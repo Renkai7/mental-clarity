@@ -952,6 +952,20 @@ Each milestone lists steps, files to touch, and Definition of Done (DoD). Submit
 
 ---
 
+## Tracking Items (post-M10)
+
+- Centralize color mapping utility
+  - Create `lib/colorMapping.ts` exposing `getCountColor(metric: 'R'|'C'|'A', count: number, caps, thresholds)` and `getCIColor(ci: number, thresholds)`.
+  - Replace inline color logic in `lib/mockData.ts`, `components/HeatmapCell.tsx`, and `components/Heatmap.tsx` with the utility.
+  - Read thresholds from Settings when available; fallback to defaults (green ≥ 0.66, yellow ≥ 0.33).
+
+- Settings-driven visualization
+  - After M10 and settings persistence, wire heatmap and stats to use saved caps (maxR/maxC/maxA), thresholds, and CI weights.
+  - Ensure counts map colors as: lower=green, mid=yellow, higher=red; CI maps higher=green.
+  - Add boundary tests for threshold edges (e.g., exactly 0.33/0.66) when test harness lands.
+
+---
+
 ## M11 — History & Stats Data
 
 ### M11.1 — Create heatmap data hook
@@ -1498,6 +1512,24 @@ Each milestone lists steps, files to touch, and Definition of Done (DoD). Submit
 **Files:** N/A (testing)
 
 **DoD:** App stable and fully functional; ready for daily use.
+
+---
+
+### M15.9 — Adopt shadcn/ui + Styling Pass
+**Task:** Introduce shadcn/ui as a lightweight component library and iterate through the app to improve visual hierarchy, spacing, and consistency while keeping our clarity color scale and a11y priorities.
+- Install and initialize shadcn/ui (scaffold into `components/ui/*`).
+- Add base primitives: Button, Card, Input, Select, Textarea, Label, Dialog, Tooltip, Tabs, Table, Badge, Separator.
+- Map our clarity colors to the design tokens and keep Tailwind utilities where it’s simpler.
+- Refactor screens to use primitives for consistent spacing/typography:
+  - Main grid (cards/headers, table density, hover states)
+  - Day detail (panel layout, inputs, steppers, sticky totals)
+  - History (toggle as segmented control, cell focus/hover tooltips)
+  - Settings (forms, sections, accordions)
+- Verify keyboard focus states remain visible and accessible; ensure dark mode parity.
+
+**Files:** `package.json`, `tailwind.config.ts`, `app/globals.css`, `components/ui/*`, existing components
+
+**DoD:** shadcn/ui initialized; key primitives in place; main pages refactored to use consistent components with improved spacing, focus states, and visual hierarchy; no a11y regressions.
 
 ---
 
