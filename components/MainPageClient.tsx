@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Tabs, { MetricTab } from './Tabs';
+import MainMetricGrid from './MainMetricGrid';
 
 const LABELS: Record<MetricTab, string> = {
   R: 'Rumination',
@@ -21,10 +22,10 @@ export default function MainPageClient() {
         aria-labelledby={LABELS[active]}
         className="rounded-md border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-black"
       >
-        <p className="text-sm text-zinc-600 dark:text-zinc-300">
+        <p className="text-sm text-zinc-600 dark:text-zinc-300 mb-2">
           Showing: <span className="font-medium text-zinc-900 dark:text-zinc-100">{LABELS[active]}</span>
         </p>
-        {/* Placeholder for future metric grid */}
+        <MainMetricGrid metric={active} metricLabel={LABELS[active]} />
       </div>
     </div>
   );
