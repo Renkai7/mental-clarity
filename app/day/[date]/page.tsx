@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import DailySummary from '../../../components/DailySummary';
+import DayDetailForm from '../../../components/DayDetailForm';
 
 interface DayDetailPageProps {
   params: Promise<{ date: string }>;
@@ -52,22 +52,13 @@ export default async function DayDetailPage({ params }: DayDetailPageProps) {
         </Link>
       </div>
 
-      <header>
+      <header className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
           {formatted}
         </h1>
       </header>
 
-      <section aria-labelledby="daily-summary" className="mt-8 rounded-md border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-black">
-        <h2 id="daily-summary" className="mb-3 text-lg font-medium text-zinc-900 dark:text-zinc-100">Daily Summary</h2>
-        <DailySummary date={date} sleepQuality={7} exerciseMinutes={0} notes="" />
-      </section>
-
-      <section aria-labelledby="timeframe-grid" className="mt-8 rounded-md border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-black">
-        <h2 id="timeframe-grid" className="mb-3 text-lg font-medium text-zinc-900 dark:text-zinc-100">Timeframes</h2>
-        {/* M3.4 will render TimeframeGrid here; M3.3 will define rows */}
-        <p className="text-sm text-zinc-600 dark:text-zinc-300">Per-timeframe entry grid will appear here.</p>
-      </section>
+      <DayDetailForm date={date} />
     </main>
   );
 }
