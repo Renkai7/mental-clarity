@@ -1,15 +1,64 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import DayDetailForm from '../../../components/DayDetailForm';
+
 interface DayDetailPageProps {
-  params: { date: string };
+  params: Promise<{ date: string }>;
 }
 
-export default function DayDetailPage({ params }: DayDetailPageProps) {
-  const { date } = params;
+function isValidDateStr(s: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y, m, d] = s.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  // Ensure date components round-trip (e.g., avoid 2025-13-40)
+  return (
+    dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d
+  );
+}
+
+function formatFullDate(dateStr: string): string {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  if (!y || !m || !d) return dateStr;
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  }).format(dt);
+}
+
+export default async function DayDetailPage({ params }: DayDetailPageProps) {
+  const resolvedParams = await params;
+  if (!resolvedParams || typeof resolvedParams.date !== 'string' || resolvedParams.date.length === 0) {
+    notFound();
+  }
+  const date = decodeURIComponent(resolvedParams.date);
+  if (!isValidDateStr(date)) {
+    notFound();
+  }
+  const formatted = formatFullDate(date);
+
   return (
     <main className="mx-auto w-full max-w-4xl px-6 py-12">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-        Day Detail: {date}
-      </h1>
-      <section aria-label="day-detail" className="mt-6" />
+      <div className="mb-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          aria-label="Back to main page"
+        >
+          ← Back
+        </Link>
+      </div>
+
+      <header className="mb-8">
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+          {formatted}
+        </h1>
+      </header>
+
+      <DayDetailForm date={date} />
     </main>
   );
 }

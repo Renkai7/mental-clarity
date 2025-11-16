@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { MainGridRow, DEFAULT_TIMEFRAMES, MetricCode, getMockMainGridData } from "../lib/mockData";
 
 interface MainMetricGridProps {
@@ -50,16 +51,22 @@ export default function MainMetricGrid({ metric, metricLabel }: MainMetricGridPr
                 tabIndex={0}
                 role="link"
                 aria-label={`View day details for ${formatShort(row.date)}`}
-                onClick={() => router.push(`/day/${row.date}`)}
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  if (target.closest('a')) return;
+                  router.push(`/day/${encodeURIComponent(row.date)}`);
+                }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    router.push(`/day/${row.date}`);
+                    router.push(`/day/${encodeURIComponent(row.date)}`);
                   }
                 }}
               >
                 <th scope="row" className="sticky left-0 z-10 bg-inherit px-3 py-2 text-left font-medium whitespace-nowrap">
-                  {formatShort(row.date)}
+                  <Link href={`/day/${encodeURIComponent(row.date)}`} className="block w-full focus:outline-none">
+                    {formatShort(row.date)}
+                  </Link>
                 </th>
                 <td className="px-3 py-2 text-right font-medium tabular-nums">{row.total}</td>
                 {DEFAULT_TIMEFRAMES.map(tf => (
