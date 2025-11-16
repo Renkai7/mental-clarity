@@ -3,6 +3,13 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Clarity scale base colors */
+  --clarity-high: #22c55e; /* green */
+  --clarity-high-200: #4ade80; /* lighter green */
+  --clarity-medium: #eab308; /* yellow */
+  --clarity-medium-200: #fcd34d; /* lighter yellow */
+  --clarity-low: #ef4444; /* red */
+  --clarity-low-200: #f87171; /* lighter red */
 }
 
 @theme inline {
@@ -10,6 +17,13 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Clarity scale mapped to tailwind color tokens */
+  --color-clarity-high: var(--clarity-high);
+  --color-clarity-high-200: var(--clarity-high-200);
+  --color-clarity-medium: var(--clarity-medium);
+  --color-clarity-medium-200: var(--clarity-medium-200);
+  --color-clarity-low: var(--clarity-low);
+  --color-clarity-low-200: var(--clarity-low-200);
 }
 
 @media (prefers-color-scheme: dark) {
