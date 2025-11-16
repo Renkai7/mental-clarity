@@ -25,7 +25,7 @@ export default function MainPageClient() {
         <p className="text-sm text-zinc-600 dark:text-zinc-300 mb-2">
           Showing: <span className="font-medium text-zinc-900 dark:text-zinc-100">{LABELS[active]}</span>
         </p>
-        <MainMetricGrid metric={active} />
+        <MainMetricGrid metric={active} metricLabel={LABELS[active]} />
       </div>
     </div>
   );

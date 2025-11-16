@@ -6,6 +6,7 @@ import { MainGridRow, DEFAULT_TIMEFRAMES, MetricCode, getMockMainGridData } from
 
 interface MainMetricGridProps {
   metric: MetricCode; // 'R' | 'C' | 'A'
+  metricLabel: string; // Human label like Rumination/Compulsions/Avoidance
 }
 
 // Utility: format YYYY-MM-DD to "Mon D" (e.g., Sep 17)
@@ -15,17 +16,20 @@ function formatShort(dateStr: string): string {
   return dt.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-export default function MainMetricGrid({ metric }: MainMetricGridProps) {
+export default function MainMetricGrid({ metric, metricLabel }: MainMetricGridProps) {
   const data: MainGridRow[] = useMemo(() => getMockMainGridData(metric), [metric]);
   const router = useRouter();
 
   return (
     <div className="mt-4 w-full overflow-x-auto">
-      <table className="min-w-full border-collapse text-sm" aria-label="Main metric grid for recent days">
+      <table className="min-w-full border-collapse text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
+        <caption className="px-3 py-2 text-left text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          {metricLabel} Tracker
+        </caption>
         <thead>
           <tr className="bg-neutral-100 dark:bg-neutral-800">
             <th scope="col" className="sticky left-0 z-10 bg-neutral-100 dark:bg-neutral-800 px-3 py-2 text-left font-medium">Date</th>
-            <th scope="col" className="px-3 py-2 text-right font-medium">Total</th>
+            <th scope="col" className="px-3 py-2 text-right font-medium">{`Total ${metricLabel}`}</th>
             {DEFAULT_TIMEFRAMES.map(label => (
               <th key={label} scope="col" className="px-3 py-2 text-center font-medium whitespace-nowrap">{label}</th>
             ))}
