@@ -6,11 +6,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dev:web": "next dev",
+    "start:web": "next start -p 3000",
+    "build:web": "next build",
+    "dev:electron": "wait-on http://localhost:3000 && npm run rebuild:native && electron .",
+    "dev:desktop": "concurrently -k -n web,app -c blue,green \"npm:dev:web\" \"npm:dev:electron\"",
+    "start:desktop": "electron .",
+    "dist": "npm run build:web && electron-builder",
+    "postinstall": "electron-builder install-app-deps",
+    "rebuild:native": "npx --yes electron-rebuild -f -w better-sqlite3"
   },
   "dependencies": {
     "date-fns": "^4.1.0",
     "dexie": "^4.2.1",
+    "better-sqlite3": "^12.4.1",
     "next": "16.0.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
@@ -22,9 +32,48 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^8.2.2",
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wait-on": "^7.2.0"
+  },
+  "optionalDependencies": {},
+  "main": "electron/main.js",
+  "build": {
+    "appId": "com.mentality.tracker",
+    "productName": "Mental Clarity",
+    "files": [
+      "**/*",
+      "!**/*.map",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/.cache/**"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/better-sqlite3/**"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "extraResources": [
+      {
+        "from": "public",
+        "to": "public"
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg",
+      "hardenedRuntime": true
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }

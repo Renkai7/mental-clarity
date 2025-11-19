@@ -7,6 +7,9 @@ export interface DailySummaryProps {
   sleepQuality?: number; // 1..10
   exerciseMinutes?: number; // 0..300
   notes?: string;
+  onSleepQualityChange?: (value: number) => void;
+  onExerciseMinutesChange?: (value: number) => void;
+  onNotesChange?: (value: string) => void;
 }
 
 function clamp(num: number, min: number, max: number) {
@@ -21,15 +24,28 @@ function formatShort(dateStr: string): string {
   );
 }
 
-export default function DailySummary({ date, sleepQuality = 7, exerciseMinutes = 0, notes = "" }: DailySummaryProps) {
+export default function DailySummary({
+  date,
+  sleepQuality = 7,
+  exerciseMinutes = 0,
+  notes = "",
+  onSleepQualityChange,
+  onExerciseMinutesChange,
+  onNotesChange,
+}: DailySummaryProps) {
   const [sleep, setSleep] = useState<number>(clamp(sleepQuality, 1, 10));
   const [exercise, setExercise] = useState<number>(clamp(exerciseMinutes, 0, 300));
   const [dailyNotes, setDailyNotes] = useState<string>(notes);
 
   const dateLabel = useMemo(() => formatShort(date), [date]);
 
-  const decSleep = () => setSleep((v) => clamp(v - 1, 1, 10));
-  const incSleep = () => setSleep((v) => clamp(v + 1, 1, 10));
+  const setSleepAndNotify = (v: number) => {
+    const nv = clamp(v, 1, 10);
+    setSleep(nv);
+    onSleepQualityChange?.(nv);
+  };
+  const decSleep = () => setSleepAndNotify(sleep - 1);
+  const incSleep = () => setSleepAndNotify(sleep + 1);
 
   return (
     <div className="flex flex-col gap-4">
@@ -57,7 +73,7 @@ export default function DailySummary({ date, sleepQuality = 7, exerciseMinutes =
               max={10}
               step={1}
               value={sleep}
-              onChange={(e) => setSleep(clamp(parseInt(e.target.value, 10), 1, 10))}
+              onChange={(e) => setSleepAndNotify(parseInt(e.target.value, 10))}
               className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-right tabular-nums outline-none focus:ring-2 focus:ring-zinc-400 dark:border-zinc-700"
               inputMode="numeric"
             />
@@ -87,7 +103,11 @@ export default function DailySummary({ date, sleepQuality = 7, exerciseMinutes =
             max={300}
             step={5}
             value={exercise}
-            onChange={(e) => setExercise(clamp(parseInt(e.target.value, 10), 0, 300))}
+            onChange={(e) => {
+              const nv = clamp(parseInt(e.target.value, 10), 0, 300);
+              setExercise(nv);
+              onExerciseMinutesChange?.(nv);
+            }}
             className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-right tabular-nums outline-none focus:ring-2 focus:ring-zinc-400 dark:border-zinc-700"
             inputMode="numeric"
           />
@@ -108,7 +128,11 @@ export default function DailySummary({ date, sleepQuality = 7, exerciseMinutes =
           name="dailyNotes"
           rows={4}
           value={dailyNotes}
-          onChange={(e) => setDailyNotes(e.target.value)}
+          onChange={(e) => {
+            const v = e.target.value;
+            setDailyNotes(v);
+            onNotesChange?.(v);
+          }}
           placeholder="Anything notable about your day…"
           className="w-full resize-y rounded-md border border-zinc-300 bg-transparent px-3 py-2 outline-none focus:ring-2 focus:ring-zinc-400 dark:border-zinc-700"
         />
