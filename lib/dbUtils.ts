@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import { makeEntryId } from '@/lib/id';
 import type { Settings, BlockConfig, BlockEntry, DailyMeta } from '@/types';
 import {
   SettingsSchema,
@@ -49,6 +50,41 @@ export async function getDailyMeta(date: string): Promise<DailyMeta | undefined>
   const meta = await db.dailyMeta.get(date);
   if (!meta) return undefined;
   return DailyMetaSchema.parse(meta);
+}
+
+export async function getEntry(date: string, blockId: string): Promise<BlockEntry | undefined> {
+  DateString.parse(date);
+  const found = await db.entries.where('[date+blockId]').equals([date, blockId]).first();
+  if (!found) return undefined;
+  return BlockEntrySchema.parse(found);
+}
+
+// Create empty entries for all active blocks for the given date.
+// Idempotent: existing entries are preserved; missing ones are created with zeros.
+export async function createEmptyDay(date: string): Promise<void> {
+  const blocks = await getBlocks();
+  const activeBlocks = blocks.filter(b => b.active);
+  const nowISO = new Date().toISOString();
+
+  for (const b of activeBlocks) {
+    const existing = await getEntry(date, b.id);
+    if (existing) continue;
+
+    const entry: BlockEntry = {
+      id: makeEntryId(date, b.id),
+      date,
+      blockId: b.id,
+      ruminationCount: 0,
+      compulsionsCount: 0,
+      avoidanceCount: 0,
+      anxietyScore: 5,
+      stressScore: 5,
+      notes: undefined,
+      createdAt: nowISO,
+      updatedAt: nowISO,
+    } as BlockEntry;
+    await upsertEntry(entry);
+  }
 }
 
 export async function upsertEntry(entry: BlockEntry): Promise<void> {
