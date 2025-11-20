@@ -1,25 +1,30 @@
-'use client';
-
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+"use client";
 import { useState, useEffect } from 'react';
+
+type AppView = 'home' | 'history' | 'stats' | 'settings';
 
 interface NavItem {
   label: string;
-  href: string;
-  exact?: boolean;
+  view: AppView;
 }
 
+interface NavbarProps {
+  currentView: AppView;
+  onNavigate: (view: AppView) => void;
+}
 const navItems: NavItem[] = [
-  { label: 'Home', href: '/', exact: true },
-  { label: 'History', href: '/history' },
-  { label: 'Stats', href: '/stats' },
-  { label: 'Settings', href: '/settings' },
+  { label: 'Home', view: 'home' },
+  { label: 'History', view: 'history' },
+  { label: 'Stats', view: 'stats' },
+  { label: 'Settings', view: 'settings' },
 ];
 
-export default function Navbar() {
-  const pathname = usePathname();
+export default function Navbar({ currentView, onNavigate }: NavbarProps) {
   const [isTop, setIsTop] = useState(true);
+
+  useEffect(() => {
+    console.log('[navbar] view changed to', currentView);
+  }, [currentView]);
 
   useEffect(() => {
     const onScroll = () => setIsTop(window.scrollY < 4);
@@ -44,19 +49,21 @@ export default function Navbar() {
         </div>
         <ul className="flex items-center gap-1" role="menubar">
           {navItems.map((item) => {
-            const active = item.exact
-              ? pathname === item.href
-              : pathname.startsWith(item.href) && pathname !== '/';
+            const active = currentView === item.view;
             return (
-              <li key={item.href} role="none">
-                <Link
-                  href={item.href}
-                  role="menuitem"
+              <li key={item.view} role="none">
+                <button
+                  type="button"
+                  aria-current={active ? 'page' : undefined}
+                  onClick={() => {
+                    console.log('[navbar] click', item.view);
+                    onNavigate(item.view);
+                  }}
                   data-active={active || undefined}
                   className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-clarity-medium data-[active]:text-clarity-high data-[active]:font-semibold"
                 >
                   {item.label}
-                </Link>
+                </button>
               </li>
             );
           })}

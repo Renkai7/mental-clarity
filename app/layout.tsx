@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/Navbar";
-import DBInitializer from "../components/DBInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,12 +24,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none';"
+        />
+        <meta name="referrer" content="no-referrer" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>        
-        <Navbar />
-        <DBInitializer />
-        <main id="main-content" className="min-h-screen">
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { db } from '@/lib/db';
+import { getMainGridSummary } from '@/lib/dbUtils';
 
 export type Metric = 'R' | 'C' | 'A';
 
@@ -38,43 +38,12 @@ export function useMainGridData(metric: Metric, daysToLoad = 30) {
     setError(null);
     const id = ++requestId.current;
     try {
-      // Load all entries ordered by date desc, then aggregate by date.
-      // Note: For MVP simplicity we read all and reduce. Can optimize with
-      // keyed pagination later if needed.
-      const entries = await db.entries.orderBy('date').reverse().toArray();
-
-      // Aggregate per-date per-block
-      const byDate: Map<string, Map<string, number>> = new Map();
-      for (const e of entries) {
-        const d = e.date;
-        let blocks = byDate.get(d);
-        if (!blocks) {
-          blocks = new Map();
-          byDate.set(d, blocks);
-        }
-        const current = blocks.get(e.blockId) ?? 0;
-        const inc = (e as any)[field] as number;
-        blocks.set(e.blockId, current + (typeof inc === 'number' ? inc : 0));
-      }
-
-      // Sort dates desc and take the latest `currentLimit`
-      const sortedDates = Array.from(byDate.keys()).sort((a, b) => (a < b ? 1 : a > b ? -1 : 0));
-      const limitedDates = sortedDates.slice(0, currentLimit);
-
-      const rows: MainGridRow[] = limitedDates.map((d) => {
-        const blocks = byDate.get(d)!;
-        const timeframes: Record<string, number> = {};
-        let total = 0;
-        for (const [blockId, count] of blocks.entries()) {
-          timeframes[blockId] = count;
-          total += count;
-        }
-        return { date: d, total, timeframes };
-      });
+      const rows = (await getMainGridSummary(metric, currentLimit)) as MainGridRow[];
 
       if (id === requestId.current) {
         setData(rows);
-        setHasMore(sortedDates.length > currentLimit);
+        // We can't know total distinct dates without another call; be optimistic
+        setHasMore(rows.length >= currentLimit);
       }
     } catch (err: any) {
       if (id === requestId.current) {
@@ -85,7 +54,7 @@ export function useMainGridData(metric: Metric, daysToLoad = 30) {
         setIsLoading(false);
       }
     }
-  }, [field]);
+  }, [field, metric]);
 
   useEffect(() => {
     setLimit(daysToLoad);
