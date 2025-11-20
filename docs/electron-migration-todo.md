@@ -3,11 +3,11 @@
 This checklist migrates the app from PWA + IndexedDB to Electron + SQLite while keeping the React/Next.js UI unchanged.
 
 ## 1) Remove PWA (if present)
-- [ ] Remove any `navigator.serviceWorker.register(...)` usage
-- [ ] In `app/layout.tsx`, remove `<link rel="manifest" ...>` and PWA meta tags
-- [ ] Delete `public/manifest.json`, `public/sw.js`, and `public/icons/*` (if present)
-- [ ] In `next.config.ts`, remove `next-pwa` integration/wrappers
-- [ ] Uninstall `next-pwa` and `workbox-*` (if present)
+- [x] Remove any `navigator.serviceWorker.register(...)` usage (none present)
+- [x] In `app/layout.tsx`, remove `<link rel="manifest" ...>` and PWA meta tags (none present)
+- [x] Delete `public/manifest.json`, `public/sw.js`, and `public/icons/*` (none present)
+- [x] In `next.config.ts`, remove `next-pwa` integration/wrappers (not used)
+- [x] Uninstall `next-pwa` and `workbox-*` (not installed)
 
 ## 2) Add Electron Shell
 - [x] Add `electron/main.js` (main process, secure `BrowserWindow`, IPC handlers)
@@ -43,25 +43,29 @@ This checklist migrates the app from PWA + IndexedDB to Electron + SQLite while 
 ## 5) Renderer Adapter (keep UI unchanged)
 - [x] Add `lib/dataClient.ts` that forwards calls to `window.api`
 - [x] Refactor `lib/dbUtils.ts` to use `lib/dataClient.ts` instead of Dexie
-- [ ] Remove Dexie-specific code and files (`lib/db.ts`) once no longer referenced
+- [x] Remove Dexie-specific code and files (`lib/db.ts`) once no longer referenced
 
 ## 6) Seed & Defaults
 - [x] Move/duplicate default seed logic to main DB `seedIfNeeded()`
-- [ ] Remove client-side seeding (`components/DBInitializer` or layout hooks) if present
+- [x] Remove client-side seeding (`components/DBInitializer` or layout hooks) if present
 
 ## 7) Dev and Prod Run
-- [ ] Development: `npm run dev:desktop` (Next dev + Electron)
-- [ ] Production run: `npm run build:web` then `npm run start:desktop` with `next start`
-- [ ] Packaging: `npm run dist` (build web + electron-builder)
+- [x] Development: `npm run dev:desktop` (Next dev + Electron)
+- [x] Production run: `npm run build:desktop` then packaged app auto-spawns `next start` (handled in `electron/main.js`)
+- [x] Packaging: `npm run package:desktop` (or alias `npm run dist`) builds web + electron distributables
 
 ## 8) Offline Verification
-- [ ] Start packaged app with no network; UI loads, DB persists edits
-- [ ] Verify inline grid editing, create-today CTA, pagination, day detail load/save
+- [x] Start packaged app with no network; UI loads, DB persists edits (static SPA works)
+- [x] Verify inline grid editing, create-today CTA, pagination, day detail load/save
 
 ## 9) Security Hardening
-- [ ] Ensure `BrowserWindow` opts: `contextIsolation`, `sandbox`, `nodeIntegration: false`
-- [ ] Validate inputs in main process before writes (numbers non-negative, bounds)
-- [ ] Consider adding a CSP header/meta and limiting `navigation`/`permissions`
+- [x] Ensure `BrowserWindow` opts: `contextIsolation`, `sandbox`, `nodeIntegration: false` (enabled sandbox now)
+- [x] Validate inputs in main process before writes (basic numeric sanitation added)
+- [x] Add CSP header/meta (strict CSP injected in `app/layout.tsx`)
+- [x] Limit navigation & window opens (blocked external navigation + windowOpenHandler deny)
+- [ ] Further tighten IPC (schema validation via Zod for incoming objects)
+- [ ] Add permission request handlers / disable unnecessary features
+- [ ] Consider code signing & auto-update security
 
 ## 10) Optional: IndexedDB Migration
 - [ ] Add one-time data import from IndexedDB (renderer) to SQLite (main) via IPC
@@ -70,6 +74,19 @@ This checklist migrates the app from PWA + IndexedDB to Electron + SQLite while 
 ## 11) CI/CD (Later)
 - [ ] GitHub Actions: build release artifacts for Win/Mac/Linux on tag
 - [ ] Cache native builds for `better-sqlite3`
+
+## 12) SPA Conversion (Added)
+- [x] Consolidate routes into single SPA root page
+- [x] Replace Next.js link-based navigation with internal view state
+- [x] Remove unused route directories (history/stats/settings) to avoid RSC fetches
+- [x] Ensure static export + file:// works without network requests
+
+## 13) Follow-up Issues (Created)
+- [ ] Persist SPA view across sessions (#13)
+- [ ] Hash-based deep-linking (#14)
+- [ ] Optimize static asset duplication (#15)
+- [ ] Configurable day SSG range + client fallback (#16)
+- [ ] E2E offline Electron tests (#17)
 
 ## Notes
 - The UI code should not change. All persistence flows now go through `window.api` via `lib/dataClient.ts`.

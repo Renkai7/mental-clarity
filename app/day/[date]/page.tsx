@@ -62,3 +62,19 @@ export default async function DayDetailPage({ params }: DayDetailPageProps) {
     </main>
   );
 }
+
+// Static export support: enumerate a limited recent set of dates so Next can
+// pre-render the dynamic route under output: 'export'. This avoids build
+// failure while keeping pages accessible offline. Adjust range as needed.
+export function generateStaticParams() {
+  const today = new Date();
+  const out: { date: string }[] = [];
+  for (let i = 0; i < 30; i++) {
+    const dt = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - i));
+    const y = dt.getUTCFullYear();
+    const m = String(dt.getUTCMonth() + 1).padStart(2, '0');
+    const d = String(dt.getUTCDate()).padStart(2, '0');
+    out.push({ date: `${y}-${m}-${d}` });
+  }
+  return out;
+}

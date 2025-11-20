@@ -20,6 +20,9 @@
 # production
 /build
 
+# electron packaging
+/dist/
+
 # misc
 .DS_Store
 *.pem

@@ -9,17 +9,18 @@
     "lint": "eslint",
     "dev:web": "next dev",
     "start:web": "next start -p 3000",
-    "build:web": "next build",
+    "build:web": "next build && node scripts/generate-static-out.js",
     "dev:electron": "wait-on http://localhost:3000 && npm run rebuild:native && electron .",
     "dev:desktop": "concurrently -k -n web,app -c blue,green \"npm:dev:web\" \"npm:dev:electron\"",
     "start:desktop": "electron .",
-    "dist": "npm run build:web && electron-builder",
+    "build:desktop": "npm run build:web",
+    "package:desktop": "npm run build:web && electron-builder build",
+    "dist": "npm run package:desktop",
     "postinstall": "electron-builder install-app-deps",
     "rebuild:native": "npx --yes electron-rebuild -f -w better-sqlite3"
   },
   "dependencies": {
     "date-fns": "^4.1.0",
-    "dexie": "^4.2.1",
     "better-sqlite3": "^12.4.1",
     "next": "16.0.3",
     "react": "19.2.0",
@@ -54,7 +55,8 @@
     ],
     "asar": true,
     "asarUnpack": [
-      "node_modules/better-sqlite3/**"
+      "node_modules/better-sqlite3/**",
+      ".next/**"
     ],
     "directories": {
       "buildResources": "assets"
@@ -63,17 +65,14 @@
       {
         "from": "public",
         "to": "public"
+      },
+      {
+        "from": "out",
+        "to": "out"
       }
     ],
     "win": {
       "target": "nsis"
-    },
-    "mac": {
-      "target": "dmg",
-      "hardenedRuntime": true
-    },
-    "linux": {
-      "target": "AppImage"
     }
   }
 }

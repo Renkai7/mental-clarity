@@ -1,14 +1,29 @@
-import MainPageClient from '../components/MainPageClient';
+"use client";
+import { useState, useCallback } from 'react';
+import Navbar from '../components/Navbar';
+import HomeView from '../components/views/HomeView';
+import HistoryViewContainer from '../components/views/HistoryViewContainer';
+import StatsViewContainer from '../components/views/StatsViewContainer';
+import SettingsViewContainer from '../components/views/SettingsViewContainer';
 
-export default function Home() {
+type AppView = 'home' | 'history' | 'stats' | 'settings';
+
+export default function AppShell() {
+  const [view, setView] = useState<AppView>('home');
+  const changeView = useCallback((next: AppView) => {
+    setView(next);
+    console.log('[app] view ->', next);
+  }, []);
+
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 py-12">
-      <header>
-        <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-          Mental Clarity Tracker
-        </h1>
-      </header>
-      <MainPageClient />
+    <div className="min-h-screen bg-white dark:bg-black">
+      <Navbar onNavigate={changeView} currentView={view} />
+      <div className="pt-2">
+        {view === 'home' && <HomeView />}
+        {view === 'history' && <HistoryViewContainer />}
+        {view === 'stats' && <StatsViewContainer />}
+        {view === 'settings' && <SettingsViewContainer />}
+      </div>
     </div>
   );
 }
