@@ -10,6 +10,7 @@ let prodMode = false;
 function createWindow() {
   const isDev = !app.isPackaged;
   const preloadPath = path.join(__dirname, 'preload.js');
+  console.log('[main] creating window. mode=', isDev ? 'dev' : 'prod', 'preload=', preloadPath);
   
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -25,11 +26,13 @@ function createWindow() {
   
   if (isDev) {
     const devURL = process.env.RENDERER_URL || 'http://localhost:3000';
+    console.log('[main] loading dev URL', devURL);
     mainWindow.loadURL(devURL);
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   } else {
     prodMode = true;
     const indexFile = path.join(__dirname, '..', 'out', 'index.html');
+    console.log('[main] loading prod file', indexFile);
     try {
       mainWindow.loadFile(indexFile);
     } catch (err) {
@@ -66,8 +69,13 @@ if (!gotTheLock) {
 }
 
 app.whenReady().then(async () => {
-  const dbFile = path.join(app.getPath('userData'), 'mental-clarity.db');
-  console.log('[main] DB init starting', dbFile);
+  const isDev = !app.isPackaged;
+  console.log('[main] app.whenReady mode=', isDev ? 'dev' : 'prod');
+  const dbName = isDev ? 'mental-clarity-dev.db' : 'mental-clarity.db';
+  const dbFile = path.join(app.getPath('userData'), dbName);
+  console.log('[main] isDev:', isDev);
+  console.log('[main] dbFile:', dbFile);
+  console.log('[main] DB init starting path=', dbFile);
   try {
     await init(dbFile);
     console.log('[main] DB init complete');
@@ -81,6 +89,7 @@ app.whenReady().then(async () => {
     return; // abort further startup
   }
   registerIpcHandlers();
+  console.log('[main] IPC handlers registered');
   createWindow();
 
   app.on('activate', () => {
@@ -171,6 +180,7 @@ function registerIpcHandlers() {
   ipcMain.handle('day:createEmpty', async (_e, date) => {
     return createEmptyDay(String(date));
   });
+  console.log('[main] registerIpcHandlers complete');
 }
 
 module.exports = { createWindow };

@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld('api', {
+// Build API object once so we can expose under multiple names for compatibility.
+const exposedApi = {
   ping: () => ipcRenderer.invoke('ping'),
 
   getSettings: () => ipcRenderer.invoke('settings:get'),
@@ -18,4 +19,15 @@ contextBridge.exposeInMainWorld('api', {
   upsertDailyMeta: (meta) => ipcRenderer.invoke('dailyMeta:upsert', meta),
 
   createEmptyDay: (date) => ipcRenderer.invoke('day:createEmpty', date),
-});
+};
+
+try {
+  contextBridge.exposeInMainWorld('api', exposedApi);
+  contextBridge.exposeInMainWorld('electronAPI', exposedApi); // alias for clarity; renderer can check either
+  // Lightweight dev log so we can confirm preload ran.
+  // eslint-disable-next-line no-console
+  console.log('[preload] API exposed (api & electronAPI) keys:', Object.keys(exposedApi));
+} catch (err) {
+  // eslint-disable-next-line no-console
+  console.error('[preload] contextBridge expose failed', err);
+}

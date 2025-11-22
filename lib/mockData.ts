@@ -1,6 +1,9 @@
 // Mock data provider for Main Metric Grid (M2.1)
 // Generates ~30 days of records with realistic ranges per metric.
 
+import { colorForCI, colorForCount } from './colorMapping';
+import type { CIThresholds, CICaps } from '@/types';
+
 export type MetricCode = 'R' | 'C' | 'A';
 
 export interface MainGridRow {
@@ -99,22 +102,11 @@ export interface HeatmapDayData {
   blocks: HeatmapBlock[]; // fixed 6 blocks in order of DEFAULT_TIMEFRAMES
 }
 
-function mapCIToColor(ci: number): HeatmapColor {
-  if (ci === null || Number.isNaN(ci)) return 'gray';
-  if (ci >= 0.66) return 'green';
-  if (ci >= 0.33) return 'yellow';
-  return 'red';
-}
 
-function mapCountToColor(metric: MetricCode, count: number): HeatmapColor {
-  if (count === null || Number.isNaN(count)) return 'gray';
-  // Lower is better. Map thresholds using RANGE caps.
-  const max = RANGE[metric].max || 1;
-  const ratio = Math.min(1, count / max);
-  if (ratio <= 0.33) return 'green';
-  if (ratio <= 0.66) return 'yellow';
-  return 'red';
-}
+// Centralized color mapping config (M10.4)
+const DEFAULT_THRESHOLDS: CIThresholds = { greenMin: 0.66, yellowMin: 0.33 };
+const DEFAULT_CAPS: CICaps = { maxR: RANGE.R.max, maxC: RANGE.C.max, maxA: RANGE.A.max };
+const COLOR_CFG = { ciThresholds: DEFAULT_THRESHOLDS, caps: DEFAULT_CAPS };
 
 // Deterministic CI generator using the seededRandom; values in [0,1]
 function seededCI(rand: () => number): number {
@@ -145,7 +137,8 @@ export function getMockHeatmapData(metric: HeatmapMetric, days = 30, offsetDays 
 
       if (metric === 'CI') {
         const ci = seededCI(rand);
-        return { blockId: label, value: Number(ci.toFixed(2)), color: mapCIToColor(ci) };
+        const color = colorForCI(ci, COLOR_CFG) as HeatmapColor;
+        return { blockId: label, value: Number(ci.toFixed(2)), color };
       }
 
       // Counts for R/C/A with mild block-dependent variance
@@ -153,7 +146,8 @@ export function getMockHeatmapData(metric: HeatmapMetric, days = 30, offsetDays 
       const base = rand();
       const bias = 0.2 + (idx / DEFAULT_TIMEFRAMES.length) * 0.3; // later blocks slightly higher
       const val = Math.round(base * (range.max - range.min) + range.min * bias);
-      return { blockId: label, value: val, color: mapCountToColor(metric as MetricCode, val) };
+      const color = colorForCount(metric as MetricCode, val, COLOR_CFG) as HeatmapColor;
+      return { blockId: label, value: val, color };
     });
 
     rows.push({ date: dateStr, blocks });

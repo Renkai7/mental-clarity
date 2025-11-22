@@ -22,16 +22,30 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isProd = process.env.NODE_ENV === "production";
+
+  const csp = `
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data:;
+    font-src 'self';
+    connect-src 'self';
+    object-src 'none';
+    base-uri 'none';
+    frame-ancestors 'none';
+  `.replace(/\s{2,}/g, " ").trim();
+
   return (
     <html lang="en">
       <head>
-        <meta
-          httpEquiv="Content-Security-Policy"
-          content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none';"
-        />
+        {/* Only enforce strict CSP in production */}
+        {isProd && (
+          <meta httpEquiv="Content-Security-Policy" content={csp} />
+        )}
         <meta name="referrer" content="no-referrer" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>        
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
