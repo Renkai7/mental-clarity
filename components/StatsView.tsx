@@ -4,35 +4,16 @@ import React from 'react';
 import StatsCards from './StatsCards';
 import Sparkline from './Sparkline';
 import BarCharts from './BarCharts';
-import { getMockHeatmapData, getMockMainGridData, DEFAULT_TIMEFRAMES } from '@/lib/mockData';
+import { DEFAULT_TIMEFRAMES } from '@/lib/mockData';
+import { useStatsData } from '@/hooks/useStatsData';
 
 export default function StatsView() {
-  const [barMetric, setBarMetric] = React.useState<'R' | 'C' | 'A'>('R');
-
-  const sparklineData = React.useMemo(() => {
-    const days = getMockHeatmapData('CI', 14).slice().reverse(); // oldest -> newest
-    return days.map((d) => {
-      const vals = d.blocks.map(b => (typeof b.value === 'number' ? b.value : null)).filter((v): v is number => v !== null);
-      const avg = vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0.5;
-      return { date: d.date, value: Number(avg.toFixed(2)) };
-    });
-  }, []);
+  const { sparkline, blockAverages, barMetric, setBarMetric, isLoading, error } = useStatsData();
 
   const barData = React.useMemo(() => {
-    const rows = getMockMainGridData(barMetric).slice(0, 7); // last 7 days
-    const sums: Record<string, { total: number; count: number }> = {};
-    DEFAULT_TIMEFRAMES.forEach(label => {
-      sums[label] = { total: 0, count: 0 };
-    });
-    rows.forEach(r => {
-      DEFAULT_TIMEFRAMES.forEach(label => {
-        const v = r.timeframes[label] ?? 0;
-        sums[label].total += v;
-        sums[label].count += 1;
-      });
-    });
-    return DEFAULT_TIMEFRAMES.map(label => ({ blockLabel: label, average: Math.round(sums[label].total / Math.max(1, sums[label].count)) }));
-  }, [barMetric]);
+    if (!blockAverages.length) return [];
+    return blockAverages.map(b => ({ blockLabel: b.blockLabel, average: b.average }));
+  }, [blockAverages]);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-6 py-12">
@@ -43,7 +24,13 @@ export default function StatsView() {
       <section className="mt-10">
         <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">Clarity Index Trend (14 days)</h2>
         <div className="mt-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
-          <Sparkline data={sparklineData} height={140} />
+          {sparkline.length ? (
+            <Sparkline data={sparkline} height={140} />
+          ) : (
+            <div className="h-[120px] flex items-center justify-center text-xs text-zinc-500 dark:text-zinc-400">
+              {isLoading ? 'Loading…' : 'No data'}
+            </div>
+          )}
         </div>
       </section>
 
@@ -66,9 +53,20 @@ export default function StatsView() {
           </div>
         </div>
         <div className="mt-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
-          <BarCharts metric={barMetric} data={barData} />
+          {barData.length ? (
+            <BarCharts metric={barMetric} data={barData} />
+          ) : (
+            <div className="h-[240px] flex items-center justify-center text-xs text-zinc-500 dark:text-zinc-400">
+              {isLoading ? 'Loading…' : 'No block data'}
+            </div>
+          )}
         </div>
       </section>
+      {error && (
+        <div className="mt-4 text-xs text-red-600 dark:text-red-400" role="alert">
+          {error}
+        </div>
+      )}
     </main>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import HomeView from '../components/views/HomeView';
 import HistoryViewContainer from '../components/views/HistoryViewContainer';
@@ -13,6 +13,14 @@ export default function AppShell() {
   const changeView = useCallback((next: AppView) => {
     setView(next);
     console.log('[app] view ->', next);
+  }, []);
+
+  // Dev diagnostics: confirm preload injected APIs.
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('[app] electronAPI present?', typeof (window as any).electronAPI !== 'undefined');
+    // eslint-disable-next-line no-console
+    console.log('[app] api present?', typeof (window as any).api !== 'undefined');
   }, []);
 
   return (

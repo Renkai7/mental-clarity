@@ -44,6 +44,16 @@ export async function getEntriesSummary(metric: 'R' | 'C' | 'A', limit: number) 
   return api.getEntriesSummary(metric, limit);
 }
 
+export async function getEntriesRange(startDate: string, endDate: string) {
+  const api = await waitForApi();
+  return api.invoke ? api.invoke('entries:range', startDate, endDate) : api['entries:range'](startDate, endDate);
+}
+
+export async function getDailyMetaRange(startDate: string, endDate: string) {
+  const api = await waitForApi();
+  return api.invoke ? api.invoke('dailyMeta:range', startDate, endDate) : api['dailyMeta:range'](startDate, endDate);
+}
+
 export async function upsertEntry(entry: any) {
   const api = await waitForApi();
   return api.upsertEntry(entry);

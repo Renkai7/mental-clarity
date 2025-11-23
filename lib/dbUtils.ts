@@ -86,3 +86,14 @@ export type Metric = 'R' | 'C' | 'A';
 export async function getMainGridSummary(metric: Metric, limit: number) {
   return api.getEntriesSummary(metric, limit);
 }
+
+// Range retrieval (M11)
+export async function getEntriesRange(startDate: string, endDate: string): Promise<BlockEntry[]> {
+  const rows: any[] = await api.getEntriesRange(startDate, endDate);
+  return rows.map(r => BlockEntrySchema.parse(r));
+}
+
+export async function getDailyMetaRange(startDate: string, endDate: string): Promise<DailyMeta[]> {
+  const rows: any[] = await api.getDailyMetaRange(startDate, endDate);
+  return rows.map(r => DailyMetaSchema.parse(r));
+}

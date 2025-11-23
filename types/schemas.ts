@@ -53,6 +53,7 @@ export const DailyMetaSchema = z.object({
   sleepQuality: Score1to10,
   exerciseMinutes: NonNegativeInt,
   dailyNotes: z.string().max(1000).optional(),
+  dailyCI: z.number().min(0).max(1).nullable().optional(),
 });
 
 // Goals schema
