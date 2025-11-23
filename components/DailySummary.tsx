@@ -1,6 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Button from "./ui/Button";
+import Input from "./ui/Input";
+import { Textarea } from "./ui/textarea";
+import { Label } from "./ui/label";
 
 export interface DailySummaryProps {
   date: string;
@@ -52,20 +56,21 @@ export default function DailySummary({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {/* Sleep Quality */}
         <div className="flex flex-col">
-          <label htmlFor="sleepQuality" className="mb-1 text-sm font-medium text-zinc-800 dark:text-zinc-100">
+          <Label htmlFor="sleepQuality" className="mb-1">
             Sleep Quality (1–10)
-          </label>
+          </Label>
           <div className="flex items-center gap-2">
-            <button
+            <Button
               type="button"
               onClick={decSleep}
               aria-label="Decrease sleep quality"
-              className="rounded-md border border-zinc-300 px-2 py-1 text-zinc-700 hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              variant="subtle"
+              className="h-10 w-10 px-0"
               disabled={sleep <= 1}
             >
               −
-            </button>
-            <input
+            </Button>
+            <Input
               id="sleepQuality"
               name="sleepQuality"
               type="number"
@@ -74,28 +79,31 @@ export default function DailySummary({
               step={1}
               value={sleep}
               onChange={(e) => setSleepAndNotify(parseInt(e.target.value, 10))}
-              className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-right tabular-nums outline-none focus:ring-2 focus:ring-zinc-400 dark:border-zinc-700"
+              density="md"
+              tabularNums
+              className="w-full text-right"
               inputMode="numeric"
             />
-            <button
+            <Button
               type="button"
               onClick={incSleep}
               aria-label="Increase sleep quality"
-              className="rounded-md border border-zinc-300 px-2 py-1 text-zinc-700 hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              variant="subtle"
+              className="h-10 w-10 px-0"
               disabled={sleep >= 10}
             >
               +
-            </button>
+            </Button>
           </div>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">How well you slept last night.</p>
+          <p className="mt-1 text-xs text-text-muted">How well you slept last night.</p>
         </div>
 
         {/* Exercise Minutes */}
         <div className="flex flex-col">
-          <label htmlFor="exerciseMinutes" className="mb-1 text-sm font-medium text-zinc-800 dark:text-zinc-100">
+          <Label htmlFor="exerciseMinutes" className="mb-1">
             Exercise (minutes)
-          </label>
-          <input
+          </Label>
+          <Input
             id="exerciseMinutes"
             name="exerciseMinutes"
             type="number"
@@ -108,10 +116,12 @@ export default function DailySummary({
               setExercise(nv);
               onExerciseMinutesChange?.(nv);
             }}
-            className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-right tabular-nums outline-none focus:ring-2 focus:ring-zinc-400 dark:border-zinc-700"
+            density="md"
+            tabularNums
+            className="w-full text-right"
             inputMode="numeric"
           />
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Total exercise minutes for {dateLabel}.</p>
+          <p className="mt-1 text-xs text-text-muted">Total exercise minutes for {dateLabel}.</p>
         </div>
 
         {/* Placeholder to balance grid on sm screens */}
@@ -120,10 +130,10 @@ export default function DailySummary({
 
       {/* Daily Notes */}
       <div className="flex flex-col">
-        <label htmlFor="dailyNotes" className="mb-1 text-sm font-medium text-zinc-800 dark:text-zinc-100">
+        <Label htmlFor="dailyNotes" className="mb-1">
           Daily Notes
-        </label>
-        <textarea
+        </Label>
+        <Textarea
           id="dailyNotes"
           name="dailyNotes"
           rows={4}
@@ -134,7 +144,8 @@ export default function DailySummary({
             onNotesChange?.(v);
           }}
           placeholder="Anything notable about your day…"
-          className="w-full resize-y rounded-md border border-zinc-300 bg-transparent px-3 py-2 outline-none focus:ring-2 focus:ring-zinc-400 dark:border-zinc-700"
+          density="md"
+          className="w-full resize-y"
         />
       </div>
     </div>

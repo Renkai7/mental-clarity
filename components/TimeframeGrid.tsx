@@ -29,52 +29,52 @@ export default function TimeframeGrid({
         aria-label="Timeframe entries grid"
       >
         <thead>
-          <tr className="bg-neutral-100 dark:bg-neutral-800">
+          <tr className="bg-surface-muted">
             <th
               scope="col"
-              className="px-3 py-2 text-left font-medium text-zinc-900 dark:text-zinc-100"
+              className="px-3 py-2 text-left font-medium text-text"
             >
               Block
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-zinc-900 dark:text-zinc-100"
+              className="px-3 py-2 text-center font-medium text-text"
             >
               Rumination
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-zinc-900 dark:text-zinc-100"
+              className="px-3 py-2 text-center font-medium text-text"
             >
               Compulsions
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-zinc-900 dark:text-zinc-100"
+              className="px-3 py-2 text-center font-medium text-text"
             >
               Avoidance
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-zinc-900 dark:text-zinc-100"
+              className="px-3 py-2 text-center font-medium text-text"
             >
               Anxiety
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-zinc-900 dark:text-zinc-100"
+              className="px-3 py-2 text-center font-medium text-text"
             >
               Stress
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-zinc-900 dark:text-zinc-100"
+              className="px-3 py-2 text-center font-medium text-text"
             >
               Notes
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white dark:bg-black">
+        <tbody className="bg-surface">
           {entries.length === 0 ? (
             <tr>
               <td

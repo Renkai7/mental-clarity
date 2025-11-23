@@ -35,15 +35,15 @@ export default function Navbar({ currentView, onNavigate }: NavbarProps) {
   return (
     <header
       className={`sticky top-0 z-50 border-b transition-colors ${
-        isTop ? 'border-transparent' : 'border-zinc-200 dark:border-zinc-800'
-      } bg-white/85 dark:bg-black/70 backdrop-blur`}
+        isTop ? 'border-transparent' : 'border-border'
+      } bg-surface/85 backdrop-blur`}
     >
       <nav
         aria-label="Main navigation"
         className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3"
       >
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+          <span className="text-lg font-semibold tracking-tight text-text">
             Mental Clarity
           </span>
         </div>
@@ -60,7 +60,7 @@ export default function Navbar({ currentView, onNavigate }: NavbarProps) {
                     onNavigate(item.view);
                   }}
                   data-active={active || undefined}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-clarity-medium data-[active]:text-clarity-high data-[active]:font-semibold"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-text-muted hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-primary data-[active]:text-primary data-[active]:font-semibold"
                 >
                   {item.label}
                 </button>

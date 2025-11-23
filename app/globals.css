@@ -3,6 +3,18 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Mindfulness theme tokens (light) */
+  --primary: #2E5B5B;
+  --primary-foreground: #ffffff;
+  --accent: #A4D8E1;
+  --surface: #ffffff;
+  --surface-muted: #F5FAFA;
+  --border: #D7E7E7;
+  --ring: #6BAF9A;
+  --text: #1F3A3D;
+  --text-muted: #4B6B6B;
+  --radius: 0.5rem;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
   /* Clarity scale base colors */
   --clarity-high: #22c55e; /* green */
   --clarity-high-200: #4ade80; /* lighter green */
@@ -15,6 +27,18 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  /* Semantic color tokens */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --radius: var(--radius);
+  --shadow-sm: var(--shadow-sm);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   /* Clarity scale mapped to tailwind color tokens */
@@ -30,11 +54,21 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    /* Mindfulness theme tokens (dark) */
+    --primary: #6BAF9A;
+    --primary-foreground: #0F1617;
+    --accent: #4B8B8B;
+    --surface: #0F1617;
+    --surface-muted: #0C1415;
+    --border: #2A3C3C;
+    --ring: #6BAF9A;
+    --text: #E6F2F2;
+    --text-muted: #BFD9D6;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }

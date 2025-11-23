@@ -68,17 +68,17 @@ export default function MainPageClient() {
         id={`panel-${active}`}
         role="tabpanel"
         aria-labelledby={LABELS[active]}
-        className="rounded-md border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-black"
+        className="rounded-lg border border-border bg-surface p-4 shadow-sm"
       >
         <div className="mb-2 flex items-center justify-between">
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">
-            Showing: <span className="font-medium text-zinc-900 dark:text-zinc-100">{LABELS[active]}</span>
+          <p className="text-sm text-text-muted">
+            Showing: <span className="font-medium text-text">{LABELS[active]}</span>
           </p>
           <button
             type="button"
             onClick={onStartToday}
             disabled={isCreating}
-            className="rounded border px-3 py-1.5 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-60"
+            className="rounded border border-border px-3 py-1.5 text-sm hover:bg-surface-muted disabled:opacity-60"
             aria-label="Start tracking today"
             title="Creates today's empty entries and shows them in the grid"
           >
@@ -86,7 +86,7 @@ export default function MainPageClient() {
           </button>
         </div>
         {(isLoading || isBlocksLoading) && (
-          <div className="animate-pulse text-sm text-zinc-500">Loading {LABELS[active]}…</div>
+          <div className="animate-pulse text-sm text-text-muted">Loading {LABELS[active]}…</div>
         )}
         {!isLoading && !isBlocksLoading && (
           <MainMetricGrid
@@ -105,7 +105,7 @@ export default function MainPageClient() {
               type="button"
               onClick={loadMore}
               disabled={isLoading}
-              className="rounded border px-3 py-1.5 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-60"
+              className="rounded border border-border px-3 py-1.5 text-sm hover:bg-surface-muted disabled:opacity-60"
             >
               Load more
             </button>

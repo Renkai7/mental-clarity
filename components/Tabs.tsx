@@ -64,11 +64,11 @@ export default function Tabs({ activeTab, onTabChange, className = '' }: TabsPro
             tabIndex={isActive ? 0 : -1}
             type="button"
             onClick={() => onTabChange(tab)}
-            className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-clarity-medium
+            className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary
               ${
                 isActive
-                  ? 'border-clarity-high bg-clarity-high/10 text-zinc-900 dark:text-zinc-100'
-                  : 'border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-black dark:text-zinc-300 dark:hover:bg-zinc-900'
+                  ? 'border-primary bg-accent/10 text-text'
+                  : 'border-border bg-surface text-text-muted hover:bg-surface-muted'
               }`}
           >
             {LABELS[tab]}

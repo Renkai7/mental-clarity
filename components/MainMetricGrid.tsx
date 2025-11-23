@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { upsertEntry, getEntry } from '@/lib/dbUtils';
 import { makeEntryId } from '@/lib/id';
+import Button from "./ui/Button";
+import Input from "./ui/Input";
 
 export type MainGridRow = {
   date: string;
@@ -96,18 +98,18 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
   return (
     <div className="mt-4 w-full overflow-x-auto">
       <table className="min-w-full border-collapse text-xs md:text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
-        <caption className="px-3 py-2 text-left text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <caption className="px-3 py-2 text-left text-sm font-medium text-text-muted">
           {metricLabel} Tracker
         </caption>
         <thead>
-          <tr className="bg-neutral-100 dark:bg-neutral-800">
-            <th scope="col" className="sticky left-0 z-10 bg-neutral-100 dark:bg-neutral-800 px-2 py-1.5 md:px-3 md:py-2 text-left font-medium">Date</th>
-            <th scope="col" className="px-2 py-1.5 md:px-3 md:py-2 text-right font-medium">{`Total ${metricLabel}`}</th>
+          <tr className="bg-surface-muted">
+            <th scope="col" className="sticky left-0 z-10 bg-surface-muted px-2 py-1.5 md:px-3 md:py-2 text-left font-medium text-text">Date</th>
+            <th scope="col" className="px-2 py-1.5 md:px-3 md:py-2 text-right font-medium text-text">{`Total ${metricLabel}`}</th>
             {columns.map(col => (
               <th
                 key={col.id}
                 scope="col"
-                className="px-2 py-1.5 md:px-3 md:py-2 text-center font-medium whitespace-normal leading-tight"
+                className="px-2 py-1.5 md:px-3 md:py-2 text-center font-medium whitespace-normal leading-tight text-text"
               >
                 {col.label}
               </th>
@@ -117,7 +119,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={2 + columns.length} className="px-3 py-6 text-center text-neutral-500">
+              <td colSpan={2 + columns.length} className="px-3 py-6 text-center text-text-muted">
                 No data yet. Create your first entry from the Day page.
               </td>
             </tr>
@@ -125,7 +127,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
             rows.map((row) => (
               <tr
                 key={row.date}
-                className="cursor-pointer odd:bg-neutral-50 dark:odd:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus:bg-neutral-100 dark:focus:bg-neutral-800"
+                className="cursor-pointer odd:bg-surface/50 hover:bg-surface-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-surface"
                 tabIndex={0}
                 role="link"
                 aria-label={`View day details for ${formatShort(row.date)}`}
@@ -154,25 +156,29 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
                   return (
                     <td key={col.id} className="px-2 py-1.5 md:px-3 md:py-2 text-right tabular-nums">
                       <div className="flex items-center justify-end gap-1.5 md:gap-2">
-                        <button
-                          type="button"
+                        <Button
                           aria-label={`Decrease ${metricLabel} for ${col.label}`}
-                          className="rounded border px-1.5 py-0.5 text-[11px] md:px-2 md:py-1 md:text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                          variant="subtle"
+                          size="sm"
+                          className="h-8 w-8 px-0 text-[11px] md:text-xs"
                           onClick={(e) => {
                             e.stopPropagation();
                             const next = Math.max(0, value - 1);
                             setCellValue(row.date, col.id, next);
                             scheduleSave(row.date, col.id, next);
                           }}
+                          type="button"
                         >
                           -
-                        </button>
-                        <input
+                        </Button>
+                        <Input
                           aria-label={`${metricLabel} count for ${col.label}`}
                           type="number"
                           inputMode="numeric"
                           min={0}
-                          className="w-12 md:w-16 rounded border px-2 py-1 text-right bg-transparent"
+                          className="w-12 md:w-16 text-right"
+                          density="sm"
+                          tabularNums
                           value={value}
                           onClick={(e) => e.stopPropagation()}
                           onChange={(e) => {
@@ -181,20 +187,22 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
                             scheduleSave(row.date, col.id, v);
                           }}
                         />
-                        <button
-                          type="button"
+                        <Button
                           aria-label={`Increase ${metricLabel} for ${col.label}`}
-                          className="rounded border px-1.5 py-0.5 text-[11px] md:px-2 md:py-1 md:text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                          variant="subtle"
+                          size="sm"
+                          className="h-8 w-8 px-0 text-[11px] md:text-xs"
                           onClick={(e) => {
                             e.stopPropagation();
                             const next = value + 1;
                             setCellValue(row.date, col.id, next);
                             scheduleSave(row.date, col.id, next);
                           }}
+                          type="button"
                         >
                           +
-                        </button>
-                        <span className="w-8 md:w-12 text-left text-[10px] md:text-xs" aria-live="polite">
+                        </Button>
+                        <span className="w-8 md:w-12 text-left text-[10px] md:text-xs text-text-muted" aria-live="polite">
                           {st === 'saving' ? 'Saving…' : st === 'saved' ? 'Saved' : st === 'error' ? 'Error' : ''}
                         </span>
                       </div>
