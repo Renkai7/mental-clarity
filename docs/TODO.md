@@ -191,8 +191,8 @@ DoD: Reliable autosave without data loss; clear save status; accurate CI trigger
 - [x] M10.2 — Block CI calculation (`computeBlockCI`).
 - [x] M10.3 — Daily CI calculation (`computeDailyCI`, `computeDayCIContext`).
 - [x] M10.4 — Color mapping centralized (`lib/colorMapping.ts`) + `mockData.ts` refactored to use `colorForCI` / `colorForCount`.
-- [ ] M10.5 — Persist CI in `daily_meta` (schema migration + column still pending).
-- [x] M10.6 — CI settings editing UI exists (`CIConfig.tsx`); recalculation wiring pending future integration.
+- [x] M10.5 — Persist CI in `daily_meta` (added `dailyCI` column + recompute on entry/meta save in `useDayData`).
+- [x] M10.6 — CI settings editing UI exists (`CIConfig.tsx`); recalculation wiring pending future integration triggers (still to propagate settings changes to recompute historical days).
 
 DoD: Deterministic CI stored per day; renderer uses threshold/color utilities consistently.
 **Task:** Wire mock data into table rows.
@@ -210,8 +210,8 @@ DoD: Deterministic CI stored per day; renderer uses threshold/color utilities co
 
 ### Tracking Items (post-M10)
 - [x] Centralize color mapping (`lib/colorMapping.ts` implemented; heatmap mock updated).
-- [ ] Settings-driven visualization (caps/thresholds dynamic across heatmap & stats).
-- [ ] Boundary tests (CI thresholds, count caps) after test harness introduced.
+- [x] Settings-driven visualization (heatmap mock now loads dynamic caps/thresholds via `getColorMappingConfig` with async refresh; fallback defaults preserved).
+- [x] Boundary tests added (`tests/colorMapping.test.ts` using Vitest for CI & count color mapping thresholds).
 **Task:** Make rows clickable to navigate to day detail page.
 - Wrap each `<tr>` or add click handler to navigate to `/day/[date]`.
 - Use Next.js `useRouter()` hook for programmatic navigation.
@@ -225,11 +225,12 @@ DoD: Deterministic CI stored per day; renderer uses threshold/color utilities co
 ---
 
 ### M11 — History & Stats Data
-- [ ] M11.1 — `useHeatmapData` hook (compute per-block values & colors, lazy range extension).
-- [ ] M11.2 — Wire History view to real data (replaces mock provider).
-- [ ] M11.3 — `lib/statsCalc.ts` (rolling average, streak, timeframe averages).
-- [ ] M11.4 — `useStatsData` hook (KPI + sparkline + bar chart datasets).
-- [ ] M11.5 — Wire Stats view to real data with loading states.
+- [x] M11.1 — `useHeatmapData` hook (real per-block values & colors via range queries; lazy pagination working).
+- [x] M11.2 — History view wired to real data (mock removed; load more extends actual range).
+- [x] M11.3 — `lib/statsCalc.ts` (KPI, sparkline, block averages, streak logic implemented).
+- [x] M11.4 — `useStatsData` hook (fetches ranges, computes KPIs, sparkline, block averages w/ labels; metric switching reloads).
+- [x] M11.5 — Stats view wired to real data (KPIs + sparkline + block averages; loading & error states added; mock bar data removed).
+Notes: Block averages currently span last 7 days; sparkline 14-day CI trend; future enhancement to allow user-adjustable spans & historical CI backfill when settings change.
 
 DoD: Accurate historical & aggregate metrics; performant queries; lazy loaded large ranges.
 **Task:** Connect tab state to grid display.

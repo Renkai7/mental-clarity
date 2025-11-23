@@ -53,6 +53,17 @@ async function init(dbFilePath) {
       dailyNotes TEXT
     );
   `);
+  // Migration: add dailyCI column if missing (M10.5)
+  try {
+    const info = db.prepare('PRAGMA table_info(daily_meta)').all();
+    const hasDailyCI = info.some(col => col.name === 'dailyCI');
+    if (!hasDailyCI) {
+      db.prepare('ALTER TABLE daily_meta ADD COLUMN dailyCI REAL').run();
+      console.log('[sqlite] Added dailyCI column to daily_meta');
+    }
+  } catch (e) {
+    console.warn('[sqlite] Failed dailyCI migration', e);
+  }
 }
 
 function migrateDefaults() {
@@ -177,24 +188,32 @@ function upsertEntry(entry) {
 }
 
 function getDailyMeta(date) {
-  const stmt = db.prepare('SELECT date, sleepQuality, exerciseMinutes, dailyNotes FROM daily_meta WHERE date = ?');
-  return stmt.get(date) || null;
+  const stmt = db.prepare('SELECT date, sleepQuality, exerciseMinutes, dailyNotes, dailyCI FROM daily_meta WHERE date = ?');
+  const row = stmt.get(date) || null;
+  if (!row) return null;
+  return {
+    ...row,
+    dailyCI: row.dailyCI == null ? null : Number(row.dailyCI),
+    dailyNotes: row.dailyNotes == null ? undefined : row.dailyNotes,
+  };
 }
 
 function upsertDailyMeta(meta) {
   const stmt = db.prepare(`
-    INSERT INTO daily_meta (date, sleepQuality, exerciseMinutes, dailyNotes)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO daily_meta (date, sleepQuality, exerciseMinutes, dailyNotes, dailyCI)
+    VALUES (?, ?, ?, ?, ?)
     ON CONFLICT(date) DO UPDATE SET
       sleepQuality=excluded.sleepQuality,
       exerciseMinutes=excluded.exerciseMinutes,
-      dailyNotes=excluded.dailyNotes
+      dailyNotes=excluded.dailyNotes,
+      dailyCI=excluded.dailyCI
   `);
   stmt.run(
     meta.date,
     Number(meta.sleepQuality || 0),
     Number(meta.exerciseMinutes || 0),
-    meta.dailyNotes || null
+    meta.dailyNotes || null,
+    meta.dailyCI == null ? null : Number(meta.dailyCI)
   );
   return true;
 }
@@ -250,6 +269,26 @@ function getEntriesSummary(metric, limit) {
   return limited.map((d) => byDate.get(d));
 }
 
+// Range queries (M11): fetch entries between inclusive dates
+function getEntriesRange(startDate, endDate) {
+  const stmt = db.prepare('SELECT * FROM entries WHERE date BETWEEN ? AND ? ORDER BY date DESC, blockId ASC');
+  const rows = stmt.all(startDate, endDate);
+  return rows.map(r => ({
+    ...r,
+    notes: r.notes == null ? undefined : r.notes,
+  }));
+}
+
+function getDailyMetaRange(startDate, endDate) {
+  const stmt = db.prepare('SELECT date, sleepQuality, exerciseMinutes, dailyNotes, dailyCI FROM daily_meta WHERE date BETWEEN ? AND ? ORDER BY date DESC');
+  const rows = stmt.all(startDate, endDate);
+  return rows.map(r => ({
+    ...r,
+    dailyNotes: r.dailyNotes == null ? undefined : r.dailyNotes,
+    dailyCI: r.dailyCI == null ? null : Number(r.dailyCI),
+  }));
+}
+
 function replaceBlocks(blocks) {
   const ids = new Set(blocks.map((b) => b.id));
   const tx = db.transaction(() => {
@@ -288,4 +327,6 @@ module.exports = {
   createEmptyDay,
   replaceBlocks,
   getEntriesSummary,
+  getEntriesRange,
+  getDailyMetaRange,
 };

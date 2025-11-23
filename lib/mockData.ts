@@ -1,7 +1,7 @@
 // Mock data provider for Main Metric Grid (M2.1)
 // Generates ~30 days of records with realistic ranges per metric.
 
-import { colorForCI, colorForCount } from './colorMapping';
+import { colorForCI, colorForCount, getColorMappingConfig } from './colorMapping';
 import type { CIThresholds, CICaps } from '@/types';
 
 export type MetricCode = 'R' | 'C' | 'A';
@@ -104,9 +104,18 @@ export interface HeatmapDayData {
 
 
 // Centralized color mapping config (M10.4)
-const DEFAULT_THRESHOLDS: CIThresholds = { greenMin: 0.66, yellowMin: 0.33 };
-const DEFAULT_CAPS: CICaps = { maxR: RANGE.R.max, maxC: RANGE.C.max, maxA: RANGE.A.max };
-const COLOR_CFG = { ciThresholds: DEFAULT_THRESHOLDS, caps: DEFAULT_CAPS };
+// Runtime mutable color config sourced from settings. Initialized with defaults.
+let COLOR_CFG: { ciThresholds: CIThresholds; caps: CICaps } = {
+  ciThresholds: { greenMin: 0.66, yellowMin: 0.33 },
+  caps: { maxR: RANGE.R.max, maxC: RANGE.C.max, maxA: RANGE.A.max },
+};
+// Load dynamic settings on module use (non-blocking). Consumers can call refreshColorConfig() if needed.
+export async function refreshColorConfig() {
+  const cfg = await getColorMappingConfig();
+  COLOR_CFG = cfg as any;
+}
+// Kick off initial async load (fire and forget)
+void refreshColorConfig();
 
 // Deterministic CI generator using the seededRandom; values in [0,1]
 function seededCI(rand: () => number): number {

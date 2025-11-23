@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getBlocks, getEntriesForDate, getDailyMeta, upsertEntry, upsertDailyMeta, createEmptyDay, getEntry } from '@/lib/dbUtils';
+import { getBlocks, getEntriesForDate, getDailyMeta, upsertEntry, upsertDailyMeta, createEmptyDay, getEntry, getSettings } from '@/lib/dbUtils';
+import { computeBlockCI, computeDailyCI } from '@/lib/clarity';
 import type { BlockEntry, DailyMeta, BlockConfig } from '@/types';
 import { BlockEntrySchema, DailyMetaSchema, DateString } from '@/types/schemas';
 import { makeEntryId } from '@/lib/id';
@@ -95,13 +96,28 @@ export function useDayData(date: string) {
         BlockEntrySchema.parse(updated);
         await upsertEntry(updated);
         setEntries(prev => prev.map(e => (e.blockId === blockId ? updated : e)));
+        // Recompute daily CI after block entry change if meta exists
+        if (dailyMeta) {
+          try {
+            const settings = await getSettings();
+            const blockCIs = entries
+              .map(e => e.blockId === blockId ? updated : e)
+              .map(e => computeBlockCI(e, settings.ciWeights, settings.caps));
+            const dailyCI = computeDailyCI(blockCIs, { ...dailyMeta }, settings.ciWeights, settings.goals);
+            const newMeta: DailyMeta = { ...dailyMeta, dailyCI };
+            await upsertDailyMeta(newMeta);
+            setDailyMeta(newMeta);
+          } catch (err) {
+            console.warn('[useDayData] dailyCI recompute failed', err);
+          }
+        }
         return updated;
       } catch (e: any) {
         console.error('[useDayData] saveEntry failed', e);
         throw e;
       }
     },
-    [ensureEntry]
+    [ensureEntry, dailyMeta, entries]
   );
 
   /**
@@ -115,8 +131,21 @@ export function useDayData(date: string) {
           sleepQuality: 7,
           exerciseMinutes: 0,
           dailyNotes: undefined,
+          dailyCI: null,
         };
-        const updated: DailyMeta = { ...base, ...patch };
+        const provisional: DailyMeta = { ...base, ...patch };
+        // Compute CI if we have entries
+        let dailyCI: number | null = null;
+        try {
+          const settings = await getSettings();
+          if (entries.length > 0) {
+            const blockCIs = entries.map(e => computeBlockCI(e, settings.ciWeights, settings.caps));
+            dailyCI = computeDailyCI(blockCIs, provisional, settings.ciWeights, settings.goals);
+          }
+        } catch (err) {
+          console.warn('[useDayData] dailyCI compute during meta save failed', err);
+        }
+        const updated: DailyMeta = { ...provisional, dailyCI };
         DailyMetaSchema.parse(updated);
         await upsertDailyMeta(updated);
         setDailyMeta(updated);
@@ -126,7 +155,7 @@ export function useDayData(date: string) {
         throw e;
       }
     },
-    [dailyMeta, date]
+    [dailyMeta, date, entries]
   );
 
   /**

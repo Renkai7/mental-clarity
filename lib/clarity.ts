@@ -92,4 +92,4 @@ export function computeDayCIContext(ctx: DailyCIContext): { blockCIs: Record<str
 }
 
 // Placeholder: future persistence: attach CI to daily_meta once migration adds column.
-export const CLARITY_VERSION = 1;
+export const CLARITY_VERSION = 1; // Persistence of dailyCI implemented (M10.5)

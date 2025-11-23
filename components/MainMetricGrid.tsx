@@ -95,16 +95,22 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
 
   return (
     <div className="mt-4 w-full overflow-x-auto">
-      <table className="min-w-full border-collapse text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
+      <table className="min-w-full border-collapse text-xs md:text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
         <caption className="px-3 py-2 text-left text-sm font-medium text-zinc-700 dark:text-zinc-300">
           {metricLabel} Tracker
         </caption>
         <thead>
           <tr className="bg-neutral-100 dark:bg-neutral-800">
-            <th scope="col" className="sticky left-0 z-10 bg-neutral-100 dark:bg-neutral-800 px-3 py-2 text-left font-medium">Date</th>
-            <th scope="col" className="px-3 py-2 text-right font-medium">{`Total ${metricLabel}`}</th>
+            <th scope="col" className="sticky left-0 z-10 bg-neutral-100 dark:bg-neutral-800 px-2 py-1.5 md:px-3 md:py-2 text-left font-medium">Date</th>
+            <th scope="col" className="px-2 py-1.5 md:px-3 md:py-2 text-right font-medium">{`Total ${metricLabel}`}</th>
             {columns.map(col => (
-              <th key={col.id} scope="col" className="px-3 py-2 text-center font-medium whitespace-nowrap">{col.label}</th>
+              <th
+                key={col.id}
+                scope="col"
+                className="px-2 py-1.5 md:px-3 md:py-2 text-center font-medium whitespace-normal leading-tight"
+              >
+                {col.label}
+              </th>
             ))}
           </tr>
         </thead>
@@ -135,23 +141,23 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
                   }
                 }}
               >
-                <th scope="row" className="sticky left-0 z-10 bg-inherit px-3 py-2 text-left font-medium whitespace-nowrap">
+                <th scope="row" className="sticky left-0 z-10 bg-inherit px-2 py-1.5 md:px-3 md:py-2 text-left font-medium whitespace-nowrap">
                   <Link href={`/day/${encodeURIComponent(row.date)}`} className="block w-full focus:outline-none">
                     {formatShort(row.date)}
                   </Link>
                 </th>
-                <td className="px-3 py-2 text-right font-medium tabular-nums">{row.total}</td>
+                <td className="px-2 py-1.5 md:px-3 md:py-2 text-right font-medium tabular-nums">{row.total}</td>
                 {columns.map(col => {
                   const key: CellKey = `${row.date}:${col.id}`;
                   const value = row.timeframes[col.id] ?? 0;
                   const st = status[key] ?? 'idle';
                   return (
-                    <td key={col.id} className="px-3 py-2 text-right tabular-nums">
-                      <div className="flex items-center justify-end gap-2">
+                    <td key={col.id} className="px-2 py-1.5 md:px-3 md:py-2 text-right tabular-nums">
+                      <div className="flex items-center justify-end gap-1.5 md:gap-2">
                         <button
                           type="button"
                           aria-label={`Decrease ${metricLabel} for ${col.label}`}
-                          className="rounded border px-2 py-1 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                          className="rounded border px-1.5 py-0.5 text-[11px] md:px-2 md:py-1 md:text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800"
                           onClick={(e) => {
                             e.stopPropagation();
                             const next = Math.max(0, value - 1);
@@ -166,7 +172,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
                           type="number"
                           inputMode="numeric"
                           min={0}
-                          className="w-16 rounded border px-2 py-1 text-right bg-transparent"
+                          className="w-12 md:w-16 rounded border px-2 py-1 text-right bg-transparent"
                           value={value}
                           onClick={(e) => e.stopPropagation()}
                           onChange={(e) => {
@@ -178,7 +184,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
                         <button
                           type="button"
                           aria-label={`Increase ${metricLabel} for ${col.label}`}
-                          className="rounded border px-2 py-1 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                          className="rounded border px-1.5 py-0.5 text-[11px] md:px-2 md:py-1 md:text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800"
                           onClick={(e) => {
                             e.stopPropagation();
                             const next = value + 1;
@@ -188,7 +194,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
                         >
                           +
                         </button>
-                        <span className="w-12 text-left text-xs" aria-live="polite">
+                        <span className="w-8 md:w-12 text-left text-[10px] md:text-xs" aria-live="polite">
                           {st === 'saving' ? 'Saving…' : st === 'saved' ? 'Saved' : st === 'error' ? 'Error' : ''}
                         </span>
                       </div>

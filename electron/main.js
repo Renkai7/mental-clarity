@@ -180,6 +180,13 @@ function registerIpcHandlers() {
   ipcMain.handle('day:createEmpty', async (_e, date) => {
     return createEmptyDay(String(date));
   });
+  // Range queries (M11)
+  ipcMain.handle('entries:range', async (_e, startDate, endDate) => {
+    return require('../db/sqlite.js').getEntriesRange(String(startDate), String(endDate));
+  });
+  ipcMain.handle('dailyMeta:range', async (_e, startDate, endDate) => {
+    return require('../db/sqlite.js').getDailyMetaRange(String(startDate), String(endDate));
+  });
   console.log('[main] registerIpcHandlers complete');
 }
 

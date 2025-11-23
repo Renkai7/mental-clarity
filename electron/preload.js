@@ -19,6 +19,11 @@ const exposedApi = {
   upsertDailyMeta: (meta) => ipcRenderer.invoke('dailyMeta:upsert', meta),
 
   createEmptyDay: (date) => ipcRenderer.invoke('day:createEmpty', date),
+  // Range query helpers (M11)
+  'entries:range': (startDate, endDate) => ipcRenderer.invoke('entries:range', startDate, endDate),
+  'dailyMeta:range': (startDate, endDate) => ipcRenderer.invoke('dailyMeta:range', startDate, endDate),
+  getEntriesRange: (startDate, endDate) => ipcRenderer.invoke('entries:range', startDate, endDate),
+  getDailyMetaRange: (startDate, endDate) => ipcRenderer.invoke('dailyMeta:range', startDate, endDate),
 };
 
 try {

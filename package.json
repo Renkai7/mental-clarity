@@ -17,7 +17,8 @@
     "package:desktop": "npm run build:web && electron-builder build",
     "dist": "npm run package:desktop",
     "postinstall": "electron-builder install-app-deps",
-    "rebuild:native": "npx --yes electron-rebuild -f -w better-sqlite3"
+    "rebuild:native": "npx --yes electron-rebuild -f -w better-sqlite3",
+    "test": "vitest run"
   },
   "dependencies": {
     "date-fns": "^4.1.0",
@@ -38,6 +39,7 @@
     "electron-builder": "^24.13.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
+    "vitest": "^1.4.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "wait-on": "^7.2.0"

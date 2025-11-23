@@ -31,6 +31,7 @@ export interface DailyMeta {
   sleepQuality: number; // 1-10
   exerciseMinutes: number;
   dailyNotes?: string;
+  dailyCI?: number | null; // persisted clarity index (0..1) null if not yet computed
 }
 
 export interface Goals {
