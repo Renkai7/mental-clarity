@@ -1,17 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { HeatmapMetric } from '@/lib/mockData';
+import type { HeatmapMetric, HeatmapDayData, HeatmapBlock, HeatmapColor } from '@/lib/mockData';
 import type { BlockEntry, DailyMeta, Settings } from '@/types';
 import { getEntriesRange, getDailyMetaRange, getSettings } from '@/lib/dbUtils';
 import { computeBlockCI } from '@/lib/clarity';
 import { colorForCI, colorForCount, getColorMappingConfig } from '@/lib/colorMapping';
 
-export interface HeatmapBlockDatum { blockId: string; value: number | null; color: string; }
-export interface HeatmapDayDatum { date: string; blocks: HeatmapBlockDatum[]; }
-
 const PAGE_SIZE = 30;
 
 export function useHeatmapData(metric: HeatmapMetric) {
-  const [days, setDays] = useState<HeatmapDayDatum[]>([]);
+  const [days, setDays] = useState<HeatmapDayData[]>([]);
   const [loaded, setLoaded] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,22 +36,18 @@ export function useHeatmapData(metric: HeatmapMetric) {
       const byDate: Record<string, BlockEntry[]> = {};
       for (const e of entries) { (byDate[e.date] ||= []).push(e); }
       const metaMap: Record<string, DailyMeta> = Object.fromEntries(meta.map(m=>[m.date,m]));
-      const newDays: HeatmapDayDatum[] = rangeDates.map(date => {
+      const settingsBlocks = settings.blocks.slice().sort((a,b)=>a.order-b.order);
+      const newDays: HeatmapDayData[] = rangeDates.map(date => {
         const dayEntries = byDate[date] || [];
-        // Determine blocks present
-        const blockIds = Array.from(new Set(dayEntries.map(e=>e.blockId)));
-        // Build block values
-        const blocks: HeatmapBlockDatum[] = blockIds.map(bid => {
+        const blocks: HeatmapBlock[] = settingsBlocks.map(bc => {
+          const entry = dayEntries.find(e=>e.blockId===bc.id);
+          if (!entry) return { blockId: bc.label, value: null, color: 'gray' as HeatmapColor };
           if (metric === 'CI') {
-            const entry = dayEntries.find(e=>e.blockId===bid);
-            if (!entry) return { blockId: bid, value: null, color: 'gray' };
             const ci = computeBlockCI(entry, settings.ciWeights, settings.caps);
-            return { blockId: bid, value: Number(ci.toFixed(2)), color: colorForCI(ci, cfg) };
+            return { blockId: bc.label, value: Number(ci.toFixed(2)), color: colorForCI(ci, cfg) as HeatmapColor };
           } else {
-            const entry = dayEntries.find(e=>e.blockId===bid);
-            const count = entry ? (metric === 'R' ? entry.ruminationCount : metric === 'C' ? entry.compulsionsCount : entry.avoidanceCount) : null;
-            if (count == null) return { blockId: bid, value: null, color: 'gray' };
-            return { blockId: bid, value: count, color: colorForCount(metric, count, cfg) };
+            const count = metric === 'R' ? entry.ruminationCount : metric === 'C' ? entry.compulsionsCount : entry.avoidanceCount;
+            return { blockId: bc.label, value: count, color: colorForCount(metric, count, cfg) as HeatmapColor };
           }
         });
         return { date, blocks };

@@ -26,15 +26,18 @@ export default function RootLayout({
 }>) {
   const isProd = process.env.NODE_ENV === "production";
 
+  // NOTE: Previous CSP blocked Next.js inline bootstrap scripts causing hydration failure in production
+  // which manifested as non-functional navigation (no event handlers attached). We now allow
+  // necessary directives for Next/Electron environment. Tighten further later with script hashes.
   const csp = `
     default-src 'self';
-    script-src 'self';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data:;
     style-src 'self' 'unsafe-inline';
-    img-src 'self' data:;
+    img-src 'self' data: blob:;
     font-src 'self';
-    connect-src 'self';
+    connect-src 'self' data: blob:;
     object-src 'none';
-    base-uri 'none';
+    base-uri 'self';
     frame-ancestors 'none';
   `.replace(/\s{2,}/g, " ").trim();
 
