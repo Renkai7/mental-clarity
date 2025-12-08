@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   # Combined job for faster feedback - lint, type-check, and test run in parallel steps
   quality-checks:
