@@ -39,20 +39,20 @@ export const TimeframeList: React.FC<TimeframeListProps> = ({
           return (
             <div
               key={block.id}
-              className="flex items-center justify-between rounded border border-zinc-200 bg-white px-4 py-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="flex items-center justify-between rounded border border-cinematic-800 bg-cinematic-900/60 px-4 py-3 shadow-sm hover:bg-cinematic-900/80 hover:shadow-glow-orange-sm transition-all"
               role="group"
               aria-label={`${block.label} timeframe row`}
             >
               <div className="min-w-0 flex-1">
-                <p className="font-medium text-sm text-zinc-900 dark:text-zinc-100">
+                <p className="font-medium text-sm text-white">
                   {block.label}
                   {!block.active && (
-                    <span className="ml-2 inline-block rounded bg-zinc-200 px-2 py-0.5 text-xs font-semibold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+                    <span className="ml-2 inline-block rounded bg-cinematic-800/60 px-2 py-0.5 text-xs font-semibold text-slate-400">
                       Inactive
                     </span>
                   )}
                 </p>
-                <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-400">
+                <p className="mt-0.5 text-xs text-slate-400">
                   {block.start} – {block.end}
                 </p>
               </div>
@@ -60,14 +60,14 @@ export const TimeframeList: React.FC<TimeframeListProps> = ({
                 <button
                   type="button"
                   onClick={() => onEdit(block)}
-                  className="rounded border border-zinc-300 px-2 py-1 text-xs font-medium hover:bg-zinc-100 focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:hover:bg-zinc-800"
+                  className="rounded border border-cinematic-800 px-2 py-1 text-xs font-medium text-white hover:bg-lumina-orange-500/20 hover:border-lumina-orange-500/30 hover:shadow-glow-orange-sm focus:outline-none focus:shadow-glow-orange transition-all"
                 >
                   Edit
                 </button>
                 <button
                   type="button"
                   onClick={() => onDelete(block.id)}
-                  className="rounded border border-red-300 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring focus:ring-red-500 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/30"
+                  className="rounded border border-red-500/30 px-2 py-1 text-xs font-medium text-red-400 hover:bg-red-500/20 hover:border-red-500/50 focus:outline-none focus:shadow-glow-orange transition-all"
                 >
                   Delete
                 </button>
@@ -77,7 +77,7 @@ export const TimeframeList: React.FC<TimeframeListProps> = ({
                     aria-label="Move timeframe up"
                     disabled={index === 0}
                     onClick={() => onReorder(index, index - 1)}
-                    className="rounded border border-zinc-300 px-2 py-1 text-xs font-medium disabled:opacity-40 hover:bg-zinc-100 focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:hover:bg-zinc-800"
+                    className="rounded border border-cinematic-800 px-2 py-1 text-xs font-medium text-white disabled:opacity-40 hover:bg-cinematic-800/60 focus:outline-none focus:shadow-glow-orange"
                   >
                     ↑
                   </button>
@@ -86,7 +86,7 @@ export const TimeframeList: React.FC<TimeframeListProps> = ({
                     aria-label="Move timeframe down"
                     disabled={index === blocks.length - 1}
                     onClick={() => onReorder(index, index + 1)}
-                    className="rounded border border-zinc-300 px-2 py-1 text-xs font-medium disabled:opacity-40 hover:bg-zinc-100 focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:hover:bg-zinc-800"
+                    className="rounded border border-cinematic-800 px-2 py-1 text-xs font-medium text-white disabled:opacity-40 hover:bg-cinematic-800/60 focus:outline-none focus:shadow-glow-orange"
                   >
                     ↓
                   </button>
@@ -96,7 +96,7 @@ export const TimeframeList: React.FC<TimeframeListProps> = ({
           );
         })}
       {blocks.length === 0 && (
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">No timeframes configured yet.</p>
+        <p className="text-sm text-slate-400">No timeframes configured yet.</p>
       )}
     </div>
   );

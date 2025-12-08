@@ -35,15 +35,15 @@ export default function Navbar({ currentView, onNavigate }: NavbarProps) {
   return (
     <header
       className={`sticky top-0 z-50 border-b transition-colors ${
-        isTop ? 'border-transparent' : 'border-border'
-      } bg-surface/85 backdrop-blur`}
+        isTop ? 'border-transparent' : 'border-cinematic-800'
+      } bg-cinematic-950/90 backdrop-blur-xl shadow-glow-orange`}
     >
       <nav
         aria-label="Main navigation"
         className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3"
       >
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold tracking-tight text-text">
+          <span className="text-lg font-semibold tracking-tight bg-gradient-to-r from-white via-lumina-orange-400 to-lumina-amber-400 bg-clip-text text-transparent">
             Mental Clarity
           </span>
         </div>
@@ -60,7 +60,7 @@ export default function Navbar({ currentView, onNavigate }: NavbarProps) {
                     onNavigate(item.view);
                   }}
                   data-active={active || undefined}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-text-muted hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-primary data-[active]:text-primary data-[active]:font-semibold"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-cinematic-800/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-lumina-orange-500 data-[active]:text-lumina-orange-400 data-[active]:font-semibold data-[active]:shadow-glow-orange transition-all cursor-pointer"
                 >
                   {item.label}
                 </button>

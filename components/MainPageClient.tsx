@@ -8,6 +8,7 @@ import { getBlocks, createEmptyDay } from '@/lib/dbUtils';
 import type { BlockConfig } from '@/types';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import { EmberCard } from '@/ui/cinematic-ember';
 
 const LABELS: Record<MetricTab, string> = {
   R: 'Rumination',
@@ -64,54 +65,58 @@ export default function MainPageClient() {
   return (
     <div className="mt-8 flex flex-col gap-6">
       <Tabs activeTab={active} onTabChange={setActive} />
-      <div
-        id={`panel-${active}`}
-        role="tabpanel"
-        aria-labelledby={LABELS[active]}
-        className="rounded-lg border border-border bg-surface p-4 shadow-sm"
+      <EmberCard
+        variant="orange"
+        className="p-6"
       >
-        <div className="mb-2 flex items-center justify-between">
-          <p className="text-sm text-text-muted">
-            Showing: <span className="font-medium text-text">{LABELS[active]}</span>
-          </p>
-          <button
-            type="button"
-            onClick={onStartToday}
-            disabled={isCreating}
-            className="rounded border border-border px-3 py-1.5 text-sm hover:bg-surface-muted disabled:opacity-60"
-            aria-label="Start tracking today"
-            title="Creates today's empty entries and shows them in the grid"
-          >
-            {isCreating ? 'Creating…' : 'Start tracking today'}
-          </button>
-        </div>
-        {(isLoading || isBlocksLoading) && (
-          <div className="animate-pulse text-sm text-text-muted">Loading {LABELS[active]}…</div>
-        )}
-        {!isLoading && !isBlocksLoading && (
-          <MainMetricGrid
-            metric={active}
-            metricLabel={LABELS[active]}
-            data={data as MainGridRow[]}
-            columns={columns}
-          />
-        )}
-        {(error || blocksError) && (
-          <p className="mt-3 text-sm text-red-600">{error || blocksError}</p>
-        )}
-        {!isLoading && !isBlocksLoading && hasMore && (
-          <div className="mt-4 text-right">
+        <div
+          id={`panel-${active}`}
+          role="tabpanel"
+          aria-labelledby={LABELS[active]}
+        >
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-sm text-slate-400">
+              Showing: <span className="font-medium text-white">{LABELS[active]}</span>
+            </p>
             <button
               type="button"
-              onClick={loadMore}
-              disabled={isLoading}
-              className="rounded border border-border px-3 py-1.5 text-sm hover:bg-surface-muted disabled:opacity-60"
+              onClick={onStartToday}
+              disabled={isCreating}
+              className="rounded border border-cinematic-800 bg-cinematic-900/60 px-4 py-2 text-sm text-white hover:bg-lumina-orange-500/20 hover:border-lumina-orange-500 hover:shadow-glow-orange hover:scale-105 transition-all duration-300 disabled:opacity-60 cursor-pointer"
+              aria-label="Start tracking today"
+              title="Creates today's empty entries and shows them in the grid"
             >
-              Load more
+              {isCreating ? 'Creating…' : 'Start tracking today'}
             </button>
           </div>
-        )}
-      </div>
+          {(isLoading || isBlocksLoading) && (
+            <div className="animate-pulse text-sm text-slate-400">Loading {LABELS[active]}…</div>
+          )}
+          {!isLoading && !isBlocksLoading && (
+            <MainMetricGrid
+              metric={active}
+              metricLabel={LABELS[active]}
+              data={data as MainGridRow[]}
+              columns={columns}
+            />
+          )}
+          {(error || blocksError) && (
+            <p className="mt-3 text-sm text-red-400">{error || blocksError}</p>
+          )}
+          {!isLoading && !isBlocksLoading && hasMore && (
+            <div className="mt-4 text-right">
+              <button
+                type="button"
+                onClick={loadMore}
+                disabled={isLoading}
+                className="rounded border border-cinematic-800 bg-cinematic-900/60 px-4 py-2 text-sm text-white hover:bg-cinematic-800 hover:shadow-glow-orange transition-all disabled:opacity-60"
+              >
+                Load more
+              </button>
+            </div>
+          )}
+        </div>
+      </EmberCard>
     </div>
   );
 }

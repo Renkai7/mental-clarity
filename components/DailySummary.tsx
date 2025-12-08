@@ -95,7 +95,7 @@ export default function DailySummary({
               +
             </Button>
           </div>
-          <p className="mt-1 text-xs text-text-muted">How well you slept last night.</p>
+          <p className="mt-1 text-xs text-slate-400">How well you slept last night.</p>
         </div>
 
         {/* Exercise Minutes */}
@@ -121,7 +121,7 @@ export default function DailySummary({
             className="w-full text-right"
             inputMode="numeric"
           />
-          <p className="mt-1 text-xs text-text-muted">Total exercise minutes for {dateLabel}.</p>
+          <p className="mt-1 text-xs text-slate-400">Total exercise minutes for {dateLabel}.</p>
         </div>
 
         {/* Placeholder to balance grid on sm screens */}

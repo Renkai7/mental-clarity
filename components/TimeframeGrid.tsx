@@ -29,57 +29,57 @@ export default function TimeframeGrid({
         aria-label="Timeframe entries grid"
       >
         <thead>
-          <tr className="bg-surface-muted">
+          <tr className="bg-cinematic-900/60 border-b border-cinematic-800">
             <th
               scope="col"
-              className="px-3 py-2 text-left font-medium text-text"
+              className="px-3 py-2 text-left font-medium text-white"
             >
               Block
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-text"
+              className="px-3 py-2 text-center font-medium text-white"
             >
               Rumination
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-text"
+              className="px-3 py-2 text-center font-medium text-white"
             >
               Compulsions
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-text"
+              className="px-3 py-2 text-center font-medium text-white"
             >
               Avoidance
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-text"
+              className="px-3 py-2 text-center font-medium text-white"
             >
               Anxiety
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-text"
+              className="px-3 py-2 text-center font-medium text-white"
             >
               Stress
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-center font-medium text-text"
+              className="px-3 py-2 text-center font-medium text-white"
             >
               Notes
             </th>
           </tr>
         </thead>
-        <tbody className="bg-surface">
+        <tbody className="bg-cinematic-950/40">
           {entries.length === 0 ? (
             <tr>
               <td
                 colSpan={7}
-                className="px-3 py-6 text-center text-neutral-500 dark:text-neutral-400"
+                className="px-3 py-6 text-center text-slate-400"
               >
                 No timeframe entries yet.
               </td>

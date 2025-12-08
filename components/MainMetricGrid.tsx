@@ -98,18 +98,18 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
   return (
     <div className="mt-4 w-full overflow-x-auto">
       <table className="min-w-full border-collapse text-xs md:text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
-        <caption className="px-3 py-2 text-left text-sm font-medium text-text-muted">
+        <caption className="px-3 py-2 text-left text-sm font-medium text-slate-400">
           {metricLabel} Tracker
         </caption>
         <thead>
-          <tr className="bg-surface-muted">
-            <th scope="col" className="sticky left-0 z-10 bg-surface-muted px-2 py-1.5 md:px-3 md:py-2 text-left font-medium text-text">Date</th>
-            <th scope="col" className="px-2 py-1.5 md:px-3 md:py-2 text-right font-medium text-text">{`Total ${metricLabel}`}</th>
+          <tr className="bg-cinematic-900/60 border-b border-cinematic-800">
+            <th scope="col" className="sticky left-0 z-10 bg-cinematic-900/60 px-2 py-1.5 md:px-3 md:py-2 text-left font-medium text-white">Date</th>
+            <th scope="col" className="px-2 py-1.5 md:px-3 md:py-2 text-right font-medium text-white">{`Total ${metricLabel}`}</th>
             {columns.map(col => (
               <th
                 key={col.id}
                 scope="col"
-                className="px-2 py-1.5 md:px-3 md:py-2 text-center font-medium whitespace-normal leading-tight text-text"
+                className="px-2 py-1.5 md:px-3 md:py-2 text-center font-medium whitespace-normal leading-tight text-white"
               >
                 {col.label}
               </th>
@@ -119,7 +119,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={2 + columns.length} className="px-3 py-6 text-center text-text-muted">
+              <td colSpan={2 + columns.length} className="px-3 py-6 text-center text-slate-400">
                 No data yet. Create your first entry from the Day page.
               </td>
             </tr>
@@ -127,7 +127,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
             rows.map((row) => (
               <tr
                 key={row.date}
-                className="cursor-pointer odd:bg-surface/50 hover:bg-surface-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-surface"
+                className="cursor-pointer border-b border-cinematic-800/50 odd:bg-cinematic-950/30 hover:bg-cinematic-800/40 hover:shadow-glow-orange-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-lumina-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-cinematic-950"
                 tabIndex={0}
                 role="link"
                 aria-label={`View day details for ${formatShort(row.date)}`}
@@ -143,12 +143,12 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
                   }
                 }}
               >
-                <th scope="row" className="sticky left-0 z-10 bg-inherit px-2 py-1.5 md:px-3 md:py-2 text-left font-medium whitespace-nowrap">
+                <th scope="row" className="sticky left-0 z-10 bg-inherit px-2 py-1.5 md:px-3 md:py-2 text-left font-medium whitespace-nowrap text-slate-300">
                   <Link href={`/day/${encodeURIComponent(row.date)}`} className="block w-full focus:outline-none">
                     {formatShort(row.date)}
                   </Link>
                 </th>
-                <td className="px-2 py-1.5 md:px-3 md:py-2 text-right font-medium tabular-nums">{row.total}</td>
+                <td className="px-2 py-1.5 md:px-3 md:py-2 text-right font-medium tabular-nums text-white">{row.total}</td>
                 {columns.map(col => {
                   const key: CellKey = `${row.date}:${col.id}`;
                   const value = row.timeframes[col.id] ?? 0;
@@ -160,7 +160,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
                           aria-label={`Decrease ${metricLabel} for ${col.label}`}
                           variant="subtle"
                           size="sm"
-                          className="h-8 w-8 px-0 text-[11px] md:text-xs"
+                          className="h-8 w-8 px-0 text-[11px] md:text-xs border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                           onClick={(e) => {
                             e.stopPropagation();
                             const next = Math.max(0, value - 1);
@@ -169,7 +169,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
                           }}
                           type="button"
                         >
-                          -
+                          −
                         </Button>
                         <Input
                           aria-label={`${metricLabel} count for ${col.label}`}
@@ -191,7 +191,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
                           aria-label={`Increase ${metricLabel} for ${col.label}`}
                           variant="subtle"
                           size="sm"
-                          className="h-8 w-8 px-0 text-[11px] md:text-xs"
+                          className="h-8 w-8 px-0 text-[11px] md:text-xs border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                           onClick={(e) => {
                             e.stopPropagation();
                             const next = value + 1;
@@ -202,7 +202,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
                         >
                           +
                         </Button>
-                        <span className="w-8 md:w-12 text-left text-[10px] md:text-xs text-text-muted" aria-live="polite">
+                        <span className="w-8 md:w-12 text-left text-[10px] md:text-xs text-slate-400" aria-live="polite">
                           {st === 'saving' ? 'Saving…' : st === 'saved' ? 'Saved' : st === 'error' ? 'Error' : ''}
                         </span>
                       </div>
