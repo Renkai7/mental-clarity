@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, screen } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const { init, seedIfNeeded, migrateDefaults, getSettings, updateSettings, getBlocks, getEntriesForDate, getEntry, upsertEntry, getDailyMeta, upsertDailyMeta, createEmptyDay, replaceBlocks, getEntriesSummary } = require('../db/sqlite');
 
 let mainWindow;
@@ -8,14 +9,31 @@ let prodMode = false;
 // Production uses static exported files (Next.js output: 'export').
 // No Next.js server or child process is started at runtime.
 function createWindow() {
-  const isDev = !app.isPackaged;
+  const isPackaged = app.isPackaged;
+  // Check if out/index.html exists to determine if we should use production build
+  const outIndexPath = path.join(__dirname, '..', 'out', 'index.html');
+  const hasProductionBuild = fs.existsSync(outIndexPath);
+  const isDev = !isPackaged && !hasProductionBuild;
+  
   const preloadPath = path.join(__dirname, 'preload.js');
+  const iconPath = path.join(__dirname, '..', 'mental-clarity-icon.png');
+  
+  // Calculate window size based on screen dimensions
+  const { workArea } = screen.getPrimaryDisplay();
+  const targetWidth = Math.round(workArea.width / 3);
+  const targetHeight = Math.round(workArea.height * 0.90);
+  
   console.log('[main] creating window. mode=', isDev ? 'dev' : 'prod', 'preload=', preloadPath);
+  console.log('[main] isPackaged:', isPackaged, 'hasProductionBuild:', hasProductionBuild);
+  console.log('[main] window size:', targetWidth, 'x', targetHeight, '(workArea:', workArea.width, 'x', workArea.height, ')');
   
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 840,
+    width: targetWidth,
+    height: targetHeight,
+    minWidth: 800,
+    minHeight: 600,
     show: true,
+    icon: iconPath,
     webPreferences: {
       contextIsolation: true,
       sandbox: true,
@@ -31,7 +49,7 @@ function createWindow() {
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   } else {
     prodMode = true;
-    const indexFile = path.join(__dirname, '..', 'out', 'index.html');
+    const indexFile = outIndexPath;
     console.log('[main] loading prod file', indexFile);
     try {
       mainWindow.loadFile(indexFile);
@@ -44,11 +62,59 @@ function createWindow() {
   // Prevent new windows / external navigation.
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   mainWindow.webContents.on('will-navigate', (e, url) => {
-    // Block attempts to navigate away from the local file origin.
-    const isLocal = url.startsWith('file://');
-    if (!isLocal) {
-      e.preventDefault();
-      console.warn('[security] Blocked navigation to', url);
+    e.preventDefault();
+    console.log('[navigation] Intercepted:', url);
+    
+    if (isDev) {
+      // Allow normal HTTP navigation in dev mode
+      const isSameOrigin = url.startsWith(process.env.RENDERER_URL || 'http://localhost:3000');
+      if (isSameOrigin) {
+        e.preventDefault();
+        mainWindow.loadURL(url);
+      } else {
+        console.warn('[security] Blocked navigation to', url);
+      }
+    } else {
+      // In production, intercept file:// navigations and convert to loadFile
+      if (url.startsWith('file://')) {
+        const urlObj = new URL(url);
+        let pathname = urlObj.pathname;
+        
+        // On Windows, pathname will be like "/C:/day/2025-11-29/"
+        // We need to extract just "/day/2025-11-29/" part
+        if (process.platform === 'win32') {
+          // Remove leading slash and drive letter (e.g., "/C:/day/" -> "/day/")
+          pathname = pathname.replace(/^\/[a-zA-Z]:/, '');
+        }
+        
+        // Check if this is a valid route in our out folder
+        const outDir = path.join(__dirname, '..', 'out');
+        let targetPath;
+        
+        // Convert URL path to file path (e.g., /day/2025-11-29/ -> day/2025-11-29/index.html)
+        if (pathname === '/' || pathname === '') {
+          targetPath = path.join(outDir, 'index.html');
+        } else {
+          // Remove leading/trailing slashes and build path
+          const cleanPath = pathname.replace(/^\/+|\/+$/g, '');
+          targetPath = path.join(outDir, cleanPath, 'index.html');
+        }
+        
+        console.log('[navigation] Attempting to load:', targetPath);
+        
+        if (fs.existsSync(targetPath)) {
+          mainWindow.loadFile(targetPath);
+        } else {
+          console.error('[navigation] File not found:', targetPath);
+          // Load 404 page
+          const notFoundPath = path.join(outDir, '_not-found', 'index.html');
+          if (fs.existsSync(notFoundPath)) {
+            mainWindow.loadFile(notFoundPath);
+          }
+        }
+      } else {
+        console.warn('[security] Blocked navigation to', url);
+      }
     }
   });
 }

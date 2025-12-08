@@ -1,12 +1,6 @@
 // Generate an "out" folder from Next.js output: 'export' build artifacts.
-// Rationale: output:'export' with `assetPrefix: './'` places prerendered HTML under
-// `.next/server/app`. We need a file:// friendly folder that mirrors route
-// structure so Electron can load `out/index.html` and navigate to other routes
-// without a server.
-// This script copies prerendered HTML and duplicates the `_next` assets into
-// each route folder to satisfy relative `./_next/` paths.
-// NOTE: This is a pragmatic solution; for large apps consider adjusting
-// assetPrefix and using a lightweight static server instead of duplication.
+// For Electron with file:// protocol, we need absolute paths for assets.
+// This script copies the static export and ensures all _next assets are available.
 
 const fs = require('fs');
 const path = require('path');
@@ -15,6 +9,7 @@ const ROOT = path.join(__dirname, '..');
 const NEXT_DIR = path.join(ROOT, '.next');
 const SERVER_APP_DIR = path.join(NEXT_DIR, 'server', 'app');
 const OUT_DIR = path.join(ROOT, 'out');
+const STATIC_DIR = path.join(NEXT_DIR, 'static');
 
 function emptyDir(dir) {
   if (fs.existsSync(dir)) {
@@ -39,12 +34,13 @@ function copyFile(src, dest) {
 }
 
 function copyDir(src, dest) {
+  if (!fs.existsSync(src)) return;
+  fs.mkdirSync(dest, { recursive: true });
   for (const entry of fs.readdirSync(src)) {
     const s = path.join(src, entry);
     const d = path.join(dest, entry);
     const stat = fs.lstatSync(s);
     if (stat.isDirectory()) {
-      fs.mkdirSync(d, { recursive: true });
       copyDir(s, d);
     } else {
       copyFile(s, d);
@@ -57,48 +53,67 @@ function main() {
     console.error('[generate-static-out] Missing', SERVER_APP_DIR);
     process.exit(1);
   }
+  
   emptyDir(OUT_DIR);
 
-  // Copy root index & not-found if present.
-  const rootHtml = path.join(SERVER_APP_DIR, 'index.html');
-  if (fs.existsSync(rootHtml)) copyFile(rootHtml, path.join(OUT_DIR, 'index.html'));
-  const notFoundHtml = path.join(SERVER_APP_DIR, '_not-found', 'index.html');
-  if (fs.existsSync(notFoundHtml)) {
-    copyDir(path.join(SERVER_APP_DIR, '_not-found'), path.join(OUT_DIR, '_not-found'));
-  }
+  // Copy all app routes
+  copyDir(SERVER_APP_DIR, OUT_DIR);
 
-  // Enumerate immediate children representing routes.
-  for (const entry of fs.readdirSync(SERVER_APP_DIR)) {
-    if (entry === 'index.html' || entry === '_not-found') continue;
-    const full = path.join(SERVER_APP_DIR, entry);
-    const stat = fs.lstatSync(full);
-    if (stat.isDirectory()) {
-      // Copy directory (contains index.html or static SSG variants)
-      copyDir(full, path.join(OUT_DIR, entry));
-    } else if (entry.endsWith('.html')) {
-      // Single HTML file for a route (rare); place into folder.
-      const routeName = entry.replace(/\.html$/, '');
-      const destDir = path.join(OUT_DIR, routeName);
-      fs.mkdirSync(destDir, { recursive: true });
-      copyFile(full, path.join(destDir, 'index.html'));
+  // Reorganize day/[date].html files into day/[date]/index.html structure
+  const dayDir = path.join(OUT_DIR, 'day');
+  if (fs.existsSync(dayDir)) {
+    const entries = fs.readdirSync(dayDir);
+    for (const entry of entries) {
+      // Match files like "2025-11-29.html"
+      const match = entry.match(/^(\d{4}-\d{2}-\d{2})\.html$/);
+      if (match) {
+        const date = match[1];
+        const dateDir = path.join(dayDir, date);
+        fs.mkdirSync(dateDir, { recursive: true });
+        
+        // Move .html file to date/index.html
+        const oldPath = path.join(dayDir, entry);
+        const newPath = path.join(dateDir, 'index.html');
+        fs.renameSync(oldPath, newPath);
+        
+        // Move associated files (.meta, .rsc, .segments/)
+        const baseName = date;
+        const metaFile = path.join(dayDir, `${baseName}.meta`);
+        const rscFile = path.join(dayDir, `${baseName}.rsc`);
+        const segmentsDir = path.join(dayDir, `${baseName}.segments`);
+        
+        if (fs.existsSync(metaFile)) {
+          fs.renameSync(metaFile, path.join(dateDir, 'index.meta'));
+        }
+        if (fs.existsSync(rscFile)) {
+          fs.renameSync(rscFile, path.join(dateDir, 'index.rsc'));
+        }
+        if (fs.existsSync(segmentsDir)) {
+          fs.renameSync(segmentsDir, path.join(dateDir, 'index.segments'));
+        }
+      }
     }
   }
 
-  // Copy global assets `_next`.
-  const nextStaticSrc = path.join(NEXT_DIR, 'static');
-  if (!fs.existsSync(nextStaticSrc)) {
-    console.error('[generate-static-out] Missing static assets', nextStaticSrc);
-  }
-  const nextTarget = path.join(OUT_DIR, '_next', 'static');
-  fs.mkdirSync(nextTarget, { recursive: true });
-  copyDir(nextStaticSrc, nextTarget);
-
-  // Duplicate _next into each route folder for relative `./_next` references.
-  const routeFolders = fs.readdirSync(OUT_DIR).filter(f => fs.lstatSync(path.join(OUT_DIR, f)).isDirectory() && !['_next'].includes(f));
-  for (const rf of routeFolders) {
-    const dest = path.join(OUT_DIR, rf, '_next', 'static');
-    fs.mkdirSync(dest, { recursive: true });
-    copyDir(nextStaticSrc, dest);
+  // Copy _next static assets to root level
+  if (fs.existsSync(STATIC_DIR)) {
+    const nextOut = path.join(OUT_DIR, '_next', 'static');
+    copyDir(STATIC_DIR, nextOut);
+    
+    // Copy _next folder into day subdirectories for relative path resolution
+    const dayDir = path.join(OUT_DIR, 'day');
+    if (fs.existsSync(dayDir)) {
+      const dayEntries = fs.readdirSync(dayDir);
+      for (const entry of dayEntries) {
+        const entryPath = path.join(dayDir, entry);
+        if (fs.statSync(entryPath).isDirectory() && entry !== '[date]') {
+          const dayNextDir = path.join(entryPath, '_next', 'static');
+          copyDir(STATIC_DIR, dayNextDir);
+        }
+      }
+    }
+  } else {
+    console.warn('[generate-static-out] Warning: Missing static assets', STATIC_DIR);
   }
 
   console.log('[generate-static-out] Prepared static out folder at', OUT_DIR);
