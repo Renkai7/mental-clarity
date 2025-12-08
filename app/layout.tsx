@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
+import { BackgroundEffects } from "@/ui/cinematic-ember";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,16 +27,20 @@ export default function RootLayout({
 }>) {
   const isProd = process.env.NODE_ENV === "production";
 
-  // NOTE: Previous CSP blocked Next.js inline bootstrap scripts causing hydration failure in production
-  // which manifested as non-functional navigation (no event handlers attached). We now allow
-  // necessary directives for Next/Electron environment. Tighten further later with script hashes.
+  // NOTE: Hardened CSP for Electron + Next.js.
+  // - 'unsafe-inline' for styles is required by Next.js/Tailwind in some modes, but we can try to restrict scripts.
+  // - 'unsafe-eval' is often needed by dev tools or some polyfills, but in prod we should try to remove it if possible.
+  //   However, Next.js App Router often requires 'unsafe-inline' for hydration scripts unless we use nonces/hashes.
+  //   Since this is a static export, we can't easily generate per-request nonces.
+  //   We will keep 'unsafe-inline' for now but remove 'unsafe-eval' and 'blob:'/'data:' from script-src to harden it.
+  //   We also restrict connect-src to 'self' (IPC is handled via preload, not fetch).
   const csp = `
     default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data:;
+    script-src 'self' 'unsafe-inline';
     style-src 'self' 'unsafe-inline';
     img-src 'self' data: blob:;
     font-src 'self';
-    connect-src 'self' data: blob:;
+    connect-src 'self';
     object-src 'none';
     base-uri 'self';
     frame-ancestors 'none';
@@ -51,6 +56,7 @@ export default function RootLayout({
         <meta name="referrer" content="no-referrer" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <BackgroundEffects />
         <TooltipProvider delayDuration={200}>
           {children}
         </TooltipProvider>

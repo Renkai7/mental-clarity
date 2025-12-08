@@ -14,6 +14,7 @@
     "dev:desktop": "concurrently -k -n web,app -c blue,green \"npm:dev:web\" \"npm:dev:electron\"",
     "start:desktop": "electron .",
     "build:desktop": "npm run build:web",
+    "test:production": "npm run build:web && electron .",
     "package:desktop": "npm run build:web && electron-builder build",
     "dist": "npm run package:desktop",
     "postinstall": "electron-builder install-app-deps",
@@ -21,17 +22,18 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "date-fns": "^4.1.0",
+    "@radix-ui/react-tooltip": "^1.0.7",
     "better-sqlite3": "^12.4.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.24",
     "next": "16.0.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "recharts": "^2.12.7",
-    "zod": "^4.1.12",
-    "@radix-ui/react-tooltip": "^1.0.7",
     "sonner": "^1.5.0",
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^2.5.2"
+    "tailwind-merge": "^2.5.2",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -43,12 +45,11 @@
     "electron-builder": "^24.13.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
-    "vitest": "^1.4.0",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "vitest": "^1.4.0",
     "wait-on": "^7.2.0"
   },
-  "optionalDependencies": {},
   "main": "electron/main.js",
   "build": {
     "appId": "com.mentality.tracker",
@@ -78,7 +79,8 @@
       }
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "assets/icon.png"
     }
   }
 }
