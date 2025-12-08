@@ -86,8 +86,8 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
         setTimeout(() => {
           setStatus(s => ({ ...s, [key]: 'idle' }));
         }, 800);
-      } catch (e: any) {
-        console.error('[MainMetricGrid] Save failed', e?.message || e);
+      } catch (e) {
+        console.error('[MainMetricGrid] Save failed', e instanceof Error ? e.message : String(e));
         setStatus(s => ({ ...s, [key]: 'error' }));
       }
     }, 500);

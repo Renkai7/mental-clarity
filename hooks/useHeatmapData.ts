@@ -59,8 +59,8 @@ export function useHeatmapData(metric: HeatmapMetric) {
         return merged;
       });
       setLoaded(l => l + PAGE_SIZE);
-    } catch (e:any) {
-      setError(e?.message || 'Failed to load heatmap data');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load heatmap data');
     } finally {
       setIsLoading(false);
     }

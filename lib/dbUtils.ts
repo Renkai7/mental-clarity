@@ -25,16 +25,16 @@ export async function updateSettings(settings: Settings): Promise<void> {
   }
 }
 
-export async function getBlocks(): Promise<BlockConfig[]> {
+export async function getBlockConfigs(): Promise<BlockConfig[]> {
   const blocks = await api.getBlocks();
-  return blocks.map((b: any) => BlockConfigSchema.parse(b));
+  return blocks.map((b) => BlockConfigSchema.parse(b));
 }
 
 export async function getEntriesForDate(date: string): Promise<BlockEntry[]> {
   DateString.parse(date);
-  const entries: any[] = await api.getEntriesForDate(date);
-  entries.sort((a: any, b: any) => a.blockId.localeCompare(b.blockId));
-  return entries.map((e: any) => BlockEntrySchema.parse(e));
+  const entries = await api.getEntriesForDate(date);
+  entries.sort((a, b) => a.blockId.localeCompare(b.blockId));
+  return entries.map((e) => BlockEntrySchema.parse(e));
 }
 
 export async function getDailyMeta(date: string): Promise<DailyMeta | undefined> {
@@ -69,8 +69,8 @@ export async function upsertEntry(entry: BlockEntry): Promise<void> {
     if ((toSave as any).anxietyScore < 1) (toSave as any).anxietyScore = 5;
     if ((toSave as any).stressScore < 1) (toSave as any).stressScore = 5;
     BlockEntrySchema.parse(toSave);
-  } catch (e: any) {
-    console.error('[dbUtils] BlockEntry validation failed', e?.issues || e?.message || e);
+  } catch (e) {
+    console.error('[dbUtils] BlockEntry validation failed', e);
     throw e;
   }
   await api.upsertEntry(toSave);
@@ -89,11 +89,11 @@ export async function getMainGridSummary(metric: Metric, limit: number) {
 
 // Range retrieval (M11)
 export async function getEntriesRange(startDate: string, endDate: string): Promise<BlockEntry[]> {
-  const rows: any[] = await api.getEntriesRange(startDate, endDate);
+  const rows = await api.getEntriesRange(startDate, endDate);
   return rows.map(r => BlockEntrySchema.parse(r));
 }
 
 export async function getDailyMetaRange(startDate: string, endDate: string): Promise<DailyMeta[]> {
-  const rows: any[] = await api.getDailyMetaRange(startDate, endDate);
+  const rows = await api.getDailyMetaRange(startDate, endDate);
   return rows.map(r => DailyMetaSchema.parse(r));
 }
