@@ -17,24 +17,28 @@ const sizeClasses: Record<NonNullable<ButtonProps["size"]>, string> = {
 const base = [
   "inline-flex items-center justify-center",
   "rounded",
-  "border border-border",
-  "bg-surface text-text",
-  "hover:bg-surface-muted",
-  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+  "border border-cinematic-800",
+  "bg-cinematic-900/60 text-white",
+  "hover:bg-cinematic-800/60 hover:shadow-glow-orange-sm",
+  "focus:outline-none focus-visible:shadow-glow-orange",
   "disabled:opacity-60 disabled:pointer-events-none",
+  "transition-all",
+  "cursor-pointer",
 ].join(" ");
 
 const variants: Record<NonNullable<ButtonProps["variant"]>, string> = {
   default: [
-    "bg-[--primary] text-[--primary-foreground]",
-    "hover:bg-[color-mix(in_oklab,var(--primary),black_10%)]",
+    "bg-lumina-orange-500 text-white",
+    "hover:bg-lumina-orange-600",
     "border-transparent",
+    "shadow-glow-orange",
+    "hover:shadow-glow-orange-lg",
   ].join(" "),
   subtle: "",
   ghost: [
     "border-transparent",
     "bg-transparent",
-    "hover:bg-surface-muted",
+    "hover:bg-cinematic-900/40",
   ].join(" "),
 };
 
