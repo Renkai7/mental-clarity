@@ -79,7 +79,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
-        const toSave = { ...base, [field]: value } as any;
+        const toSave: BlockEntry = { ...base, [field]: value };
         await upsertEntry(toSave);
         setStatus(s => ({ ...s, [key]: 'saved' }));
         // Fade saved indicator

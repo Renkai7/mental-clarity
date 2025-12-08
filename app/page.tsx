@@ -18,9 +18,9 @@ export default function AppShell() {
   // Dev diagnostics: confirm preload injected APIs.
   useEffect(() => {
     // eslint-disable-next-line no-console
-    console.log('[app] electronAPI present?', typeof (window as any).electronAPI !== 'undefined');
+    console.log('[app] electronAPI present?', typeof window.electronAPI !== 'undefined');
     // eslint-disable-next-line no-console
-    console.log('[app] api present?', typeof (window as any).api !== 'undefined');
+    console.log('[app] api present?', typeof window.api !== 'undefined');
   }, []);
 
   return (

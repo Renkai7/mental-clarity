@@ -112,7 +112,7 @@ let COLOR_CFG: { ciThresholds: CIThresholds; caps: CICaps } = {
 // Load dynamic settings on module use (non-blocking). Consumers can call refreshColorConfig() if needed.
 export async function refreshColorConfig() {
   const cfg = await getColorMappingConfig();
-  COLOR_CFG = cfg as any;
+  COLOR_CFG = cfg;
 }
 // Kick off initial async load (fire and forget)
 void refreshColorConfig();

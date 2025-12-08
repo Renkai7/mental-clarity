@@ -25,7 +25,7 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
   // Derive timeframe-friendly entry objects (ensure stable ordering via blocks)
   // Draft overrides hold unsaved edits until debounced flush.
   const [draftOverrides, setDraftOverrides] = useState<Record<string, TimeframeEntry>>({});
-  const saveTimeouts = useRef<Record<string, any>>({});
+  const saveTimeouts = useRef<Record<string, NodeJS.Timeout>>({});
   const pendingBlocksRef = useRef<Set<string>>(new Set());
   const [isSaving, setIsSaving] = useState(false);
   // Daily meta draft + debounce (M9.4)
@@ -34,7 +34,7 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
     exerciseMinutes: dailyMeta?.exerciseMinutes ?? 0,
     dailyNotes: dailyMeta?.dailyNotes ?? '',
   });
-  const metaTimeoutRef = useRef<any>(null);
+  const metaTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const metaPendingRef = useRef<boolean>(false);
 
   // Keep draft in sync when underlying persisted meta changes (e.g., after reload)
