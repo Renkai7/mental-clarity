@@ -46,12 +46,22 @@ export async function getEntriesSummary(metric: 'R' | 'C' | 'A', limit: number) 
 
 export async function getEntriesRange(startDate: string, endDate: string) {
   const api = await waitForApi();
-  return api.invoke ? api.invoke('entries:range', startDate, endDate) : api['entries:range'](startDate, endDate);
+  if (api.invoke) {
+    return api.invoke('entries:range', startDate, endDate);
+  } else if (api['entries:range']) {
+    return api['entries:range'](startDate, endDate);
+  }
+  throw new Error('getEntriesRange not available');
 }
 
 export async function getDailyMetaRange(startDate: string, endDate: string) {
   const api = await waitForApi();
-  return api.invoke ? api.invoke('dailyMeta:range', startDate, endDate) : api['dailyMeta:range'](startDate, endDate);
+  if (api.invoke) {
+    return api.invoke('dailyMeta:range', startDate, endDate);
+  } else if (api['dailyMeta:range']) {
+    return api['dailyMeta:range'](startDate, endDate);
+  }
+  throw new Error('getDailyMetaRange not available');
 }
 
 export async function upsertEntry(entry: Partial<import('@/types').BlockEntry> & { date: string; blockId: string }) {

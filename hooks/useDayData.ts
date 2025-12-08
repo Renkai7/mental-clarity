@@ -32,13 +32,13 @@ export function useDayData(date: string) {
         getBlocks(),
         getEntriesForDate(date),
         getDailyMeta(date),
-      ]);
+      ]);  
       if (id !== requestId.current) return; // stale
       setBlocks(blk);
       // Ensure entries ordered by block order
-      const ordered = ent.slice().sort((a, b) => {
-        const ai = blk.findIndex(x => x.id === a.blockId);
-        const bi = blk.findIndex(x => x.id === b.blockId);
+      const ordered = ent.slice().sort((a: BlockEntry, b: BlockEntry) => {
+        const ai = blk.findIndex((x: BlockConfig) => x.id === a.blockId);
+        const bi = blk.findIndex((x: BlockConfig) => x.id === b.blockId);
         return ai - bi;
       });
       setEntries(ordered);

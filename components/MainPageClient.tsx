@@ -32,11 +32,11 @@ export default function MainPageClient() {
     setIsBlocksLoading(true);
     setBlocksError(null);
     getBlocks()
-      .then((b) => {
+      .then((b: BlockConfig[]) => {
         if (mounted) setBlocks(b);
       })
-      .catch((e) => {
-        if (mounted) setBlocksError(e?.message ?? 'Failed to load timeframes');
+      .catch((e: unknown) => {
+        if (mounted) setBlocksError(e instanceof Error ? e.message : 'Failed to load timeframes');
       })
       .finally(() => {
         if (mounted) setIsBlocksLoading(false);

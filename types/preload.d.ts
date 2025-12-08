@@ -16,6 +16,10 @@ declare global {
       getDailyMeta: (date: string) => Promise<DailyMeta | null>;
       upsertDailyMeta: (meta: Partial<DailyMeta> & { date: string }) => Promise<void>;
       createEmptyDay: (date: string) => Promise<void>;
+      getEntriesSummary: (metric: 'R' | 'C' | 'A', limit: number) => Promise<unknown>;
+      invoke?: (channel: string, ...args: unknown[]) => Promise<unknown>;
+      'entries:range'?: (startDate: string, endDate: string) => Promise<BlockEntry[]>;
+      'dailyMeta:range'?: (startDate: string, endDate: string) => Promise<DailyMeta[]>;
     };
   }
 }

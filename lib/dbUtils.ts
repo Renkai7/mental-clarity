@@ -30,6 +30,9 @@ export async function getBlockConfigs(): Promise<BlockConfig[]> {
   return blocks.map((b) => BlockConfigSchema.parse(b));
 }
 
+// Alias for backwards compatibility
+export const getBlocks = getBlockConfigs;
+
 export async function getEntriesForDate(date: string): Promise<BlockEntry[]> {
   DateString.parse(date);
   const entries = await api.getEntriesForDate(date);
@@ -89,11 +92,11 @@ export async function getMainGridSummary(metric: Metric, limit: number) {
 
 // Range retrieval (M11)
 export async function getEntriesRange(startDate: string, endDate: string): Promise<BlockEntry[]> {
-  const rows = await api.getEntriesRange(startDate, endDate);
-  return rows.map(r => BlockEntrySchema.parse(r));
+  const rows = (await api.getEntriesRange(startDate, endDate)) as unknown[];
+  return rows.map((r) => BlockEntrySchema.parse(r));
 }
 
 export async function getDailyMetaRange(startDate: string, endDate: string): Promise<DailyMeta[]> {
-  const rows = await api.getDailyMetaRange(startDate, endDate);
-  return rows.map(r => DailyMetaSchema.parse(r));
+  const rows = (await api.getDailyMetaRange(startDate, endDate)) as unknown[];
+  return rows.map((r) => DailyMetaSchema.parse(r));
 }
