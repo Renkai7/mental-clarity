@@ -95,22 +95,22 @@ export const CIConfig: React.FC<CIConfigProps> = ({ ciSettings, onSave, disabled
   }
 
   return (
-    <div className="border border-zinc-200 rounded-md dark:border-zinc-700" aria-labelledby="ci-config-heading">
+    <div className="border border-cinematic-800 rounded-md bg-cinematic-950/40" aria-labelledby="ci-config-heading">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-4 py-2 text-left text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+        className="flex w-full items-center justify-between px-4 py-2 text-left text-sm font-medium text-white hover:bg-cinematic-900/60"
         aria-expanded={open}
         id="ci-config-heading"
       >
         <span>Advanced: Clarity Index Tuning</span>
-        <span className="text-xs opacity-70">{open ? "Hide" : "Show"}</span>
+        <span className="text-xs text-slate-400">{open ? "Hide" : "Show"}</span>
       </button>
       {open && (
-        <div className="px-4 py-4 border-t border-zinc-200 dark:border-zinc-700">
+        <div className="px-4 py-4 border-t border-cinematic-800">
           <form onSubmit={handleSubmit} className="space-y-6" aria-label="Clarity Index configuration">
             <div className="space-y-2">
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">Adjust contribution weights (should total 1) and normalization caps.</p>
+              <p className="text-xs text-slate-400">Adjust contribution weights (should total 1) and normalization caps.</p>
               <div className="grid gap-4 sm:grid-cols-2">
                 {([
                   { key: 'alphaR', label: 'Rumination Weight' },
@@ -120,7 +120,7 @@ export const CIConfig: React.FC<CIConfigProps> = ({ ciSettings, onSave, disabled
                   { key: 'alphaStr', label: 'Stress Weight' },
                 ] as const).map((item) => (
                   <div key={item.key} className="space-y-1">
-                    <label htmlFor={item.key} className="block text-xs font-medium text-zinc-700 dark:text-zinc-300">{item.label}</label>
+                    <label htmlFor={item.key} className="block text-xs font-medium text-slate-300">{item.label}</label>
                     <input
                       id={item.key}
                       type="range"
@@ -130,18 +130,18 @@ export const CIConfig: React.FC<CIConfigProps> = ({ ciSettings, onSave, disabled
                       value={local[item.key]}
                       disabled={disabled}
                       onChange={(e) => handleSlider(item.key, e.target.value)}
-                      className="w-full"
+                      className="w-full accent-lumina-orange-500"
                       aria-valuenow={local[item.key]}
                       aria-valuemin={0}
                       aria-valuemax={1}
                     />
-                    <div className="flex justify-between text-[11px] text-zinc-600 dark:text-zinc-400">
+                    <div className="flex justify-between text-[11px] text-slate-400">
                       <span>{local[item.key].toFixed(2)}</span>
                       <button
                         type="button"
                         onClick={() => handleNumeric(item.key, DEFAULTS[item.key])}
                         disabled={disabled}
-                        className="text-indigo-600 hover:underline disabled:opacity-40"
+                        className="text-lumina-orange-500 hover:underline disabled:opacity-40"
                       >
                         Default
                       </button>
@@ -150,7 +150,7 @@ export const CIConfig: React.FC<CIConfigProps> = ({ ciSettings, onSave, disabled
                 ))}
               </div>
               {errors.weights && (
-                <p className="text-xs text-red-600 dark:text-red-400" role="alert">{errors.weights}</p>
+                <p className="text-xs text-red-400" role="alert">{errors.weights}</p>
               )}
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
@@ -218,10 +218,10 @@ export const CIConfig: React.FC<CIConfigProps> = ({ ciSettings, onSave, disabled
                     aria-invalid={!!errors.greenMin}
                     aria-describedby={errors.greenMin ? 'greenMin-error' : undefined}
                   />
-                  {errors.greenMin && <p id="greenMin-error" className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.greenMin}</p>}
+                  {errors.greenMin && <p id="greenMin-error" className="mt-1 text-xs text-red-400">{errors.greenMin}</p>}
                 </div>
                 <div>
-                  <label htmlFor="yellowMin" className="block text-xs font-medium text-zinc-700 dark:text-zinc-300">Yellow Min</label>
+                  <label htmlFor="yellowMin" className="block text-xs font-medium text-slate-300">Yellow Min</label>
                   <input
                     id="yellowMin"
                     type="number"
@@ -231,11 +231,11 @@ export const CIConfig: React.FC<CIConfigProps> = ({ ciSettings, onSave, disabled
                     value={local.yellowMin}
                     disabled={disabled}
                     onChange={(e) => handleNumeric('yellowMin', clamp(Number(e.target.value), 0, 1))}
-                    className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                    className="mt-1 w-full rounded border border-cinematic-800 bg-cinematic-900/60 px-2 py-1 text-sm text-white focus:outline-none focus:border-lumina-orange-500 focus:shadow-glow-orange"
                     aria-invalid={!!errors.yellowMin}
                     aria-describedby={errors.yellowMin ? 'yellowMin-error' : undefined}
                   />
-                  {errors.yellowMin && <p id="yellowMin-error" className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.yellowMin}</p>}
+                  {errors.yellowMin && <p id="yellowMin-error" className="mt-1 text-xs text-red-400">{errors.yellowMin}</p>}
                 </div>
               </div>
               <div className="mt-2 flex items-center gap-2" aria-label="Preview colors based on thresholds">
@@ -251,14 +251,14 @@ export const CIConfig: React.FC<CIConfigProps> = ({ ciSettings, onSave, disabled
                 type="button"
                 onClick={resetDefaults}
                 disabled={disabled}
-                className="rounded border border-zinc-300 px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:hover:bg-zinc-800 disabled:opacity-50"
+                className="rounded border border-cinematic-800 px-3 py-1.5 text-sm font-medium text-slate-300 hover:bg-cinematic-800/60 focus:outline-none focus:shadow-glow-orange disabled:opacity-50"
               >
                 Reset Defaults
               </button>
               <button
                 type="submit"
                 disabled={saveDisabled}
-                className="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring focus:ring-indigo-500 disabled:opacity-50"
+                className="rounded bg-lumina-orange-500 px-4 py-2 text-sm font-medium text-white shadow-glow-orange hover:bg-lumina-orange-600 focus:outline-none focus:shadow-glow-orange-lg disabled:opacity-50"
               >
                 Save CI Settings
               </button>

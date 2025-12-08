@@ -8,22 +8,23 @@ export interface HeatmapCellProps {
   value: number | null;
   label: string; // e.g., date + block label
   color: HeatColor;
+  metric?: 'R' | 'C' | 'A' | 'CI'; // metric type to determine display format
   onClick?: () => void;
 }
 
-export default function HeatmapCell({ value, label, color, onClick }: HeatmapCellProps) {
+export default function HeatmapCell({ value, label, color, metric, onClick }: HeatmapCellProps) {
   const bg =
     color === 'green'
-      ? 'bg-clarity-high hover:bg-clarity-high-200'
+      ? 'bg-lumina-orange-500 hover:bg-lumina-orange-400 shadow-glow-orange-sm'
       : color === 'yellow'
-      ? 'bg-clarity-medium hover:bg-clarity-medium-200'
+      ? 'bg-lumina-amber-500 hover:bg-lumina-amber-400 shadow-glow-amber-sm'
       : color === 'red'
-      ? 'bg-clarity-low hover:bg-clarity-low-200'
-      : 'bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-400 dark:hover:bg-zinc-600';
+      ? 'bg-red-500/80 hover:bg-red-400/80'
+      : 'bg-cinematic-800 hover:bg-cinematic-700';
 
   const isInteractive = typeof onClick === 'function';
 
-  const common = 'flex items-center justify-center rounded-md transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-zinc-500 text-[0.7rem] font-medium';
+  const common = 'flex items-center justify-center rounded-md transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-lumina-orange-500 text-[0.7rem] font-medium';
 
   const content = (
     <div
@@ -43,11 +44,11 @@ export default function HeatmapCell({ value, label, color, onClick }: HeatmapCel
       style={{ width: 28, height: 28 }}
     >
       {value !== null ? (
-        <span className="text-white/90 drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
-          {typeof value === 'number' && value <= 1 ? (value * 100).toFixed(0) : String(value)}
+        <span className="text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+          {metric === 'CI' && typeof value === 'number' && value <= 1 ? (value * 100).toFixed(0) : String(value)}
         </span>
       ) : (
-        <span className="text-zinc-700 dark:text-zinc-300">–</span>
+        <span className="text-slate-500 font-medium">–</span>
       )}
     </div>
   );

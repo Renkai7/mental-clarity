@@ -78,11 +78,11 @@ export default function TimeframeEntryRow({
   };
 
   return (
-    <tr className="border-b border-border odd:bg-surface/50 hover:bg-surface-muted focus-within:bg-surface-muted">
+    <tr className="border-b border-cinematic-800 odd:bg-cinematic-950/20 hover:bg-cinematic-900/40 hover:shadow-glow-orange-sm transition-all focus-within:bg-cinematic-900/40">
       {/* Block Label */}
       <th
         scope="row"
-        className="px-3 py-3 text-left font-medium text-text whitespace-nowrap"
+        className="px-3 py-3 text-left font-medium text-white whitespace-nowrap"
       >
         {blockLabel}
       </th>
@@ -95,7 +95,7 @@ export default function TimeframeEntryRow({
                 onClick={() => handleDecrement(rumination, 0, onRuminationChange)}
                 size="sm"
                 variant="subtle"
-                className="h-7 w-7 px-0"
+                className="h-7 w-7 px-0 border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                 tabularNums
                 type="button"
               >
@@ -117,7 +117,7 @@ export default function TimeframeEntryRow({
                 onClick={() => handleIncrement(rumination, 999, onRuminationChange)}
                 size="sm"
                 variant="subtle"
-                className="h-7 w-7 px-0"
+                className="h-7 w-7 px-0 border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                 tabularNums
                 type="button"
               >
@@ -134,7 +134,7 @@ export default function TimeframeEntryRow({
                 onClick={() => handleDecrement(compulsions, 0, onCompulsionsChange)}
                 size="sm"
                 variant="subtle"
-                className="h-7 w-7 px-0"
+                className="h-7 w-7 px-0 border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                 tabularNums
                 type="button"
               >
@@ -156,7 +156,7 @@ export default function TimeframeEntryRow({
                 onClick={() => handleIncrement(compulsions, 999, onCompulsionsChange)}
                 size="sm"
                 variant="subtle"
-                className="h-7 w-7 px-0"
+                className="h-7 w-7 px-0 border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                 tabularNums
                 type="button"
               >
@@ -165,7 +165,6 @@ export default function TimeframeEntryRow({
         </div>
       </td>
 
-      {/* Avoidance Count */}
       <td className="px-3 py-3">
         <div className="flex items-center justify-center gap-1">
               <Button
@@ -173,7 +172,7 @@ export default function TimeframeEntryRow({
                 onClick={() => handleDecrement(avoidance, 0, onAvoidanceChange)}
                 size="sm"
                 variant="subtle"
-                className="h-7 w-7 px-0"
+                className="h-7 w-7 px-0 border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                 tabularNums
                 type="button"
               >
@@ -195,7 +194,7 @@ export default function TimeframeEntryRow({
                 onClick={() => handleIncrement(avoidance, 999, onAvoidanceChange)}
                 size="sm"
                 variant="subtle"
-                className="h-7 w-7 px-0"
+                className="h-7 w-7 px-0 border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                 tabularNums
                 type="button"
               >
@@ -204,7 +203,6 @@ export default function TimeframeEntryRow({
         </div>
       </td>
 
-      {/* Anxiety Score (1-10) */}
       <td className="px-3 py-3">
         <div className="flex items-center justify-center gap-1">
               <Button
@@ -212,7 +210,7 @@ export default function TimeframeEntryRow({
                 onClick={() => handleScoreDecrement(anxiety, onAnxietyChange)}
                 size="sm"
                 variant="subtle"
-                className="h-7 w-7 px-0"
+                className="h-7 w-7 px-0 border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                 tabularNums
                 type="button"
               >
@@ -235,7 +233,7 @@ export default function TimeframeEntryRow({
                 onClick={() => handleScoreIncrement(anxiety, onAnxietyChange)}
                 size="sm"
                 variant="subtle"
-                className="h-7 w-7 px-0"
+                className="h-7 w-7 px-0 border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                 tabularNums
                 type="button"
               >
@@ -244,7 +242,6 @@ export default function TimeframeEntryRow({
         </div>
       </td>
 
-      {/* Stress Score (1-10) */}
       <td className="px-3 py-3">
         <div className="flex items-center justify-center gap-1">
               <Button
@@ -252,7 +249,7 @@ export default function TimeframeEntryRow({
                 onClick={() => handleScoreDecrement(stress, onStressChange)}
                 size="sm"
                 variant="subtle"
-                className="h-7 w-7 px-0"
+                className="h-7 w-7 px-0 border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                 tabularNums
                 type="button"
               >
@@ -275,7 +272,7 @@ export default function TimeframeEntryRow({
                 onClick={() => handleScoreIncrement(stress, onStressChange)}
                 size="sm"
                 variant="subtle"
-                className="h-7 w-7 px-0"
+                className="h-7 w-7 px-0 border border-cinematic-700 hover:border-lumina-orange-500 hover:bg-cinematic-800 hover:shadow-glow-orange-sm hover:text-lumina-orange-400 transition-all duration-200"
                 tabularNums
                 type="button"
               >

@@ -115,19 +115,19 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="tf-editor-title"
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 backdrop-blur-sm p-4"
     >
       <div
         ref={dialogRef}
-        className="w-full max-w-md rounded-lg border border-zinc-200 bg-white p-5 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
+        className="w-full max-w-md rounded-lg border border-cinematic-800 bg-cinematic-950/95 p-5 shadow-glow-orange backdrop-blur-xl"
       >
         <h2
           id="tf-editor-title"
-          className="text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+          className="text-lg font-semibold text-white"
         >
           {block ? "Edit Timeframe" : "Add Timeframe"}
         </h2>
-        <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-xs text-slate-400">
           Define a labeled tracking window. Avoid overlaps for accurate totals.
         </p>
         <form
@@ -140,7 +140,7 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
           <div>
             <label
               htmlFor="tf-label"
-              className="block text-xs font-medium text-zinc-700 dark:text-zinc-300"
+              className="block text-xs font-medium text-slate-300"
             >
               Label
             </label>
@@ -149,14 +149,14 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              className="mt-1 w-full rounded border border-cinematic-800 bg-cinematic-900/60 px-2 py-1 text-sm shadow-sm text-white focus:outline-none focus:border-lumina-orange-500 focus:shadow-glow-orange"
               aria-invalid={!!errors.label}
               aria-describedby={errors.label ? "tf-label-error" : undefined}
             />
             {errors.label && (
               <p
                 id="tf-label-error"
-                className="mt-1 text-xs text-red-600 dark:text-red-400"
+                className="mt-1 text-xs text-red-400"
               >
                 {errors.label}
               </p>
@@ -166,7 +166,7 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
             <div className="flex-1">
               <label
                 htmlFor="tf-start"
-                className="block text-xs font-medium text-zinc-700 dark:text-zinc-300"
+                className="block text-xs font-medium text-slate-300"
               >
                 Start
               </label>
@@ -175,12 +175,12 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
                 type="time"
                 value={start}
                 onChange={(e) => setStart(e.target.value)}
-                className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                className="mt-1 w-full rounded border border-cinematic-800 bg-cinematic-900/60 px-2 py-1 text-sm shadow-sm text-white focus:outline-none focus:border-lumina-orange-500 focus:shadow-glow-orange"
                 aria-invalid={!!errors.start}
                 aria-describedby={errors.start ? "tf-start-error" : undefined}
               />
               {errors.start && (
-                <p id="tf-start-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+                <p id="tf-start-error" className="mt-1 text-xs text-red-400">
                   {errors.start}
                 </p>
               )}
@@ -188,7 +188,7 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
             <div className="flex-1">
               <label
                 htmlFor="tf-end"
-                className="block text-xs font-medium text-zinc-700 dark:text-zinc-300"
+                className="block text-xs font-medium text-slate-300"
               >
                 End
               </label>
@@ -197,12 +197,12 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
                 type="time"
                 value={end}
                 onChange={(e) => setEnd(e.target.value)}
-                className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                className="mt-1 w-full rounded border border-cinematic-800 bg-cinematic-900/60 px-2 py-1 text-sm shadow-sm text-white focus:outline-none focus:border-lumina-orange-500 focus:shadow-glow-orange"
                 aria-invalid={!!errors.end}
                 aria-describedby={errors.end ? "tf-end-error" : undefined}
               />
               {errors.end && (
-                <p id="tf-end-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+                <p id="tf-end-error" className="mt-1 text-xs text-red-400">
                   {errors.end}
                 </p>
               )}
@@ -214,14 +214,14 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
               type="checkbox"
               checked={active}
               onChange={(e) => setActive(e.target.checked)}
-              className="h-4 w-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 dark:border-zinc-600"
+              className="h-4 w-4 rounded border-cinematic-800 bg-cinematic-900/60 text-lumina-orange-500 focus:ring-lumina-orange-500"
             />
-            <label htmlFor="tf-active" className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+            <label htmlFor="tf-active" className="text-xs font-medium text-slate-300">
               Active
             </label>
           </div>
           {errors.overlap && (
-            <p className="text-xs text-red-600 dark:text-red-400" role="alert">
+            <p className="text-xs text-red-400" role="alert">
               {errors.overlap}
             </p>
           )}
@@ -229,13 +229,13 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
             <button
               type="button"
               onClick={onCancel}
-              className="rounded border border-zinc-300 px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:hover:bg-zinc-800"
+              className="rounded border border-cinematic-800 px-3 py-1.5 text-sm font-medium text-slate-300 hover:bg-cinematic-800/60 focus:outline-none focus:shadow-glow-orange"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring focus:ring-indigo-500 disabled:opacity-50"
+              className="rounded bg-lumina-orange-500 px-3 py-1.5 text-sm font-medium text-white shadow-glow-orange hover:bg-lumina-orange-600 focus:outline-none focus:shadow-glow-orange-lg disabled:opacity-50"
               disabled={Object.keys(errors).length > 0 && touched}
             >
               Save

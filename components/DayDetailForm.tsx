@@ -170,28 +170,28 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
   return (
     <div className="relative pb-24">
       {isLoading && (
-        <div className="mb-4 text-sm text-neutral-500 dark:text-neutral-400" role="status">
+        <div className="mb-4 text-sm text-slate-400" role="status">
           Loading day data...
         </div>
       )}
       {!isLoading && !error && (
-        <div className="mb-4 text-xs font-medium text-neutral-600 dark:text-neutral-400" aria-live="polite">
+        <div className="mb-4 text-xs font-medium text-slate-400" aria-live="polite">
           {isSaving || pendingBlocksRef.current.size > 0 || metaPendingRef.current ? 'Autosave pending…' : 'All changes saved'}
         </div>
       )}
       {error && !isLoading && (
-        <div className="mb-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300" role="alert">
+        <div className="mb-4 rounded border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400" role="alert">
           {error}
         </div>
       )}
       {/* Daily Summary Section */}
       <section
         aria-labelledby="daily-summary"
-        className="mb-8 rounded-md border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-black"
+        className="mb-8 rounded-md border border-cinematic-800 bg-cinematic-950/40 p-4 backdrop-blur-sm"
       >
         <h2
           id="daily-summary"
-          className="mb-3 text-lg font-medium text-zinc-900 dark:text-zinc-100"
+          className="mb-3 text-lg font-medium text-white"
         >
           Daily Summary
         </h2>
@@ -209,27 +209,27 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
       {/* Timeframes Section */}
       <section
         aria-labelledby="timeframe-grid"
-        className="rounded-md border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-black"
+        className="rounded-md border border-cinematic-800 bg-cinematic-950/40 p-4 backdrop-blur-sm"
       >
         <h2
           id="timeframe-grid"
-          className="mb-3 text-lg font-medium text-zinc-900 dark:text-zinc-100"
+          className="mb-3 text-lg font-medium text-white"
         >
           Timeframes
         </h2>
         {blocks.length === 0 && !isLoading ? (
-          <div className="text-sm text-neutral-500 dark:text-neutral-400">
+          <div className="text-sm text-slate-400">
             No active blocks configured. Add blocks in Settings.
           </div>
         ) : timeframeEntries.every((e) => e.rumination === 0 && e.compulsions === 0 && e.avoidance === 0 && rawEntries.length === 0) && !isLoading ? (
           <div className="flex flex-col gap-3">
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            <p className="text-sm text-slate-400">
               This day has no entries yet. Initialize to create empty rows.
             </p>
             <button
               type="button"
               onClick={initializeDay}
-              className="w-fit rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm font-medium text-zinc-800 hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+              className="w-fit rounded-md border border-cinematic-800 bg-cinematic-900/60 px-3 py-1 text-sm font-medium text-white hover:bg-lumina-orange-500/20 hover:border-lumina-orange-500/30 hover:shadow-glow-orange-sm transition-all"
             >
               Initialize Day
             </button>

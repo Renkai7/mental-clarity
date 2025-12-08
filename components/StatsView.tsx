@@ -6,6 +6,7 @@ import Sparkline from './Sparkline';
 import BarCharts from './BarCharts';
 import { DEFAULT_TIMEFRAMES } from '@/lib/mockData';
 import { useStatsData } from '@/hooks/useStatsData';
+import { EmberCard } from '@/ui/cinematic-ember';
 
 export default function StatsView() {
   const { sparkline, blockAverages, barMetric, setBarMetric, isLoading, error } = useStatsData();
@@ -16,34 +17,32 @@ export default function StatsView() {
   }, [blockAverages]);
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-6 py-12">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Statistics</h1>
-
+    <div className="space-y-10">
       <StatsCards />
 
-      <section className="mt-10">
-        <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">Clarity Index Trend (14 days)</h2>
-        <div className="mt-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
+      <section>
+        <h2 className="text-lg font-medium text-white mb-4">Clarity Index Trend (14 days)</h2>
+        <EmberCard variant="orange" className="p-6">
           {sparkline.length ? (
             <Sparkline data={sparkline} height={140} />
           ) : (
-            <div className="h-[120px] flex items-center justify-center text-xs text-zinc-500 dark:text-zinc-400">
+            <div className="h-[120px] flex items-center justify-center text-xs text-slate-400">
               {isLoading ? 'Loading…' : 'No data'}
             </div>
           )}
-        </div>
+        </EmberCard>
       </section>
 
-      <section className="mt-10">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">By Timeframe (7-day average)</h2>
-          <div className="inline-flex overflow-hidden rounded-lg border border-zinc-300 dark:border-zinc-700">
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-medium text-white">By Timeframe (7-day average)</h2>
+          <div className="inline-flex overflow-hidden rounded-lg border border-cinematic-800">
             {(['R', 'C', 'A'] as const).map((m, idx) => {
               const active = barMetric === m;
               return (
                 <button
                   key={m}
-                  className={`px-3 py-2 text-sm ${active ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900' : 'bg-zinc-50 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'} ${idx > 0 ? 'border-l border-zinc-300 dark:border-zinc-700' : ''}`}
+                  className={`px-3 py-2 text-sm ${active ? 'bg-lumina-orange-500 text-white' : 'bg-cinematic-900/60 text-slate-300'} ${idx > 0 ? 'border-l border-cinematic-800' : ''} transition-all`}
                   onClick={() => setBarMetric(m)}
                 >
                   {m === 'R' ? 'Rumination' : m === 'C' ? 'Compulsions' : 'Avoidance'}
@@ -52,21 +51,21 @@ export default function StatsView() {
             })}
           </div>
         </div>
-        <div className="mt-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
+        <EmberCard variant="amber" className="p-6">
           {barData.length ? (
             <BarCharts metric={barMetric} data={barData} />
           ) : (
-            <div className="h-[240px] flex items-center justify-center text-xs text-zinc-500 dark:text-zinc-400">
+            <div className="h-[240px] flex items-center justify-center text-xs text-slate-400">
               {isLoading ? 'Loading…' : 'No block data'}
             </div>
           )}
-        </div>
+        </EmberCard>
       </section>
       {error && (
-        <div className="mt-4 text-xs text-red-600 dark:text-red-400" role="alert">
+        <div className="mt-4 text-xs text-red-400" role="alert">
           {error}
         </div>
       )}
-    </main>
+    </div>
   );
 }

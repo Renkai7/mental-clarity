@@ -7,6 +7,7 @@ import GoalsConfig, { Goals } from "./GoalsConfig";
 import PreferencesConfig, { Preferences } from "./PreferencesConfig";
 import CIConfig from "./CIConfig";
 import DataManagement from "./DataManagement";
+import { EmberCard } from "@/ui/cinematic-ember";
 
 interface BlockConfig {
   id: string;
@@ -100,51 +101,61 @@ export const SettingsView: React.FC = () => {
     <div className="mt-8 space-y-12" aria-label="Settings sections">
       {/* Timeframes */}
       <section aria-labelledby="timeframes-heading" className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 id="timeframes-heading" className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+        <div className="flex items-center justify-between mb-4">
+          <h2 id="timeframes-heading" className="text-base font-semibold text-white">
             Timeframes
           </h2>
           <button
             type="button"
             onClick={handleAdd}
-            className="rounded bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring focus:ring-indigo-500"
+            className="rounded bg-lumina-orange-500 px-4 py-2 text-sm font-medium text-white shadow-glow-orange hover:bg-lumina-orange-400 hover:shadow-glow-orange-lg transition-all focus:outline-none focus:ring focus:ring-lumina-orange-500"
           >
             Add Timeframe
           </button>
         </div>
-        <TimeframeList blocks={blocks} onEdit={handleEdit} onDelete={handleDelete} onReorder={handleReorder} />
+        <EmberCard variant="orange" className="p-6">
+          <TimeframeList blocks={blocks} onEdit={handleEdit} onDelete={handleDelete} onReorder={handleReorder} />
+        </EmberCard>
       </section>
       {/* Goals */}
       <section aria-labelledby="goals-heading" className="space-y-4">
-        <h2 id="goals-heading" className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Goals</h2>
-        <GoalsConfig goals={goals} onSave={(g) => setGoals(g)} />
+        <h2 id="goals-heading" className="text-base font-semibold text-white mb-4">Goals</h2>
+        <EmberCard variant="amber" className="p-6">
+          <GoalsConfig goals={goals} onSave={(g) => setGoals(g)} />
+        </EmberCard>
       </section>
       {/* Preferences */}
       <section aria-labelledby="prefs-heading" className="space-y-4">
-        <h2 id="prefs-heading" className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Preferences</h2>
-        <PreferencesConfig preferences={preferences} onSave={(p) => setPreferences(p)} />
+        <h2 id="prefs-heading" className="text-base font-semibold text-white mb-4">Preferences</h2>
+        <EmberCard variant="orange" className="p-6">
+          <PreferencesConfig preferences={preferences} onSave={(p) => setPreferences(p)} />
+        </EmberCard>
       </section>
       {/* CI Advanced */}
       <section aria-labelledby="ci-heading" className="space-y-4">
-        <h2 id="ci-heading" className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Clarity Index</h2>
-        <CIConfig ciSettings={ciSettings} onSave={(s) => setCISettings(s)} />
+        <h2 id="ci-heading" className="text-base font-semibold text-white mb-4">Clarity Index</h2>
+        <EmberCard variant="amber" className="p-6">
+          <CIConfig ciSettings={ciSettings} onSave={(s) => setCISettings(s)} />
+        </EmberCard>
       </section>
       {/* Data Management */}
       <section aria-labelledby="data-heading" className="space-y-4">
-        <h2 id="data-heading" className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Data</h2>
-        <DataManagement
-          onExportJSON={() => console.log('Export JSON placeholder')}
-          onExportCSV={() => console.log('Export CSV placeholder')}
-          onImportJSON={(file, mode) => console.log('Import JSON placeholder', file.name, mode)}
-          onClearAll={() => {
-            console.log('Clear all data placeholder');
-            // Reset local mock state
-            setBlocks([]);
-            setGoals(defaultGoals);
-            setPreferences(defaultPreferences);
-            setCISettings(defaultCISettings);
-          }}
-        />
+        <h2 id="data-heading" className="text-base font-semibold text-white mb-4">Data</h2>
+        <EmberCard variant="orange" className="p-6">
+          <DataManagement
+            onExportJSON={() => console.log('Export JSON placeholder')}
+            onExportCSV={() => console.log('Export CSV placeholder')}
+            onImportJSON={(file, mode) => console.log('Import JSON placeholder', file.name, mode)}
+            onClearAll={() => {
+              console.log('Clear all data placeholder');
+              // Reset local mock state
+              setBlocks([]);
+              setGoals(defaultGoals);
+              setPreferences(defaultPreferences);
+              setCISettings(defaultCISettings);
+            }}
+          />
+        </EmberCard>
       </section>
       {showEditor && (
         <TimeframeEditor

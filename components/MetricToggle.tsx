@@ -18,7 +18,7 @@ const OPTIONS: { key: HeatmapMetric; label: string }[] = [
 
 export default function MetricToggle({ activeMetric, onMetricChange }: MetricToggleProps) {
   return (
-    <div role="radiogroup" aria-label="Select heatmap metric" className="inline-flex rounded-lg border border-zinc-300 dark:border-zinc-700 overflow-hidden">
+    <div role="radiogroup" aria-label="Select heatmap metric" className="inline-flex rounded-lg border border-cinematic-800 overflow-hidden">
       {OPTIONS.map((opt, idx) => {
         const isActive = opt.key === activeMetric;
         return (
@@ -26,9 +26,9 @@ export default function MetricToggle({ activeMetric, onMetricChange }: MetricTog
             key={opt.key}
             role="radio"
             aria-checked={isActive}
-            className={`px-3 py-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-zinc-500 ${
-              isActive ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900' : 'bg-zinc-50 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
-            } ${idx > 0 ? 'border-l border-zinc-300 dark:border-zinc-700' : ''}`}
+            className={`px-3 py-2 text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-lumina-orange-500 ${
+              isActive ? 'bg-lumina-orange-500 text-white shadow-glow-orange' : 'bg-cinematic-900/60 text-slate-300 hover:bg-cinematic-800 hover:text-white'
+            } ${idx > 0 ? 'border-l border-cinematic-800' : ''}`}
             onClick={() => onMetricChange(opt.key)}
           >
             {opt.label}

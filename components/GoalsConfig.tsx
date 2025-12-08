@@ -72,16 +72,16 @@ export const GoalsConfig: React.FC<GoalsConfigProps> = ({ goals, onSave, disable
       className="space-y-5"
     >
       <div>
-        <h3 id="goals-config-title" className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+        <h3 id="goals-config-title" className="text-sm font-semibold text-white">
           Daily Goals
         </h3>
-        <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-xs text-slate-400">
           These targets help visualize progress and influence derived metrics later.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="goal-r" className="block text-xs font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="goal-r" className="block text-xs font-medium text-slate-300">
             Max Rumination
           </label>
           <input
@@ -91,19 +91,19 @@ export const GoalsConfig: React.FC<GoalsConfigProps> = ({ goals, onSave, disable
             min={0}
             value={local.R}
             onChange={(e) => handleChange("R", clamp(Number(e.target.value), 0, 10000))}
-            className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            className="mt-1 w-full rounded border border-cinematic-800 bg-cinematic-900/60 px-2 py-1 text-sm text-white focus:outline-none focus:border-lumina-orange-500 focus:shadow-glow-orange"
             aria-invalid={!!errors.R}
             aria-describedby={errors.R ? "goal-r-error" : undefined}
             disabled={disabled}
           />
           {errors.R && (
-            <p id="goal-r-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+            <p id="goal-r-error" className="mt-1 text-xs text-red-400">
               {errors.R}
             </p>
           )}
         </div>
         <div>
-          <label htmlFor="goal-c" className="block text-xs font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="goal-c" className="block text-xs font-medium text-slate-300">
             Max Compulsions
           </label>
           <input
@@ -112,19 +112,19 @@ export const GoalsConfig: React.FC<GoalsConfigProps> = ({ goals, onSave, disable
             min={0}
             value={local.C}
             onChange={(e) => handleChange("C", clamp(Number(e.target.value), 0, 10000))}
-            className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            className="mt-1 w-full rounded border border-cinematic-800 bg-cinematic-900/60 px-2 py-1 text-sm text-white focus:outline-none focus:border-lumina-orange-500 focus:shadow-glow-orange"
             aria-invalid={!!errors.C}
             aria-describedby={errors.C ? "goal-c-error" : undefined}
             disabled={disabled}
           />
           {errors.C && (
-            <p id="goal-c-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+            <p id="goal-c-error" className="mt-1 text-xs text-red-400">
               {errors.C}
             </p>
           )}
         </div>
         <div>
-          <label htmlFor="goal-a" className="block text-xs font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="goal-a" className="block text-xs font-medium text-slate-300">
             Max Avoidance
           </label>
           <input
@@ -133,19 +133,19 @@ export const GoalsConfig: React.FC<GoalsConfigProps> = ({ goals, onSave, disable
             min={0}
             value={local.A}
             onChange={(e) => handleChange("A", clamp(Number(e.target.value), 0, 10000))}
-            className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            className="mt-1 w-full rounded border border-cinematic-800 bg-cinematic-900/60 px-2 py-1 text-sm text-white focus:outline-none focus:border-lumina-orange-500 focus:shadow-glow-orange"
             aria-invalid={!!errors.A}
             aria-describedby={errors.A ? "goal-a-error" : undefined}
             disabled={disabled}
           />
           {errors.A && (
-            <p id="goal-a-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+            <p id="goal-a-error" className="mt-1 text-xs text-red-400">
               {errors.A}
             </p>
           )}
         </div>
         <div>
-          <label htmlFor="goal-ex" className="block text-xs font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="goal-ex" className="block text-xs font-medium text-slate-300">
             Min Exercise Minutes
           </label>
           <input
@@ -154,19 +154,19 @@ export const GoalsConfig: React.FC<GoalsConfigProps> = ({ goals, onSave, disable
             min={0}
             value={local.exerciseMinutes}
             onChange={(e) => handleChange("exerciseMinutes", clamp(Number(e.target.value), 0, 1440))}
-            className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            className="mt-1 w-full rounded border border-cinematic-800 bg-cinematic-900/60 px-2 py-1 text-sm text-white focus:outline-none focus:border-lumina-orange-500 focus:shadow-glow-orange"
             aria-invalid={!!errors.exerciseMinutes}
             aria-describedby={errors.exerciseMinutes ? "goal-ex-error" : undefined}
             disabled={disabled}
           />
           {errors.exerciseMinutes && (
-            <p id="goal-ex-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+            <p id="goal-ex-error" className="mt-1 text-xs text-red-400">
               {errors.exerciseMinutes}
             </p>
           )}
         </div>
         <div>
-          <label htmlFor="goal-sleep" className="block text-xs font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="goal-sleep" className="block text-xs font-medium text-slate-300">
             Min Sleep Quality (1–10)
           </label>
             <input
@@ -176,13 +176,13 @@ export const GoalsConfig: React.FC<GoalsConfigProps> = ({ goals, onSave, disable
               max={10}
               value={local.minSleepQuality}
               onChange={(e) => handleChange("minSleepQuality", clamp(Number(e.target.value), 1, 10))}
-              className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              className="mt-1 w-full rounded border border-cinematic-800 bg-cinematic-900/60 px-2 py-1 text-sm text-white focus:outline-none focus:border-lumina-orange-500 focus:shadow-glow-orange"
               aria-invalid={!!errors.minSleepQuality}
               aria-describedby={errors.minSleepQuality ? "goal-sleep-error" : undefined}
               disabled={disabled}
             />
             {errors.minSleepQuality && (
-              <p id="goal-sleep-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+              <p id="goal-sleep-error" className="mt-1 text-xs text-red-400">
                 {errors.minSleepQuality}
               </p>
             )}
@@ -192,7 +192,7 @@ export const GoalsConfig: React.FC<GoalsConfigProps> = ({ goals, onSave, disable
         <button
           type="submit"
           disabled={saveDisabled}
-          className="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring focus:ring-indigo-500 disabled:opacity-50"
+          className="rounded bg-lumina-orange-500 px-4 py-2 text-sm font-medium text-white shadow-glow-orange hover:bg-lumina-orange-600 focus:outline-none focus:shadow-glow-orange-lg disabled:opacity-50"
         >
           Save Goals
         </button>
