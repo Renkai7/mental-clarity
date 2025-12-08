@@ -37,17 +37,17 @@ export function colorArrayForCI(values: number[], cfg: ColorMappingConfig): stri
   return values.map(v => colorForCI(v, cfg));
 }
 
-// Utility to derive Tailwind class from semantic color
+// Utility to derive Tailwind class from semantic color (Cinematic Ember palette)
 export function heatmapColorClass(color: string): string {
   switch (color) {
     case 'green':
-      return 'bg-green-500';
+      return 'bg-clarity-high'; // warm green for high clarity
     case 'yellow':
-      return 'bg-yellow-400';
+      return 'bg-lumina-amber-500'; // amber for medium clarity
     case 'red':
-      return 'bg-red-500';
+      return 'bg-clarity-low'; // warm red-orange for low clarity
     case 'gray':
     default:
-      return 'bg-neutral-300 dark:bg-neutral-700';
+      return 'bg-cinematic-800'; // cinematic dark gray for no data
   }
 }

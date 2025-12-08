@@ -74,17 +74,24 @@ export function buildSparkline(days: DayAggregates[], metric: 'CI', span = 14) {
 
 export function buildBlockAverages(days: DayAggregates[], metric: Metric, span = 7) {
   const slice = days.slice(0, span);
-  const totals: Record<string, { sum: number; count: number }> = {};
+  const totals: Record<string, number> = {};
+  
+  // Sum up values for each block across all days in the span
   for (const d of slice) {
     for (const blockId of Object.keys(d.blockTotals)) {
-      if (!totals[blockId]) totals[blockId] = { sum: 0, count: 0 };
+      if (!totals[blockId]) totals[blockId] = 0;
       const block = d.blockTotals[blockId];
       const val = metric === 'R' ? block.R : metric === 'C' ? block.C : block.A;
-      totals[blockId].sum += val;
-      totals[blockId].count += 1;
+      totals[blockId] += val;
     }
   }
-  return Object.keys(totals).map(blockId => ({ blockId, average: Math.round(totals[blockId].sum / Math.max(1, totals[blockId].count)) }));
+  
+  // Calculate average by dividing by the span (7 days), not the number of days with entries
+  // This ensures days without entries count as 0 in the average
+  return Object.keys(totals).map(blockId => ({ 
+    blockId, 
+    average: Math.round(totals[blockId] / span) 
+  }));
 }
 
 function avg(arr: number[]): number { return arr.reduce((s,v)=>s+v,0)/Math.max(1,arr.length); }

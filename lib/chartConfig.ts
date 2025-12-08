@@ -1,22 +1,29 @@
-// Basic chart config and theming helpers for Recharts (UI-only)
+// Cinematic Ember chart config and theming helpers for Recharts
 
 export const CHART_COLORS = {
   text: {
-    light: '#3f3f46',
-    dark: '#e5e7eb',
+    light: 'rgb(100 116 139)', // slate-500
+    dark: 'rgb(226 232 240)', // slate-200
   },
   grid: {
-    light: '#e5e7eb',
-    dark: '#3f3f46',
+    light: 'rgb(226 232 240)', // slate-200
+    dark: 'oklch(0.16 0 0)', // cinematic-800
   },
-  ci: '#22c55e', // clarity-high green
-  rumination: '#ef4444', // clarity-low red
-  compulsions: '#3b82f6',
-  avoidance: '#f59e0b',
+  // Cinematic Ember palette for metrics
+  ci: 'oklch(0.70 0.18 150)', // clarity-high warm green
+  rumination: 'oklch(0.65 0.20 30)', // clarity-low warm red-orange
+  compulsions: 'oklch(0.70 0.20 45)', // lumina-orange-500
+  avoidance: 'oklch(0.73 0.18 60)', // lumina-amber-500
+  
+  // Additional accent colors
+  orange: 'oklch(0.70 0.20 45)', // lumina-orange-500
+  amber: 'oklch(0.73 0.18 60)', // lumina-amber-500
+  orangeLight: 'oklch(0.75 0.18 45)', // lumina-orange-400
+  amberLight: 'oklch(0.78 0.16 60)', // lumina-amber-400
 };
 
 export function isDark(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined') return true; // Default to dark (Cinematic Ember is dark theme)
   return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
