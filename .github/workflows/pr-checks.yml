@@ -120,16 +120,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Download web build artifacts
+      - name: Download .next artifacts
         uses: actions/download-artifact@v4
         with:
           name: nextjs-build
+          path: .
 
       - name: Verify artifacts
         run: |
           echo "Checking downloaded artifacts..."
-          dir .next
-          dir out
+          if (Test-Path .next) { Write-Host ".next exists" } else { Write-Host ".next missing" }
+          if (Test-Path out) { Write-Host "out exists" } else { Write-Host "out missing" }
 
       - name: Build Electron app
         run: npm run package:desktop

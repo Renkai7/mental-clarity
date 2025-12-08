@@ -65,12 +65,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: nextjs-build
+          path: .
 
       - name: Verify Electron configuration
         run: |
           echo "Checking Electron files..."
-          dir electron
-          dir out
+          if (Test-Path electron) { Write-Host "electron exists" } else { Write-Host "electron missing" }
+          if (Test-Path out) { Write-Host "out exists" } else { Write-Host "out missing" }
+          if (Test-Path .next) { Write-Host ".next exists" } else { Write-Host ".next missing" }
 
       - name: Package Electron app
         run: npm run package:desktop
