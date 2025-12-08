@@ -1,11 +1,17 @@
 'use client';
+import { useEffect } from 'react';
 import SettingsView from '../SettingsView';
+import { EmberShell } from '@/ui/cinematic-ember';
 
 export default function SettingsViewContainer() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <main className="mx-auto w-full max-w-4xl px-6 py-8" id="main-content">
-      <h1 className="mb-6 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Settings</h1>
+    <EmberShell className="max-w-4xl">
+      <h1 className="mb-6 text-3xl font-bold text-white">Settings</h1>
       <SettingsView />
-    </main>
+    </EmberShell>
   );
 }

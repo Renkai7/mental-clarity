@@ -1,11 +1,12 @@
 'use client';
 import HistoryView from '../HistoryView';
+import { EmberShell } from '@/ui/cinematic-ember';
 
 export default function HistoryViewContainer() {
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-8">
-      <h1 className="mb-6 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">History</h1>
+    <EmberShell className="max-w-5xl">
+      <h1 className="mb-6 text-3xl font-bold text-white">History</h1>
       <HistoryView />
-    </main>
+    </EmberShell>
   );
 }
