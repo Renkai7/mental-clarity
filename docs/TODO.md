@@ -275,7 +275,7 @@ DoD: Reliable data portability with validation and optional encryption.
 - [ ] M13.5 — Zod schema validation for all IPC payloads (partial: renderer validates; main process not yet enforcing schemas per channel).
 - [ ] M13.6 — Migration system for SQLite schema (issue #23).
 - [ ] M13.7 — Permission abstractions / feature gating (issue #19).
-- [ ] M13.8 — CSP hardening (inline style removal, hashes, stricter directives) (issue #21).
+- [x] M13.8 — CSP hardening (inline style removal, hashes, stricter directives) (issue #21).
 - [ ] M13.9 — Code signing & auto-update strategy (issue #20).
 - [ ] M13.10 — E2E offline regression tests (issue #17).
 
