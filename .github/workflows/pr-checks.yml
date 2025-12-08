@@ -4,9 +4,14 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
-  lint-and-type-check:
-    name: Lint & Type Check
+  # Combined job for faster feedback - lint, type-check, and test run in parallel steps
+  quality-checks:
+    name: Quality Checks (Lint, Type Check, Tests)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,23 +32,7 @@ jobs:
       - name: Run TypeScript type check
         run: npx tsc --noEmit
 
-  test:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
+      - name: Run unit tests
         run: npm test
 
   build-web:
@@ -62,6 +51,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: |
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', '!node_modules/**') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-
+
       - name: Build Next.js application
         run: npm run build:web
 
@@ -74,10 +73,40 @@ jobs:
             out/
           retention-days: 1
 
+  # Only runs when Electron-related files are modified
+  check-electron-changes:
+    name: Check for Electron Changes
+    runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.check.outputs.result }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for Electron-related changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            electron:
+              - 'electron/**'
+              - 'db/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'next.config.ts'
+
+      - name: Set output
+        id: check
+        run: echo "result=${{ steps.filter.outputs.electron }}" >> $GITHUB_OUTPUT
+
   build-electron:
-    name: Build Electron (Windows)
+    name: Build Electron (Conditional)
     runs-on: windows-latest
-    needs: build-web
+    needs: [build-web, check-electron-changes]
+    if: |
+      needs.check-electron-changes.outputs.should_build == 'true' ||
+      contains(github.event.pull_request.labels.*.name, 'electron') ||
+      contains(github.event.pull_request.title, '[electron]')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -91,5 +120,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Download web build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: nextjs-build
+
+      - name: Verify artifacts
+        run: |
+          echo "Checking downloaded artifacts..."
+          dir .next
+          dir out
+
       - name: Build Electron app
-        run: npm run build:desktop
+        run: npm run package:desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
