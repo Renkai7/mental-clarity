@@ -32,19 +32,19 @@ export function useDayData(date: string) {
         getBlocks(),
         getEntriesForDate(date),
         getDailyMeta(date),
-      ]);
+      ]);  
       if (id !== requestId.current) return; // stale
       setBlocks(blk);
       // Ensure entries ordered by block order
-      const ordered = ent.slice().sort((a, b) => {
-        const ai = blk.findIndex(x => x.id === a.blockId);
-        const bi = blk.findIndex(x => x.id === b.blockId);
+      const ordered = ent.slice().sort((a: BlockEntry, b: BlockEntry) => {
+        const ai = blk.findIndex((x: BlockConfig) => x.id === a.blockId);
+        const bi = blk.findIndex((x: BlockConfig) => x.id === b.blockId);
         return ai - bi;
       });
       setEntries(ordered);
       setDailyMeta(meta ?? null);
-    } catch (e: any) {
-      if (id === requestId.current) setError(e?.message || 'Failed to load day data');
+    } catch (e) {
+      if (id === requestId.current) setError(e instanceof Error ? e.message : 'Failed to load day data');
     } finally {
       if (id === requestId.current) setIsLoading(false);
     }
@@ -112,7 +112,7 @@ export function useDayData(date: string) {
           }
         }
         return updated;
-      } catch (e: any) {
+      } catch (e) {
         console.error('[useDayData] saveEntry failed', e);
         throw e;
       }
@@ -150,7 +150,7 @@ export function useDayData(date: string) {
         await upsertDailyMeta(updated);
         setDailyMeta(updated);
         return updated;
-      } catch (e: any) {
+      } catch (e) {
         console.error('[useDayData] saveDailyMeta failed', e);
         throw e;
       }
@@ -166,9 +166,9 @@ export function useDayData(date: string) {
     try {
       await createEmptyDay(date);
       await load();
-    } catch (e: any) {
+    } catch (e) {
       console.error('[useDayData] initializeDay failed', e);
-      setError(e?.message || 'Failed to initialize day');
+      setError(e instanceof Error ? e.message : 'Failed to initialize day');
     }
   }, [date, load]);
 

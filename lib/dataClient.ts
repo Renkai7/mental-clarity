@@ -1,7 +1,7 @@
 // Thin adapter that proxies data calls to Electron preload API.
 // Keeps existing UI code unchanged by exposing familiar functions.
 
-type Api = typeof window & { api?: any };
+type Api = typeof window & { api?: Window['api'] };
 
 async function waitForApi(maxWaitMs = 1500, intervalMs = 50) {
   const w = window as Api;
@@ -24,7 +24,7 @@ export async function getSettings() {
   return api.getSettings();
 }
 
-export async function updateSettings(settings: any) {
+export async function updateSettings(settings: Partial<import('@/types').Settings>) {
   const api = await waitForApi();
   return api.updateSettings(settings);
 }
@@ -46,15 +46,25 @@ export async function getEntriesSummary(metric: 'R' | 'C' | 'A', limit: number) 
 
 export async function getEntriesRange(startDate: string, endDate: string) {
   const api = await waitForApi();
-  return api.invoke ? api.invoke('entries:range', startDate, endDate) : api['entries:range'](startDate, endDate);
+  if (api.invoke) {
+    return api.invoke('entries:range', startDate, endDate);
+  } else if (api['entries:range']) {
+    return api['entries:range'](startDate, endDate);
+  }
+  throw new Error('getEntriesRange not available');
 }
 
 export async function getDailyMetaRange(startDate: string, endDate: string) {
   const api = await waitForApi();
-  return api.invoke ? api.invoke('dailyMeta:range', startDate, endDate) : api['dailyMeta:range'](startDate, endDate);
+  if (api.invoke) {
+    return api.invoke('dailyMeta:range', startDate, endDate);
+  } else if (api['dailyMeta:range']) {
+    return api['dailyMeta:range'](startDate, endDate);
+  }
+  throw new Error('getDailyMetaRange not available');
 }
 
-export async function upsertEntry(entry: any) {
+export async function upsertEntry(entry: Partial<import('@/types').BlockEntry> & { date: string; blockId: string }) {
   const api = await waitForApi();
   return api.upsertEntry(entry);
 }
@@ -64,7 +74,7 @@ export async function getDailyMeta(date: string) {
   return api.getDailyMeta(date);
 }
 
-export async function upsertDailyMeta(meta: any) {
+export async function upsertDailyMeta(meta: Partial<import('@/types').DailyMeta> & { date: string }) {
   const api = await waitForApi();
   return api.upsertDailyMeta(meta);
 }

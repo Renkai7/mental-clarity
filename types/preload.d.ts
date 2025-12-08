@@ -1,19 +1,25 @@
+import type { Settings, BlockConfig, BlockEntry, DailyMeta } from './index';
+
 export {}; // ensure this is treated as a module
 
 declare global {
   interface Window {
     api?: {
       ping: () => Promise<string>;
-      getSettings: () => Promise<any>;
-      updateSettings: (settings: any) => Promise<any>;
-      getBlocks: () => Promise<any[]>;
-      replaceBlocks: (blocks: any[]) => Promise<any>;
-      getEntriesForDate: (date: string) => Promise<any[]>;
-      getEntry: (date: string, blockId: string) => Promise<any | null>;
-      upsertEntry: (entry: any) => Promise<{ id: string; updatedAt: string } | any>;
-      getDailyMeta: (date: string) => Promise<any | null>;
-      upsertDailyMeta: (meta: any) => Promise<any>;
-      createEmptyDay: (date: string) => Promise<any>;
+      getSettings: () => Promise<Settings>;
+      updateSettings: (settings: Partial<Settings>) => Promise<void>;
+      getBlocks: () => Promise<BlockConfig[]>;
+      replaceBlocks: (blocks: BlockConfig[]) => Promise<void>;
+      getEntriesForDate: (date: string) => Promise<BlockEntry[]>;
+      getEntry: (date: string, blockId: string) => Promise<BlockEntry | null>;
+      upsertEntry: (entry: Partial<BlockEntry> & { date: string; blockId: string }) => Promise<{ id: string; updatedAt: string }>;
+      getDailyMeta: (date: string) => Promise<DailyMeta | null>;
+      upsertDailyMeta: (meta: Partial<DailyMeta> & { date: string }) => Promise<void>;
+      createEmptyDay: (date: string) => Promise<void>;
+      getEntriesSummary: (metric: 'R' | 'C' | 'A', limit: number) => Promise<unknown>;
+      invoke?: (channel: string, ...args: unknown[]) => Promise<unknown>;
+      'entries:range'?: (startDate: string, endDate: string) => Promise<BlockEntry[]>;
+      'dailyMeta:range'?: (startDate: string, endDate: string) => Promise<DailyMeta[]>;
     };
   }
 }

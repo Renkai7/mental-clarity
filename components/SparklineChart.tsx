@@ -27,7 +27,7 @@ export default function SparklineChart({ data, height = 120 }: SparklineChartPro
           <Line type="monotone" dataKey="value" stroke="#ea580c" strokeWidth={2} dot={false} />
           <Tooltip
             labelFormatter={(label: string | number) => formatDateLabel(label)}
-            formatter={(val: any) => [`${Math.round((val as number) * 100)}%`, 'Clarity']}
+            formatter={(val: number | string) => [`${Math.round(Number(val) * 100)}%`, 'Clarity']}
             contentStyle={{ 
               backgroundColor: 'oklch(0.12 0 0 / 0.95)', 
               border: '1px solid oklch(0.16 0 0)', 

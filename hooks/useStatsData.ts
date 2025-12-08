@@ -42,8 +42,8 @@ export function useStatsData() {
       const rawBlockAvgs = buildBlockAverages(aggregates, barMetric, 7);
       const labelMap: Record<string, string> = Object.fromEntries(settings.blocks.map(b => [b.id, b.label]));
       setBlockAverages(rawBlockAvgs.map(b => ({ blockId: b.blockId, blockLabel: labelMap[b.blockId] || b.blockId, average: b.average })));
-    } catch (e:any) {
-      setError(e?.message || 'Failed to load stats');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load stats');
     } finally {
       setIsLoading(false);
     }

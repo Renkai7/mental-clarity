@@ -45,9 +45,9 @@ export function useMainGridData(metric: Metric, daysToLoad = 30) {
         // We can't know total distinct dates without another call; be optimistic
         setHasMore(rows.length >= currentLimit);
       }
-    } catch (err: any) {
+    } catch (err) {
       if (id === requestId.current) {
-        setError(err?.message ?? 'Failed to load data');
+        setError(err instanceof Error ? err.message : 'Failed to load data');
       }
     } finally {
       if (id === requestId.current) {

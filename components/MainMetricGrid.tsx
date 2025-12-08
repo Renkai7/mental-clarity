@@ -79,15 +79,15 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
-        const toSave = { ...base, [field]: value } as any;
+        const toSave: BlockEntry = { ...base, [field]: value };
         await upsertEntry(toSave);
         setStatus(s => ({ ...s, [key]: 'saved' }));
         // Fade saved indicator
         setTimeout(() => {
           setStatus(s => ({ ...s, [key]: 'idle' }));
         }, 800);
-      } catch (e: any) {
-        console.error('[MainMetricGrid] Save failed', e?.message || e);
+      } catch (e) {
+        console.error('[MainMetricGrid] Save failed', e instanceof Error ? e.message : String(e));
         setStatus(s => ({ ...s, [key]: 'error' }));
       }
     }, 500);

@@ -23,7 +23,7 @@ export default function BarChartsImpl({ data, metric, height = 260 }: BarChartsI
           <XAxis dataKey="blockLabel" tick={{ fill: text, fontSize: 12 }} axisLine={{ stroke: grid }} tickLine={{ stroke: grid }} interval={0} angle={-20} height={70} dy={8} />
           <YAxis tick={{ fill: text, fontSize: 12 }} axisLine={{ stroke: grid }} tickLine={{ stroke: grid }} allowDecimals={false} />
           <Tooltip
-            formatter={(val: any) => [String(val), metric === 'R' ? 'Rumination' : metric === 'C' ? 'Compulsions' : 'Avoidance']}
+            formatter={(val: number | string) => [String(val), metric === 'R' ? 'Rumination' : metric === 'C' ? 'Compulsions' : 'Avoidance']}
             contentStyle={{ backgroundColor: 'oklch(0.12 0 0 / 0.95)', border: '1px solid oklch(0.16 0 0)', borderRadius: '8px', color: '#fff', boxShadow: '0 0 20px oklch(0.70 0.20 45 / 0.3)' }}
             labelStyle={{ color: '#fff' }}
             wrapperStyle={{ outline: 'none' }}

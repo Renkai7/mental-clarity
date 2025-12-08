@@ -20,21 +20,24 @@ export async function updateSettings(settings: Settings): Promise<void> {
   // Update settings JSON and sync block_configs in SQLite
   const validatedBlocks = validated.blocks.map((b) => BlockConfigSchema.parse(b));
   await api.updateSettings(validated);
-  if (validatedBlocks.length && (window as any).api?.replaceBlocks) {
-    await (window as any).api.replaceBlocks(validatedBlocks);
+  if (validatedBlocks.length && window.api?.replaceBlocks) {
+    await window.api.replaceBlocks(validatedBlocks);
   }
 }
 
-export async function getBlocks(): Promise<BlockConfig[]> {
+export async function getBlockConfigs(): Promise<BlockConfig[]> {
   const blocks = await api.getBlocks();
-  return blocks.map((b: any) => BlockConfigSchema.parse(b));
+  return blocks.map((b) => BlockConfigSchema.parse(b));
 }
+
+// Alias for backwards compatibility
+export const getBlocks = getBlockConfigs;
 
 export async function getEntriesForDate(date: string): Promise<BlockEntry[]> {
   DateString.parse(date);
-  const entries: any[] = await api.getEntriesForDate(date);
-  entries.sort((a: any, b: any) => a.blockId.localeCompare(b.blockId));
-  return entries.map((e: any) => BlockEntrySchema.parse(e));
+  const entries = await api.getEntriesForDate(date);
+  entries.sort((a, b) => a.blockId.localeCompare(b.blockId));
+  return entries.map((e) => BlockEntrySchema.parse(e));
 }
 
 export async function getDailyMeta(date: string): Promise<DailyMeta | undefined> {
@@ -46,7 +49,7 @@ export async function getDailyMeta(date: string): Promise<DailyMeta | undefined>
 
 export async function getEntry(date: string, blockId: string): Promise<BlockEntry | undefined> {
   DateString.parse(date);
-  const found = await (window as any).api.getEntry(date, blockId);
+  const found = await window.api?.getEntry(date, blockId);
   if (!found) return undefined;
   return BlockEntrySchema.parse(found);
 }
@@ -66,11 +69,11 @@ export async function upsertEntry(entry: BlockEntry): Promise<void> {
   };
   try {
     // Ensure scores meet schema (some legacy rows had 0)
-    if ((toSave as any).anxietyScore < 1) (toSave as any).anxietyScore = 5;
-    if ((toSave as any).stressScore < 1) (toSave as any).stressScore = 5;
+    if (toSave.anxietyScore < 1) toSave.anxietyScore = 5;
+    if (toSave.stressScore < 1) toSave.stressScore = 5;
     BlockEntrySchema.parse(toSave);
-  } catch (e: any) {
-    console.error('[dbUtils] BlockEntry validation failed', e?.issues || e?.message || e);
+  } catch (e) {
+    console.error('[dbUtils] BlockEntry validation failed', e);
     throw e;
   }
   await api.upsertEntry(toSave);
@@ -89,11 +92,11 @@ export async function getMainGridSummary(metric: Metric, limit: number) {
 
 // Range retrieval (M11)
 export async function getEntriesRange(startDate: string, endDate: string): Promise<BlockEntry[]> {
-  const rows: any[] = await api.getEntriesRange(startDate, endDate);
-  return rows.map(r => BlockEntrySchema.parse(r));
+  const rows = (await api.getEntriesRange(startDate, endDate)) as unknown[];
+  return rows.map((r) => BlockEntrySchema.parse(r));
 }
 
 export async function getDailyMetaRange(startDate: string, endDate: string): Promise<DailyMeta[]> {
-  const rows: any[] = await api.getDailyMetaRange(startDate, endDate);
-  return rows.map(r => DailyMetaSchema.parse(r));
+  const rows = (await api.getDailyMetaRange(startDate, endDate)) as unknown[];
+  return rows.map((r) => DailyMetaSchema.parse(r));
 }
