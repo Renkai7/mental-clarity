@@ -1,13 +1,15 @@
 'use client';
 import MainPageClient from '../MainPageClient';
+import { EmberShell, BackgroundEffects } from '@/ui/cinematic-ember';
 
 export default function HomeView() {
   return (
-    <div className="mx-auto w-full max-w-7xl xl:max-w-none px-6 py-8">
+    <EmberShell>
+      <BackgroundEffects />
       <header className="mb-6">
-        <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Mental Clarity Tracker</h1>
+        <h1 className="text-6xl font-extrabold tracking-tight text-white bg-gradient-to-r from-white via-slate-200 to-lumina-orange-400 bg-clip-text text-transparent">Mental Clarity Tracker</h1>
       </header>
       <MainPageClient />
-    </div>
+    </EmberShell>
   );
 }
