@@ -67,7 +67,7 @@
   "main": "electron/main.js",
   "build": {
     "appId": "com.mentality.tracker",
-    "productName": "Mental Clarity",
+    "productName": "Mental-Clarity",
     "publish": {
       "provider": "github",
       "owner": "Renkai7",
