@@ -318,7 +318,24 @@ function registerIpcHandlers() {
       return { success: true };
     } catch (error) {
       log.error('Download update failed:', error);
-      return { success: false, error: error.message };
+      
+      // Provide user-friendly error messages
+      let friendlyMessage = error.message;
+      
+      // Handle 404 - No releases available
+      if (error.message && error.message.includes('404')) {
+        friendlyMessage = 'Update download failed. Please try checking for updates again.';
+      }
+      // Handle network errors
+      else if (error.message && (error.message.includes('ENOTFOUND') || error.message.includes('ETIMEDOUT'))) {
+        friendlyMessage = 'Unable to connect to update server. Check your internet connection.';
+      }
+      // Handle other HTTP errors
+      else if (error.message && error.message.includes('HttpError')) {
+        friendlyMessage = 'Update server temporarily unavailable. Try again later.';
+      }
+      
+      return { success: false, error: friendlyMessage };
     }
   });
 

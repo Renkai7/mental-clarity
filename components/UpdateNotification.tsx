@@ -61,7 +61,14 @@ export default function UpdateNotification() {
     if (!window.electronAPI) return;
     setState('downloading');
     setDownloadProgress(0);
-    await window.electronAPI.downloadUpdate();
+    
+    const result = await window.electronAPI.downloadUpdate();
+    if (result && !result.success) {
+      // Download failed, show error
+      setState('error');
+      setErrorMessage(result.error || 'Download failed. Please try again.');
+    }
+    // If successful, the download progress events will handle state updates
   };
 
   const handleInstall = () => {
