@@ -85,49 +85,57 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
 
   // Persist changes directly (M9.2 simple wiring; autosave/debounce in M9.3)
   // Debounced autosave (M9.3): queue save after inactivity.
-  const flushBlockSave = useCallback(async (blockId: string) => {
+  const flushBlockSave = useCallback(async (blockId: string, entry: TimeframeEntry) => {
     const blk = blocks.find(b => b.id === blockId);
-    const draft = draftOverrides[blockId];
-    if (!blk || !draft) return;
+    if (!blk) return;
+    
     setIsSaving(true);
+    pendingBlocksRef.current.add(blockId);
+    
     try {
       await saveEntry(blockId, {
-        ruminationCount: draft.rumination,
-        compulsionsCount: draft.compulsions,
-        avoidanceCount: draft.avoidance,
-        anxietyScore: draft.anxiety,
-        stressScore: draft.stress,
-        notes: draft.notes || undefined,
+        ruminationCount: entry.rumination,
+        compulsionsCount: entry.compulsions,
+        avoidanceCount: entry.avoidance,
+        anxietyScore: entry.anxiety,
+        stressScore: entry.stress,
+        notes: entry.notes || undefined,
       });
+      
       // Remove override after persistence so fresh data displays from rawEntries
       setDraftOverrides(prev => {
         const c = { ...prev };
         delete c[blockId];
         return c;
       });
+      
       pendingBlocksRef.current.delete(blockId);
-    } catch (e) {
-      console.error('[day] autosave failed', e);
-      // Keep override so user doesn't lose edits; could mark error later.
-    } finally {
-      // If no more pending blocks, clear saving state shortly (allow UI to show completion)
-      if (pendingBlocksRef.current.size === 0) {
+      
+      // If no more pending blocks or meta, clear saving state
+      if (pendingBlocksRef.current.size === 0 && !metaPendingRef.current) {
         setTimeout(() => setIsSaving(false), 120);
       }
+    } catch (e) {
+      console.error('[day] autosave failed', e);
+      pendingBlocksRef.current.delete(blockId);
+      // Keep override so user doesn't lose edits
     }
-  }, [blocks, draftOverrides, saveEntry]);
+  }, [blocks, saveEntry]);
 
   const handleEntryChange = (index: number, updated: TimeframeEntry) => {
     const blk = blocks[index];
     if (!blk) return;
+    
+    // Update draft immediately for UI responsiveness
     setDraftOverrides(prev => ({ ...prev, [blk.id]: updated }));
-    pendingBlocksRef.current.add(blk.id);
+    
     // Clear previous timeout
     const existing = saveTimeouts.current[blk.id];
     if (existing) clearTimeout(existing);
-    // Schedule new save
+    
+    // Schedule new save with the updated entry data
     saveTimeouts.current[blk.id] = setTimeout(() => {
-      flushBlockSave(blk.id);
+      flushBlockSave(blk.id, updated);
     }, 600); // 600ms debounce window
   };
 

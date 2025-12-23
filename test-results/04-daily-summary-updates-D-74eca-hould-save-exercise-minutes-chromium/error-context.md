@@ -1,7 +1,7 @@
 # Page snapshot
 
 ```yaml
-- generic [ref=e1]:
+- generic [active] [ref=e1]:
   - main [ref=e2]:
     - link "Back to main page" [ref=e4] [cursor=pointer]:
       - /url: /
@@ -22,7 +22,7 @@
               - paragraph [ref=e18]: How well you slept last night.
             - generic [ref=e19]:
               - text: Exercise (minutes)
-              - spinbutton "Exercise (minutes)" [active] [ref=e20]: "30"
+              - spinbutton "Exercise (minutes)" [ref=e20]: "0"
               - paragraph [ref=e21]: Total exercise minutes for Dec 21.
           - generic [ref=e22]:
             - text: Daily Notes
