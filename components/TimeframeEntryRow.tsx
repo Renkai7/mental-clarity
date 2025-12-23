@@ -104,9 +104,10 @@ export default function TimeframeEntryRow({
               <Input
                 type="number"
                 value={rumination}
-                onChange={(e) =>
-                  onRuminationChange?.(clamp(parseInt(e.target.value) || 0, 0, 999))
-                }
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  onRuminationChange?.(clamp(isNaN(val) ? 0 : val, 0, 999));
+                }}
                 className="w-14 text-center"
                 tabularNums
                 aria-label={`Rumination count for ${blockLabel}`}
@@ -143,9 +144,10 @@ export default function TimeframeEntryRow({
               <Input
                 type="number"
                 value={compulsions}
-                onChange={(e) =>
-                  onCompulsionsChange?.(clamp(parseInt(e.target.value) || 0, 0, 999))
-                }
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  onCompulsionsChange?.(clamp(isNaN(val) ? 0 : val, 0, 999));
+                }}
                 className="w-14 text-center"
                 tabularNums
                 aria-label={`Compulsions count for ${blockLabel}`}
@@ -181,9 +183,10 @@ export default function TimeframeEntryRow({
               <Input
                 type="number"
                 value={avoidance}
-                onChange={(e) =>
-                  onAvoidanceChange?.(clamp(parseInt(e.target.value) || 0, 0, 999))
-                }
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  onAvoidanceChange?.(clamp(isNaN(val) ? 0 : val, 0, 999));
+                }}
                 className="w-14 text-center"
                 tabularNums
                 aria-label={`Avoidance count for ${blockLabel}`}
@@ -219,9 +222,10 @@ export default function TimeframeEntryRow({
               <Input
                 type="number"
                 value={anxiety}
-                onChange={(e) =>
-                  onAnxietyChange?.(clamp(parseInt(e.target.value) || 1, 1, 10))
-                }
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  onAnxietyChange?.(clamp(isNaN(val) ? 1 : val, 1, 10));
+                }}
                 className="w-14 text-center"
                 tabularNums
                 aria-label={`Anxiety score for ${blockLabel}`}
@@ -258,9 +262,10 @@ export default function TimeframeEntryRow({
               <Input
                 type="number"
                 value={stress}
-                onChange={(e) =>
-                  onStressChange?.(clamp(parseInt(e.target.value) || 1, 1, 10))
-                }
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  onStressChange?.(clamp(isNaN(val) ? 1 : val, 1, 10));
+                }}
                 className="w-14 text-center"
                 tabularNums
                 aria-label={`Stress score for ${blockLabel}`}

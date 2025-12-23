@@ -36,7 +36,7 @@ function makeMeta(): DailyMeta[] {
     const date = new Date();
     date.setDate(date.getDate()-i);
     const ds = date.toISOString().slice(0,10);
-    arr.push({ date: ds, sleepQuality: 7, exerciseMinutes: 40, dailyNotes: 'ok', dailyCI: null });
+    arr.push({ date: ds, sleepQuality: 7, exerciseMinutes: 40, dailyNotes: 'ok', dailyCI: null, tracked: true });
   }
   return arr;
 }

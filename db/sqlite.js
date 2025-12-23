@@ -366,6 +366,17 @@ async function createDbContext(dbFilePath) {
     console.warn('[sqlite] Failed dailyCI migration', e);
   }
   
+  // Migration: add tracked column if missing
+  try {
+    const info = dbInstance.prepare('PRAGMA table_info(daily_meta)').all();
+    const hasTracked = info.some(col => col.name === 'tracked');
+    if (!hasTracked) {
+      dbInstance.prepare('ALTER TABLE daily_meta ADD COLUMN tracked INTEGER NOT NULL DEFAULT 0').run();
+    }
+  } catch (e) {
+    console.warn('[sqlite] Failed tracked migration', e);
+  }
+  
   // Return context object with all methods bound to this db instance
   return {
     db: dbInstance,
@@ -447,32 +458,35 @@ async function createDbContext(dbFilePath) {
     },
     
     getDailyMeta(date) {
-      const stmt = dbInstance.prepare('SELECT date, sleepQuality, exerciseMinutes, dailyNotes, dailyCI FROM daily_meta WHERE date = ?');
+      const stmt = dbInstance.prepare('SELECT date, sleepQuality, exerciseMinutes, dailyNotes, dailyCI, tracked FROM daily_meta WHERE date = ?');
       const row = stmt.get(date) || null;
       if (!row) return null;
       return {
         ...row,
         dailyCI: row.dailyCI == null ? null : Number(row.dailyCI),
         dailyNotes: row.dailyNotes == null ? undefined : row.dailyNotes,
+        tracked: row.tracked === 1,
       };
     },
     
     upsertDailyMeta(meta) {
       const stmt = dbInstance.prepare(`
-        INSERT INTO daily_meta (date, sleepQuality, exerciseMinutes, dailyNotes, dailyCI)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO daily_meta (date, sleepQuality, exerciseMinutes, dailyNotes, dailyCI, tracked)
+        VALUES (?, ?, ?, ?, ?, ?)
         ON CONFLICT(date) DO UPDATE SET
           sleepQuality=excluded.sleepQuality,
           exerciseMinutes=excluded.exerciseMinutes,
           dailyNotes=excluded.dailyNotes,
-          dailyCI=excluded.dailyCI
+          dailyCI=excluded.dailyCI,
+          tracked=excluded.tracked
       `);
       stmt.run(
         meta.date,
         Number(meta.sleepQuality || 0),
         Number(meta.exerciseMinutes || 0),
         meta.dailyNotes || null,
-        meta.dailyCI == null ? null : Number(meta.dailyCI)
+        meta.dailyCI == null ? null : Number(meta.dailyCI),
+        meta.tracked ? 1 : 0
       );
       return true;
     },

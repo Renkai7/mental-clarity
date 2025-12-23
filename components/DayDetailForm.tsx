@@ -172,6 +172,19 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
     scheduleMetaSave();
   };
 
+  const handleTrackDay = async () => {
+    try {
+      await saveDailyMeta({
+        sleepQuality: dailyMetaDraft.sleepQuality,
+        exerciseMinutes: dailyMetaDraft.exerciseMinutes,
+        dailyNotes: dailyMetaDraft.dailyNotes || undefined,
+        tracked: true,
+      });
+    } catch (e) {
+      console.error('[day] track day failed', e);
+    }
+  };
+
   return (
     <div className="relative pb-24">
       {isLoading && (
@@ -193,18 +206,27 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
       {/* Tracking Completion Indicator */}
       {!dayIsTracked && !isLoading && (
         <div className="mb-4 rounded-md border border-lumina-orange-500/30 bg-lumina-orange-500/10 p-4 backdrop-blur-sm" role="status">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex-shrink-0">
-              <svg className="h-5 w-5 text-lumina-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex-shrink-0">
+                <svg className="h-5 w-5 text-lumina-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-lumina-orange-300">Day not tracked yet</h3>
+                <p className="mt-1 text-sm text-lumina-orange-200/80">
+                  Mark this day as tracked to include it in your stats and analytics.
+                </p>
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className="text-sm font-semibold text-lumina-orange-300">Day not tracked yet</h3>
-              <p className="mt-1 text-sm text-lumina-orange-200/80">
-                Fill out the <strong>Daily Summary</strong> below (sleep quality, exercise, or notes) to track this day and include it in your stats.
-              </p>
-            </div>
+            <button
+              onClick={handleTrackDay}
+              className="flex-shrink-0 rounded-md bg-lumina-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-lumina-orange-600 focus:outline-none focus:ring-2 focus:ring-lumina-orange-500 focus:ring-offset-2 focus:ring-offset-cinematic-950"
+              aria-label="Mark this day as tracked"
+            >
+              Track This Day
+            </button>
           </div>
         </div>
       )}

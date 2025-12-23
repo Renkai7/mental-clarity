@@ -32,6 +32,7 @@ export interface DailyMeta {
   exerciseMinutes: number;
   dailyNotes?: string;
   dailyCI?: number | null; // persisted clarity index (0..1) null if not yet computed
+  tracked?: boolean; // whether user explicitly marked this day as tracked
 }
 
 export interface Goals {

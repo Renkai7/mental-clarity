@@ -10,20 +10,14 @@ export interface DayAggregates {
 
 /**
  * Determine if a day has been actively tracked (vs auto-created empty).
- * A day with all 0s counts as tracked if the user filled out daily summary.
+ * A day is tracked if the user explicitly marked it as tracked.
  * 
  * @param dailyMeta - Daily metadata for the day
  * @returns true if the day has been tracked by the user
  */
 export function isTrackedDay(dailyMeta?: DailyMeta | null): boolean {
   if (!dailyMeta) return false;
-  
-  // Check if any daily summary fields were filled out
-  const hasNotes = dailyMeta.dailyNotes && dailyMeta.dailyNotes.trim().length > 0;
-  const hasSleep = dailyMeta.sleepQuality != null && dailyMeta.sleepQuality > 0;
-  const hasExercise = dailyMeta.exerciseMinutes != null && dailyMeta.exerciseMinutes > 0;
-  
-  return hasNotes || hasSleep || hasExercise;
+  return dailyMeta.tracked === true;
 }
 
 // Build per-day aggregates from entries & meta
