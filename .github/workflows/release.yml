@@ -31,7 +31,7 @@ jobs:
         run: npm ci
       
       - name: Build and publish release
-        uses: nick-fields/retry-action@v3
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 20
           max_attempts: 3
