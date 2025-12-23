@@ -1,0 +1,53 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - link "Back to main page" [ref=e4] [cursor=pointer]:
+      - /url: /
+      - text: ← Back
+    - heading "Friday, December 20, 2024" [level=1] [ref=e6]
+    - generic [ref=e7]:
+      - status [ref=e8]: Loading day data...
+      - region "Daily Summary" [ref=e9]:
+        - heading "Daily Summary" [level=2] [ref=e10]
+        - generic [ref=e11]:
+          - generic [ref=e12]:
+            - generic [ref=e13]:
+              - text: Sleep Quality (1–10)
+              - generic [ref=e14]:
+                - button "Decrease sleep quality" [ref=e15]: −
+                - spinbutton "Sleep Quality (1–10)" [ref=e16]: "7"
+                - button "Increase sleep quality" [ref=e17]: +
+              - paragraph [ref=e18]: How well you slept last night.
+            - generic [ref=e19]:
+              - text: Exercise (minutes)
+              - spinbutton "Exercise (minutes)" [ref=e20]: "0"
+              - paragraph [ref=e21]: Total exercise minutes for Dec 19.
+          - generic [ref=e22]:
+            - text: Daily Notes
+            - textbox "Daily Notes" [ref=e23]:
+              - /placeholder: Anything notable about your day…
+      - region "Timeframes" [ref=e24]:
+        - heading "Timeframes" [level=2] [ref=e25]
+        - table "Timeframe entries grid" [ref=e27]:
+          - rowgroup [ref=e28]:
+            - row "Block Rumination Compulsions Avoidance Anxiety Stress Notes" [ref=e29]:
+              - columnheader "Block" [ref=e30]
+              - columnheader "Rumination" [ref=e31]
+              - columnheader "Compulsions" [ref=e32]
+              - columnheader "Avoidance" [ref=e33]
+              - columnheader "Anxiety" [ref=e34]
+              - columnheader "Stress" [ref=e35]
+              - columnheader "Notes" [ref=e36]
+          - rowgroup [ref=e37]:
+            - row "No timeframe entries yet." [ref=e38]:
+              - cell "No timeframe entries yet." [ref=e39]
+      - generic [ref=e42]:
+        - heading "Daily Totals" [level=3] [ref=e43]
+        - generic [ref=e44]:
+          - generic [ref=e45]: R0
+          - generic [ref=e46]: C0
+          - generic [ref=e47]: A0
+  - region "Notifications alt+T"
+```

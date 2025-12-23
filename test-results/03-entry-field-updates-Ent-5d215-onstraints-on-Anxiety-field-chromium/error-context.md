@@ -1,12 +1,12 @@
 # Page snapshot
 
 ```yaml
-- generic [ref=e1]:
+- generic [active] [ref=e1]:
   - main [ref=e2]:
     - link "Back to main page" [ref=e4] [cursor=pointer]:
       - /url: /
       - text: ← Back
-    - heading "Sunday, December 22, 2024" [level=1] [ref=e6]
+    - heading "Friday, December 20, 2024" [level=1] [ref=e6]
     - generic [ref=e7]:
       - status [ref=e8]: Loading day data...
       - region "Daily Summary" [ref=e9]:
@@ -18,12 +18,12 @@
               - generic [ref=e14]:
                 - button "Decrease sleep quality" [ref=e15]: −
                 - spinbutton "Sleep Quality (1–10)" [ref=e16]: "7"
-                - button "Increase sleep quality" [active] [ref=e17]: +
+                - button "Increase sleep quality" [ref=e17]: +
               - paragraph [ref=e18]: How well you slept last night.
             - generic [ref=e19]:
               - text: Exercise (minutes)
               - spinbutton "Exercise (minutes)" [ref=e20]: "0"
-              - paragraph [ref=e21]: Total exercise minutes for Dec 21.
+              - paragraph [ref=e21]: Total exercise minutes for Dec 19.
           - generic [ref=e22]:
             - text: Daily Notes
             - textbox "Daily Notes" [ref=e23]:
