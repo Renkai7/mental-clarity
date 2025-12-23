@@ -42,7 +42,23 @@ autoUpdater.on('update-not-available', (info) => {
 autoUpdater.on('error', (err) => {
   log.error('Update error:', err);
   if (mainWindow) {
-    mainWindow.webContents.send('update-error', err.message);
+    // Provide user-friendly error messages
+    let friendlyMessage = err.message;
+    
+    // Handle 404 - No releases available
+    if (err.message && err.message.includes('404')) {
+      friendlyMessage = 'No releases found. This is the first version.';
+    }
+    // Handle network errors
+    else if (err.message && (err.message.includes('ENOTFOUND') || err.message.includes('ETIMEDOUT'))) {
+      friendlyMessage = 'Unable to connect to update server. Check your internet connection.';
+    }
+    // Handle other HTTP errors
+    else if (err.message && err.message.includes('HttpError')) {
+      friendlyMessage = 'Update server temporarily unavailable. Try again later.';
+    }
+    
+    mainWindow.webContents.send('update-error', friendlyMessage);
   }
 });
 
