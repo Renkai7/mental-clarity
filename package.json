@@ -2,6 +2,11 @@
   "name": "mental-clarity",
   "version": "1.0.4",
   "private": true,
+  "author": {
+    "name": "Mental Clarity",
+    "email": "contact@mentalclarity.app"
+  },
+  "description": "Personal productivity and mental wellness tracking application",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
