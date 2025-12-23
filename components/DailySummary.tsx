@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
 import { Textarea } from "./ui/textarea";
@@ -40,6 +40,19 @@ export default function DailySummary({
   const [sleep, setSleep] = useState<number>(clamp(sleepQuality, 1, 10));
   const [exercise, setExercise] = useState<number>(clamp(exerciseMinutes, 0, 300));
   const [dailyNotes, setDailyNotes] = useState<string>(notes);
+
+  // Sync local state with props when they change
+  useEffect(() => {
+    setSleep(clamp(sleepQuality, 1, 10));
+  }, [sleepQuality]);
+
+  useEffect(() => {
+    setExercise(clamp(exerciseMinutes, 0, 300));
+  }, [exerciseMinutes]);
+
+  useEffect(() => {
+    setDailyNotes(notes);
+  }, [notes]);
 
   const dateLabel = useMemo(() => formatShort(date), [date]);
 

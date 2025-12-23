@@ -222,9 +222,9 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
         </h2>
         <DailySummary
           date={date}
-          sleepQuality={dailyMeta?.sleepQuality}
-          exerciseMinutes={dailyMeta?.exerciseMinutes}
-          notes={dailyMeta?.dailyNotes}
+          sleepQuality={dailyMetaDraft.sleepQuality}
+          exerciseMinutes={dailyMetaDraft.exerciseMinutes}
+          notes={dailyMetaDraft.dailyNotes}
           onSleepQualityChange={handleSleepChange}
           onExerciseMinutesChange={handleExerciseChange}
           onNotesChange={handleNotesChange}
