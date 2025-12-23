@@ -1,6 +1,6 @@
 ---
 
-tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'github/github-mcp-server/*', 'problems', 'changes', 'testFailure', 'fetch', 'github.vscode-pull-request-github/copilotCodingAgent', 'github.vscode-pull-request-github/issue_fetch', 'github.vscode-pull-request-github/suggest-fix', 'github.vscode-pull-request-github/searchSyntax', 'github.vscode-pull-request-github/doSearch', 'github.vscode-pull-request-github/renderIssues', 'github.vscode-pull-request-github/activePullRequest', 'github.vscode-pull-request-github/openPullRequest', 'todos']
+tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'github/github-mcp-server/*', 'next-devtools/*', 'problems', 'changes', 'testFailure', 'fetch', 'github.vscode-pull-request-github/copilotCodingAgent', 'github.vscode-pull-request-github/issue_fetch', 'github.vscode-pull-request-github/suggest-fix', 'github.vscode-pull-request-github/searchSyntax', 'github.vscode-pull-request-github/doSearch', 'github.vscode-pull-request-github/renderIssues', 'github.vscode-pull-request-github/activePullRequest', 'github.vscode-pull-request-github/openPullRequest', 'todos']
 ---
 # Shadow Engineer — TDD Lead Agent
 

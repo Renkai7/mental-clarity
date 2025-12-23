@@ -8,6 +8,7 @@ import PreferencesConfig, { Preferences } from "./PreferencesConfig";
 import CIConfig from "./CIConfig";
 import DataManagement from "./DataManagement";
 import { EmberCard } from "@/ui/cinematic-ember";
+import { Button } from "@/components/ui/Button";
 
 interface BlockConfig {
   id: string;
@@ -65,6 +66,8 @@ export const SettingsView: React.FC = () => {
   const [goals, setGoals] = useState<Goals>(defaultGoals);
   const [preferences, setPreferences] = useState<Preferences>(defaultPreferences);
   const [ciSettings, setCISettings] = useState<CISettings>(defaultCISettings);
+  const [checkingUpdate, setCheckingUpdate] = useState(false);
+  const [updateCheckResult, setUpdateCheckResult] = useState<string>('');
 
   function handleAdd() {
     setEditing(undefined);
@@ -96,6 +99,35 @@ export const SettingsView: React.FC = () => {
     });
     setShowEditor(false);
   }
+
+  const handleCheckForUpdates = async () => {
+    if (typeof window === 'undefined' || !window.electronAPI) {
+      setUpdateCheckResult('Updates only available in desktop app');
+      return;
+    }
+    
+    setCheckingUpdate(true);
+    setUpdateCheckResult('');
+    
+    try {
+      const result = await window.electronAPI.checkForUpdates();
+      
+      if (result.isDev) {
+        setUpdateCheckResult('Update checking disabled in development');
+      } else if (result.available && result.updateInfo) {
+        setUpdateCheckResult(`Update available: v${result.updateInfo.version}`);
+      } else if (result.error) {
+        // Display the user-friendly error message from main process
+        setUpdateCheckResult(result.error);
+      } else {
+        setUpdateCheckResult('You are running the latest version');
+      }
+    } catch (error) {
+      setUpdateCheckResult('Failed to check for updates. Please try again.');
+    } finally {
+      setCheckingUpdate(false);
+    }
+  };
 
   return (
     <div className="mt-8 space-y-12" aria-label="Settings sections">
@@ -155,6 +187,29 @@ export const SettingsView: React.FC = () => {
               setCISettings(defaultCISettings);
             }}
           />
+        </EmberCard>
+      </section>
+      {/* Updates */}
+      <section aria-labelledby="updates-heading" className="space-y-4">
+        <h2 id="updates-heading" className="text-base font-semibold text-white mb-4">Updates</h2>
+        <EmberCard variant="amber" className="p-6">
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Button
+                onClick={handleCheckForUpdates}
+                disabled={checkingUpdate}
+                variant="default"
+              >
+                {checkingUpdate ? 'Checking...' : 'Check for Updates'}
+              </Button>
+              {updateCheckResult && (
+                <p className="text-sm text-text-muted">{updateCheckResult}</p>
+              )}
+            </div>
+            <p className="text-xs text-text-muted">
+              Current version: {typeof window !== 'undefined' && window.electronAPI ? 'v0.1.0 (Desktop App)' : 'Web Version'}
+            </p>
+          </div>
         </EmberCard>
       </section>
       {showEditor && (

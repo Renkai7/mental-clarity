@@ -4,6 +4,7 @@ import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import { BackgroundEffects } from "@/ui/cinematic-ember";
+import UpdateNotification from "@/components/UpdateNotification";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,6 +62,7 @@ export default function RootLayout({
           {children}
         </TooltipProvider>
         <Toaster position="top-center" richColors />
+        <UpdateNotification />
       </body>
     </html>
   );

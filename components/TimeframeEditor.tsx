@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 
 interface BlockConfig {
   id: string;
@@ -66,7 +66,6 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
   const [start, setStart] = useState(block?.start ?? "08:00");
   const [end, setEnd] = useState(block?.end ?? "09:00");
   const [active, setActive] = useState(block?.active ?? true);
-  const [errors, setErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
@@ -75,7 +74,7 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
     dialogRef.current?.querySelector<HTMLInputElement>("#tf-label")?.focus();
   }, []);
 
-  function runValidation(): ValidationErrors {
+  const runValidation = useCallback((): ValidationErrors => {
     const errs: ValidationErrors = {};
     if (!label.trim()) errs.label = "Label is required";
     const timeErrs = validateTimes(start, end);
@@ -86,12 +85,17 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
       }
     }
     return errs;
-  }
+  }, [label, start, end, existingBlocks, block?.id]);
+
+  // Derive errors from current state (only when touched)
+  const errors = useMemo(() => {
+    if (!touched) return {};
+    return runValidation();
+  }, [touched, runValidation]);
 
   function handleSave() {
     setTouched(true);
     const v = runValidation();
-    setErrors(v);
     if (Object.keys(v).length > 0) return;
     const newBlock: BlockConfig = {
       id: block?.id ?? crypto.randomUUID(),
@@ -103,12 +107,6 @@ export const TimeframeEditor: React.FC<TimeframeEditorProps> = ({
     };
     onSave(newBlock);
   }
-
-  // Revalidate on changes after initial touch
-  useEffect(() => {
-    if (!touched) return;
-    setErrors(runValidation());
-  }, [label, start, end, active, touched]);
 
   return (
     <div

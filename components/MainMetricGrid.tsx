@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import type { BlockEntry } from '@/types';
 import { upsertEntry, getEntry } from '@/lib/dbUtils';
 import { makeEntryId } from '@/lib/id';
 import Button from "./ui/Button";
@@ -40,9 +41,8 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
   const router = useRouter();
   const field = getMetricField(metric) as 'ruminationCount' | 'compulsionsCount' | 'avoidanceCount';
 
-  // Local rows for optimistic updates
+  // Local rows for optimistic updates (reset when data changes via key)
   const [rows, setRows] = useState<MainGridRow[]>(data);
-  useEffect(() => setRows(data), [data]);
 
   // Save status per cell
   const [status, setStatus] = useState<Record<CellKey, 'idle' | 'saving' | 'saved' | 'error'>>({});

@@ -24,6 +24,15 @@ const eslintConfig = defineConfig([
       "@typescript-eslint/no-explicit-any": "warn",
     },
   },
+  // Relaxed rules for test files
+  {
+    files: ["tests/**/*.ts", "**/*.test.ts", "**/*.spec.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-require-imports": "off", // Allow require() in tests for dynamic imports
+      "@typescript-eslint/no-unused-vars": "warn", // Test helpers may have intentionally unused params
+    },
+  },
 ]);
 
 export default eslintConfig;

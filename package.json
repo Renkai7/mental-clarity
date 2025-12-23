@@ -19,13 +19,22 @@
     "dist": "npm run package:desktop",
     "postinstall": "electron-builder install-app-deps",
     "rebuild:native": "npx --yes electron-rebuild -f -w better-sqlite3",
-    "test": "vitest run"
+    "test": "vitest run",
+    "pipeline": "node scripts/local-pipeline.js",
+    "pipeline:quick": "node scripts/quick-pipeline.js",
+    "typecheck": "tsc --noEmit",
+    "release:patch": "npm version patch && git push origin main --follow-tags",
+    "release:minor": "npm version minor && git push origin main --follow-tags",
+    "release:major": "npm version major && git push origin main --follow-tags",
+    "release": "node scripts/release.js"
   },
   "dependencies": {
     "@radix-ui/react-tooltip": "^1.0.7",
     "better-sqlite3": "^12.4.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "electron-log": "^5.4.3",
+    "electron-updater": "^6.6.2",
     "framer-motion": "^12.23.24",
     "next": "16.0.3",
     "react": "19.2.0",
@@ -54,6 +63,11 @@
   "build": {
     "appId": "com.mentality.tracker",
     "productName": "Mental Clarity",
+    "publish": {
+      "provider": "github",
+      "owner": "Renkai7",
+      "repo": "mental-clarity"
+    },
     "files": [
       "**/*",
       "!**/*.map",
@@ -79,8 +93,29 @@
       }
     ],
     "win": {
-      "target": "nsis",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "assets/icon.png"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.healthcare-fitness"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility"
     }
   }
 }

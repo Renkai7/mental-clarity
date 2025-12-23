@@ -1,24 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mental Clarity
+
+A personal productivity and mental wellness tracking application built with Next.js and Electron.
+
+## Features
+
+- **Time-based tracking**: Monitor activities across custom timeframes
+- **Mental wellness metrics**: Track clarity, anxiety, stress levels
+- **Data visualization**: Heatmaps, charts, and statistics
+- **Goal setting**: Define and track daily targets
+- **Auto-updates**: Seamless desktop app updates
+- **Offline-first**: Works without internet connection
+- **Data privacy**: All data stored locally on your device
 
 ## Getting Started
 
-First, run the development server:
+### Web Development
+
+Run the Next.js development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Desktop Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run the Electron desktop app:
+
+```bash
+npm run dev:desktop
+```
+
+This will start both the Next.js dev server and Electron app.
+
+### Building for Production
+
+```bash
+# Build web version
+npm run build:web
+
+# Package desktop app (all platforms)
+npm run package:desktop
+```
+
+## Auto-Updates
+
+Mental Clarity includes automatic update functionality for the desktop app:
+
+- ✅ Updates are checked automatically when the app launches
+- ✅ Receive notifications when a new version is available
+- ✅ Updates download in the background with progress indicator
+- ✅ One-click installation with automatic restart
+- ✅ All your data is preserved during updates
+
+### Manual Update Check
+
+You can manually check for updates:
+1. Open the app
+2. Navigate to **Settings**
+3. Scroll to the **Updates** section
+4. Click **"Check for Updates"**
+
+### For Developers
+
+See [docs/auto-updater-implementation.md](docs/auto-updater-implementation.md) for implementation details.
+
+## Releasing New Versions
+
+Use the built-in release tools to create new versions:
+
+```bash
+# Patch release (bug fixes: 1.0.0 → 1.0.1)
+npm run release:patch
+
+# Minor release (new features: 1.0.0 → 1.1.0)
+npm run release:minor
+
+# Major release (breaking changes: 1.0.0 → 2.0.0)
+npm run release:major
+
+# Interactive release tool
+npm run release
+```
+
+See [docs/release-checklist.md](docs/release-checklist.md) for the complete release process.
 
 ## Learn More
 

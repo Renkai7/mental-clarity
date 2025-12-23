@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 
 interface CISettings {
   alphaR: number;
@@ -41,16 +41,9 @@ function clamp(n: number, min: number, max: number) {
 export const CIConfig: React.FC<CIConfigProps> = ({ ciSettings, onSave, disabled }) => {
   const [local, setLocal] = useState<CISettings>(ciSettings);
   const [open, setOpen] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState(false);
 
-  useEffect(() => {
-    // Revalidate whenever settings change after touch
-    if (!touched) return;
-    setErrors(validate(local));
-  }, [local, touched]);
-
-  function validate(s: CISettings): Record<string, string> {
+  const validate = useCallback((s: CISettings): Record<string, string> => {
     const e: Record<string, string> = {};
     const weightSum = s.alphaR + s.alphaC + s.alphaA + s.alphaAnx + s.alphaStr;
     if (Math.abs(weightSum - 1) > 0.0001) e.weights = `Weights should sum to 1 (current ${weightSum.toFixed(2)})`;
@@ -61,7 +54,13 @@ export const CIConfig: React.FC<CIConfigProps> = ({ ciSettings, onSave, disabled
     if (s.greenMin < 0 || s.greenMin > 1) e.greenMin = "Green threshold 0–1";
     if (s.yellowMin < 0 || s.yellowMin > 1) e.yellowMin = "Yellow threshold 0–1";
     return e;
-  }
+  }, []);
+
+  // Derive errors from current state (no useEffect needed)
+  const errors = useMemo(() => {
+    if (!touched) return {};
+    return validate(local);
+  }, [local, touched, validate]);
 
   function handleNumeric<K extends keyof CISettings>(key: K, value: number) {
     setTouched(true);
@@ -75,13 +74,13 @@ export const CIConfig: React.FC<CIConfigProps> = ({ ciSettings, onSave, disabled
   function resetDefaults() {
     setTouched(true);
     setLocal(DEFAULTS);
-    setErrors(validate(DEFAULTS));
+    // Errors will be automatically recomputed via useMemo
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setTouched(true); // Ensure errors are shown
     const v = validate(local);
-    setErrors(v);
     if (Object.keys(v).length > 0) return;
     onSave(local);
   }

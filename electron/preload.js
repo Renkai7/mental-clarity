@@ -24,6 +24,35 @@ const exposedApi = {
   'dailyMeta:range': (startDate, endDate) => ipcRenderer.invoke('dailyMeta:range', startDate, endDate),
   getEntriesRange: (startDate, endDate) => ipcRenderer.invoke('entries:range', startDate, endDate),
   getDailyMetaRange: (startDate, endDate) => ipcRenderer.invoke('dailyMeta:range', startDate, endDate),
+
+  // Auto-updater APIs
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+  downloadUpdate: () => ipcRenderer.invoke('download-update'),
+  installUpdate: () => ipcRenderer.invoke('install-update'),
+
+  onUpdateAvailable: (callback) => {
+    const listener = (_, data) => callback(data);
+    ipcRenderer.on('update-available', listener);
+    return () => ipcRenderer.removeListener('update-available', listener);
+  },
+
+  onUpdateDownloadProgress: (callback) => {
+    const listener = (_, data) => callback(data);
+    ipcRenderer.on('update-download-progress', listener);
+    return () => ipcRenderer.removeListener('update-download-progress', listener);
+  },
+
+  onUpdateDownloaded: (callback) => {
+    const listener = (_, data) => callback(data);
+    ipcRenderer.on('update-downloaded', listener);
+    return () => ipcRenderer.removeListener('update-downloaded', listener);
+  },
+
+  onUpdateError: (callback) => {
+    const listener = (_, message) => callback(message);
+    ipcRenderer.on('update-error', listener);
+    return () => ipcRenderer.removeListener('update-error', listener);
+  },
 };
 
 try {

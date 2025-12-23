@@ -2,10 +2,69 @@ const { app, BrowserWindow, ipcMain, dialog, screen } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { init, seedIfNeeded, migrateDefaults, getSettings, updateSettings, getBlocks, getEntriesForDate, getEntry, upsertEntry, getDailyMeta, upsertDailyMeta, createEmptyDay, replaceBlocks, getEntriesSummary } = require('../db/sqlite');
+const { autoUpdater } = require('electron-updater');
+const log = require('electron-log');
+
+// Configure logging for updates
+log.transports.file.level = 'info';
+autoUpdater.logger = log;
 
 let mainWindow;
 
 let prodMode = false;
+
+// Auto-updater configuration
+autoUpdater.autoDownload = false; // Don't auto-download, ask user first
+autoUpdater.autoInstallOnAppQuit = true;
+
+// Update event handlers
+autoUpdater.on('checking-for-update', () => {
+  log.info('Checking for updates...');
+});
+
+autoUpdater.on('update-available', (info) => {
+  log.info('Update available:', info.version);
+  
+  // Notify renderer process
+  if (mainWindow) {
+    mainWindow.webContents.send('update-available', {
+      version: info.version,
+      releaseNotes: info.releaseNotes,
+      releaseDate: info.releaseDate
+    });
+  }
+});
+
+autoUpdater.on('update-not-available', (info) => {
+  log.info('Update not available:', info.version);
+});
+
+autoUpdater.on('error', (err) => {
+  log.error('Update error:', err);
+  if (mainWindow) {
+    mainWindow.webContents.send('update-error', err.message);
+  }
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+  log.info(`Download progress: ${progressObj.percent}%`);
+  if (mainWindow) {
+    mainWindow.webContents.send('update-download-progress', {
+      percent: progressObj.percent,
+      transferred: progressObj.transferred,
+      total: progressObj.total
+    });
+  }
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  log.info('Update downloaded:', info.version);
+  if (mainWindow) {
+    mainWindow.webContents.send('update-downloaded', {
+      version: info.version
+    });
+  }
+});
 // Production uses static exported files (Next.js output: 'export').
 // No Next.js server or child process is started at runtime.
 function createWindow() {
@@ -186,6 +245,61 @@ process.on('unhandledRejection', (reason) => {
 
 function registerIpcHandlers() {
   ipcMain.handle('ping', () => 'pong');
+
+  // IPC handlers for update actions
+  ipcMain.handle('check-for-updates', async () => {
+    if (!app.isPackaged) {
+      return { available: false, isDev: true };
+    }
+    
+    try {
+      const result = await autoUpdater.checkForUpdates();
+      return { available: true, updateInfo: result.updateInfo };
+    } catch (error) {
+      log.error('Check for updates failed:', error);
+      
+      // Provide user-friendly error messages
+      let friendlyMessage = error.message;
+      
+      // Handle 404 - No releases available
+      if (error.message && error.message.includes('404')) {
+        friendlyMessage = 'No releases found. This is the first version.';
+      }
+      // Handle network errors
+      else if (error.message && (error.message.includes('ENOTFOUND') || error.message.includes('ETIMEDOUT'))) {
+        friendlyMessage = 'Unable to connect to update server. Check your internet connection.';
+      }
+      // Handle other HTTP errors
+      else if (error.message && error.message.includes('HttpError')) {
+        friendlyMessage = 'Update server temporarily unavailable. Try again later.';
+      }
+      
+      return { available: false, error: friendlyMessage };
+    }
+  });
+
+  ipcMain.handle('download-update', async () => {
+    if (!app.isPackaged) {
+      return { success: false, isDev: true };
+    }
+    
+    try {
+      await autoUpdater.downloadUpdate();
+      return { success: true };
+    } catch (error) {
+      log.error('Download update failed:', error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle('install-update', () => {
+    if (!app.isPackaged) {
+      return { success: false, isDev: true };
+    }
+    
+    autoUpdater.quitAndInstall();
+    return { success: true };
+  });
 
   ipcMain.handle('settings:get', async () => {
     return getSettings();
