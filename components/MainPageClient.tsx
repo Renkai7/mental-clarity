@@ -56,7 +56,11 @@ export default function MainPageClient() {
       setIsCreating(true);
       const today = format(new Date(), 'yyyy-MM-dd');
       await createEmptyDay(today);
-      router.refresh();
+      // Automatically navigate to today's date after creating entries
+      router.push(`/day/${encodeURIComponent(today)}`);
+    } catch (error) {
+      console.error('Failed to start tracking today:', error);
+      router.refresh(); // Fallback to refresh if navigation fails
     } finally {
       setIsCreating(false);
     }
@@ -83,10 +87,10 @@ export default function MainPageClient() {
               onClick={onStartToday}
               disabled={isCreating}
               className="rounded border border-cinematic-800 bg-cinematic-900/60 px-4 py-2 text-sm text-white hover:bg-lumina-orange-500/20 hover:border-lumina-orange-500 hover:shadow-glow-orange hover:scale-105 transition-all duration-300 disabled:opacity-60 cursor-pointer"
-              aria-label="Start tracking today"
-              title="Creates today's empty entries and shows them in the grid"
+              aria-label="Start tracking today and navigate to today's entry form"
+              title="Opens today's entry form for tracking"
             >
-              {isCreating ? 'Creating…' : 'Start tracking today'}
+              {isCreating ? 'Opening…' : 'Track Today'}
             </button>
           </div>
           {(isLoading || isBlocksLoading) && (
