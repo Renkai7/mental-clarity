@@ -7,6 +7,7 @@ import GoalsConfig, { Goals } from "./GoalsConfig";
 import PreferencesConfig, { Preferences } from "./PreferencesConfig";
 import CIConfig from "./CIConfig";
 import DataManagement from "./DataManagement";
+import ChangelogView from "./ChangelogView";
 import { EmberCard } from "@/ui/cinematic-ember";
 import { Button } from "@/components/ui/Button";
 
@@ -69,6 +70,7 @@ export const SettingsView: React.FC = () => {
   const [checkingUpdate, setCheckingUpdate] = useState(false);
   const [updateCheckResult, setUpdateCheckResult] = useState<string>('');
   const [appVersion, setAppVersion] = useState<string>('');
+  const [showChangelog, setShowChangelog] = useState(false);
 
   // Fetch app version on mount
   useEffect(() => {
@@ -210,6 +212,12 @@ export const SettingsView: React.FC = () => {
               >
                 {checkingUpdate ? 'Checking...' : 'Check for Updates'}
               </Button>
+              <Button
+                onClick={() => setShowChangelog(!showChangelog)}
+                variant="outline"
+              >
+                {showChangelog ? 'Hide' : "What's New"}
+              </Button>
               {updateCheckResult && (
                 <p className="text-sm text-text-muted">{updateCheckResult}</p>
               )}
@@ -221,6 +229,7 @@ export const SettingsView: React.FC = () => {
             </p>
           </div>
         </EmberCard>
+        {showChangelog && <ChangelogView />}
       </section>
       {showEditor && (
         <TimeframeEditor
