@@ -43,17 +43,11 @@ test.describe('Entry Field Updates', () => {
     await avoidanceInput.clear();
     await avoidanceInput.fill('2');
     
-    // Wait for autosave (700ms debounce + network)
-    await page.waitForTimeout(2000);
+    // Wait for "All changes saved" message
+    await expect(page.locator('text=/all changes saved/i')).toBeVisible({ timeout: 10000 });
     
-    // Look for save indicator or wait a bit more
-    const saveIndicator = page.locator('text=/saved|saving/i');
-    if (await saveIndicator.isVisible().catch(() => false)) {
-      await page.waitForTimeout(500);
-    }
-    
-    // Wait extra time to ensure save completes
-    await page.waitForTimeout(2000);
+    // Wait a bit more to ensure database write completes
+    await page.waitForTimeout(1000);
     
     // Reload page
     await page.reload();
@@ -87,20 +81,13 @@ test.describe('Entry Field Updates', () => {
     await stressInput.clear();
     await stressInput.fill('7');
     
-    // Wait for autosave
-    await page.waitForTimeout(2000);
+    // Wait for "All changes saved" message
+    await expect(page.locator('text=/all changes saved/i')).toBeVisible({ timeout: 10000 });
     
-    // Look for save indicator
-    const saveIndicator = page.locator('text=/saved|saving/i');
-    if (await saveIndicator.isVisible().catch(() => false)) {
-      await page.waitForTimeout(500);
-    }
-    
-    // Wait extra time to ensure save completes
-    await page.waitForTimeout(2000);
+    // Wait a bit more to ensure database write completes
+    await page.waitForTimeout(1000);
     
     // Reload page
-    await page.reload();
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     
