@@ -6,9 +6,11 @@ on:
       - 'v*.*.*'
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
+    permissions:
+      contents: write
     
     strategy:
       matrix:
@@ -28,53 +30,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Build and package
+      - name: Build and publish release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CI: true
-        run: npm run package:desktop
-      
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.os }}-build
-          path: dist/*
-          
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: write
-    
-    steps:
-      - name: Download Windows artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-latest-build
-          path: dist
-      
-      - name: Download macOS artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-latest-build
-          path: dist
-      
-      - name: Download Linux artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ubuntu-latest-build
-          path: dist
-      
-      - name: List files for debugging
-        run: ls -R dist
-      
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/*
-          draft: false
-          prerelease: false
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run build:web
+          npx electron-builder build --publish always
