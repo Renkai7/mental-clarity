@@ -348,6 +348,58 @@ function registerIpcHandlers() {
     return { success: true };
   });
 
+  // Fetch GitHub releases for changelog
+  ipcMain.handle('get-releases', async () => {
+    try {
+      const https = require('https');
+      
+      return new Promise((resolve, reject) => {
+        const options = {
+          hostname: 'api.github.com',
+          path: '/repos/Renkai7/mental-clarity/releases',
+          method: 'GET',
+          headers: {
+            'User-Agent': 'mental-clarity-app',
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        };
+
+        const req = https.request(options, (res) => {
+          let data = '';
+
+          res.on('data', (chunk) => {
+            data += chunk;
+          });
+
+          res.on('end', () => {
+            if (res.statusCode === 200) {
+              try {
+                const releases = JSON.parse(data);
+                resolve({ success: true, releases });
+              } catch (err) {
+                reject(new Error('Failed to parse releases'));
+              }
+            } else {
+              reject(new Error(`GitHub API returned ${res.statusCode}`));
+            }
+          });
+        });
+
+        req.on('error', (err) => {
+          reject(err);
+        });
+
+        req.end();
+      });
+    } catch (error) {
+      log.error('Get releases failed:', error);
+      return { 
+        success: false, 
+        error: error.message || 'Failed to fetch releases' 
+      };
+    }
+  });
+
   ipcMain.handle('settings:get', async () => {
     return getSettings();
   });

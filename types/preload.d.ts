@@ -43,6 +43,18 @@ declare global {
       
       installUpdate: () => void;
       
+      // Releases/changelog API
+      getReleases: () => Promise<{
+        success: boolean;
+        releases?: Array<{
+          tag_name: string;
+          published_at: string;
+          body: string;
+          name?: string;
+        }>;
+        error?: string;
+      }>;
+      
       onUpdateAvailable: (callback: (data: {
         version: string;
         releaseNotes?: string;
@@ -99,6 +111,18 @@ declare global {
       }>;
       
       installUpdate: () => void;
+      
+      // Releases/changelog API
+      getReleases: () => Promise<{
+        success: boolean;
+        releases?: Array<{
+          tag_name: string;
+          published_at: string;
+          body: string;
+          name?: string;
+        }>;
+        error?: string;
+      }>;
       
       onUpdateAvailable: (callback: (data: {
         version: string;

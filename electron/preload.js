@@ -33,6 +33,9 @@ const exposedApi = {
   downloadUpdate: () => ipcRenderer.invoke('download-update'),
   installUpdate: () => ipcRenderer.invoke('install-update'),
 
+  // Releases/changelog API
+  getReleases: () => ipcRenderer.invoke('get-releases'),
+
   onUpdateAvailable: (callback) => {
     const listener = (_, data) => callback(data);
     ipcRenderer.on('update-available', listener);

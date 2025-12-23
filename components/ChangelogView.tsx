@@ -20,17 +20,36 @@ export const ChangelogView: React.FC = () => {
 
   const fetchChangelog = async () => {
     try {
-      const response = await fetch('https://api.github.com/repos/Renkai7/mental-clarity/releases');
-      if (!response.ok) throw new Error('Failed to fetch releases');
+      // Use Electron API if available, otherwise fall back to direct fetch
+      if (window.electronAPI?.getReleases) {
+        const result = await window.electronAPI.getReleases();
+        
+        if (!result.success || !result.releases) {
+          throw new Error(result.error || 'Failed to fetch releases');
+        }
+        
+        const formattedReleases = result.releases.map((release: any) => ({
+          version: release.tag_name,
+          date: new Date(release.published_at).toLocaleDateString(),
+          notes: release.body || 'No release notes provided.'
+        }));
+        
+        setReleases(formattedReleases);
+      } else {
+        // Fallback for web/dev mode
+        const response = await fetch('https://api.github.com/repos/Renkai7/mental-clarity/releases');
+        if (!response.ok) throw new Error('Failed to fetch releases');
+        
+        const data = await response.json();
+        const formattedReleases = data.map((release: any) => ({
+          version: release.tag_name,
+          date: new Date(release.published_at).toLocaleDateString(),
+          notes: release.body || 'No release notes provided.'
+        }));
+        
+        setReleases(formattedReleases);
+      }
       
-      const data = await response.json();
-      const formattedReleases = data.map((release: any) => ({
-        version: release.tag_name,
-        date: new Date(release.published_at).toLocaleDateString(),
-        notes: release.body || 'No release notes provided.'
-      }));
-      
-      setReleases(formattedReleases);
       setLoading(false);
     } catch (err) {
       setError('Unable to load changelog. Please check your internet connection.');
