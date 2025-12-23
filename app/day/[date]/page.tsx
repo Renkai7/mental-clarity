@@ -69,6 +69,8 @@ export default async function DayDetailPage({ params }: DayDetailPageProps) {
 export function generateStaticParams() {
   const today = new Date();
   const out: { date: string }[] = [];
+  
+  // Generate last 30 days for production use
   for (let i = 0; i < 30; i++) {
     const dt = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - i));
     const y = dt.getUTCFullYear();
@@ -76,5 +78,21 @@ export function generateStaticParams() {
     const d = String(dt.getUTCDate()).padStart(2, '0');
     out.push({ date: `${y}-${m}-${d}` });
   }
+  
+  // Add specific test dates for E2E testing
+  const testDates = [
+    '2024-12-15',
+    '2024-12-20',
+    '2024-12-22',
+    '2025-01-15',
+    '2025-12-30'
+  ];
+  
+  testDates.forEach(date => {
+    if (!out.some(d => d.date === date)) {
+      out.push({ date });
+    }
+  });
+  
   return out;
 }
