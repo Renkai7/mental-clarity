@@ -5,6 +5,7 @@ import DailySummary from "./DailySummary";
 import TimeframeGrid, { TimeframeEntry } from "./TimeframeGrid";
 import DailyTotals from "./DailyTotals";
 import { useDayData } from "../hooks/useDayData";
+import { isTrackedDay } from "@/lib/statsCalc";
 
 interface DayDetailFormProps {
   date: string;
@@ -19,7 +20,6 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
     error,
     saveEntry,
     saveDailyMeta,
-    initializeDay,
   } = useDayData(date);
 
   // Derive timeframe-friendly entry objects (ensure stable ordering via blocks)
@@ -76,6 +76,11 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
       { rumination: 0, compulsions: 0, avoidance: 0 }
     );
   }, [timeframeEntries]);
+
+  // Check if this day is tracked
+  const dayIsTracked = useMemo(() => {
+    return isTrackedDay(dailyMeta);
+  }, [dailyMeta]);
 
   // Persist changes directly (M9.2 simple wiring; autosave/debounce in M9.3)
   // Debounced autosave (M9.3): queue save after inactivity.
@@ -184,6 +189,26 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
           {error}
         </div>
       )}
+      
+      {/* Tracking Completion Indicator */}
+      {!dayIsTracked && !isLoading && (
+        <div className="mb-4 rounded-md border border-lumina-orange-500/30 bg-lumina-orange-500/10 p-4 backdrop-blur-sm" role="status">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 flex-shrink-0">
+              <svg className="h-5 w-5 text-lumina-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-lumina-orange-300">Day not tracked yet</h3>
+              <p className="mt-1 text-sm text-lumina-orange-200/80">
+                Fill out the <strong>Daily Summary</strong> below (sleep quality, exercise, or notes) to track this day and include it in your stats.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Daily Summary Section */}
       <section
         aria-labelledby="daily-summary"
@@ -220,19 +245,6 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
         {blocks.length === 0 && !isLoading ? (
           <div className="text-sm text-slate-400">
             No active blocks configured. Add blocks in Settings.
-          </div>
-        ) : timeframeEntries.every((e) => e.rumination === 0 && e.compulsions === 0 && e.avoidance === 0 && rawEntries.length === 0) && !isLoading ? (
-          <div className="flex flex-col gap-3">
-            <p className="text-sm text-slate-400">
-              This day has no entries yet. Initialize to create empty rows.
-            </p>
-            <button
-              type="button"
-              onClick={initializeDay}
-              className="w-fit rounded-md border border-cinematic-800 bg-cinematic-900/60 px-3 py-1 text-sm font-medium text-white hover:bg-lumina-orange-500/20 hover:border-lumina-orange-500/30 hover:shadow-glow-orange-sm transition-all"
-            >
-              Initialize Day
-            </button>
           </div>
         ) : (
           <TimeframeGrid

@@ -8,6 +8,24 @@ export interface DayAggregates {
   dailyCI: number | null;
 }
 
+/**
+ * Determine if a day has been actively tracked (vs auto-created empty).
+ * A day with all 0s counts as tracked if the user filled out daily summary.
+ * 
+ * @param dailyMeta - Daily metadata for the day
+ * @returns true if the day has been tracked by the user
+ */
+export function isTrackedDay(dailyMeta?: DailyMeta | null): boolean {
+  if (!dailyMeta) return false;
+  
+  // Check if any daily summary fields were filled out
+  const hasNotes = dailyMeta.dailyNotes && dailyMeta.dailyNotes.trim().length > 0;
+  const hasSleep = dailyMeta.sleepQuality != null && dailyMeta.sleepQuality > 0;
+  const hasExercise = dailyMeta.exerciseMinutes != null && dailyMeta.exerciseMinutes > 0;
+  
+  return hasNotes || hasSleep || hasExercise;
+}
+
 // Build per-day aggregates from entries & meta
 export function buildDayAggregates(entries: BlockEntry[], dailyMeta: DailyMeta[], settings: Settings): DayAggregates[] {
   const byDate: Record<string, DayAggregates> = {};
@@ -44,25 +62,53 @@ export function buildDayAggregates(entries: BlockEntry[], dailyMeta: DailyMeta[]
 
 export interface KPIResult {
   todayR: number; todayC: number; todayA: number; todayCI: number | null;
-  sevenAvgCI: number; streakDays: number;
+  todayIsTracked: boolean;
+  sevenAvgCI: number | null;
+  sevenTrackedCount: number;
+  streakDays: number;
 }
 
-export function computeKPIs(days: DayAggregates[], settings: Settings): KPIResult {
+export function computeKPIs(days: DayAggregates[], dailyMetaList: DailyMeta[]): KPIResult {
   const today = days[0];
-  const todayCI = today?.dailyCI ?? null;
-  const last7 = days.slice(0,7).map(d=>d.dailyCI).filter((v): v is number => v!=null);
-  const sevenAvgCI = last7.length ? avg(last7) : 0;
-  // Simple streak: consecutive days from today with at least one entry
+  const todayMeta = dailyMetaList.find(m => m.date === today?.date);
+  const todayIsTracked = today ? isTrackedDay(todayMeta) : false;
+  
+  // Show CI if tracked, otherwise null
+  const todayCI = todayIsTracked ? (today?.dailyCI ?? null) : null;
+  
+  // Only include tracked days in 7-day average
+  const last7 = days.slice(0, 7);
+  const last7Tracked = last7.filter(d => {
+    const meta = dailyMetaList.find(m => m.date === d.date);
+    return isTrackedDay(meta);
+  });
+  
+  const last7CIs = last7Tracked
+    .map(d => d.dailyCI)
+    .filter((v): v is number => v != null);
+  
+  const sevenAvgCI = last7CIs.length ? avg(last7CIs) : null;
+  const sevenTrackedCount = last7Tracked.length;
+  
+  // Count consecutive tracked days from today
   let streak = 0;
   for (const d of days) {
-    if (d.totalR + d.totalC + d.totalA > 0) streak++; else break;
+    const meta = dailyMetaList.find(m => m.date === d.date);
+    if (isTrackedDay(meta)) {
+      streak++;
+    } else {
+      break; // Stop at first untracked day
+    }
   }
+  
   return {
     todayR: today?.totalR || 0,
     todayC: today?.totalC || 0,
     todayA: today?.totalA || 0,
     todayCI,
+    todayIsTracked,
     sevenAvgCI,
+    sevenTrackedCount,
     streakDays: streak,
   };
 }
@@ -72,25 +118,40 @@ export function buildSparkline(days: DayAggregates[], metric: 'CI', span = 14) {
   return slice.map(d => ({ date: d.date, value: d.dailyCI ?? 0 }));
 }
 
-export function buildBlockAverages(days: DayAggregates[], metric: Metric, span = 7) {
-  const slice = days.slice(0, span);
-  const totals: Record<string, number> = {};
+export function buildBlockAverages(
+  days: DayAggregates[], 
+  dailyMetaList: DailyMeta[], 
+  metric: Metric, 
+  span = 7
+): Array<{ blockId: string; average: number; trackedDays: number }> {
+  // Only include tracked days
+  const trackedDays = days.slice(0, span).filter(d => {
+    const meta = dailyMetaList.find(m => m.date === d.date);
+    return isTrackedDay(meta);
+  });
   
-  // Sum up values for each block across all days in the span
-  for (const d of slice) {
+  const totals: Record<string, number> = {};
+  const counts: Record<string, number> = {};
+  
+  // Sum up values for each block across tracked days only
+  for (const d of trackedDays) {
     for (const blockId of Object.keys(d.blockTotals)) {
-      if (!totals[blockId]) totals[blockId] = 0;
+      if (!totals[blockId]) {
+        totals[blockId] = 0;
+        counts[blockId] = 0;
+      }
       const block = d.blockTotals[blockId];
       const val = metric === 'R' ? block.R : metric === 'C' ? block.C : block.A;
       totals[blockId] += val;
+      counts[blockId]++;
     }
   }
   
-  // Calculate average by dividing by the span (7 days), not the number of days with entries
-  // This ensures days without entries count as 0 in the average
+  // Calculate average over tracked days only
   return Object.keys(totals).map(blockId => ({ 
     blockId, 
-    average: Math.round(totals[blockId] / span) 
+    average: counts[blockId] > 0 ? Math.round(totals[blockId] / counts[blockId]) : 0,
+    trackedDays: counts[blockId]
   }));
 }
 

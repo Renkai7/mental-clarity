@@ -54,9 +54,9 @@ describe('statsCalc aggregation', () => {
   });
 
   it('computeKPIs derives today totals and streak', () => {
-    const kpis = computeKPIs(aggregates, settings);
+    const kpis = computeKPIs(aggregates, meta);
     expect(kpis.todayR).toBeGreaterThan(0);
-    expect(kpis.streakDays).toBe(5); // all days have entries
+    expect(kpis.streakDays).toBe(5); // all days have entries filled with daily summary
   });
 
   it('buildSparkline returns correct span ordered oldest->newest', () => {
@@ -67,10 +67,11 @@ describe('statsCalc aggregation', () => {
   });
 
   it('buildBlockAverages returns averages per block', () => {
-    const avgs = buildBlockAverages(aggregates, 'R', 5);
+    const avgs = buildBlockAverages(aggregates, meta, 'R', 5);
     expect(avgs.length).toBeGreaterThan(0);
     const first = avgs[0];
     expect(first).toHaveProperty('blockId');
     expect(first).toHaveProperty('average');
+    expect(first).toHaveProperty('trackedDays');
   });
 });

@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import { BackgroundEffects } from "@/ui/cinematic-ember";
 import UpdateNotification from "@/components/UpdateNotification";
+import TrackingReminder from "@/components/TrackingReminder";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,6 +64,7 @@ export default function RootLayout({
         </TooltipProvider>
         <Toaster position="top-center" richColors />
         <UpdateNotification />
+        <TrackingReminder />
       </body>
     </html>
   );

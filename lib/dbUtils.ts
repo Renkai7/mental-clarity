@@ -36,6 +36,15 @@ export const getBlocks = getBlockConfigs;
 export async function getEntriesForDate(date: string): Promise<BlockEntry[]> {
   DateString.parse(date);
   const entries = await api.getEntriesForDate(date);
+  
+  // Auto-create day if no entries exist
+  if (entries.length === 0) {
+    await createEmptyDay(date);
+    const newEntries = await api.getEntriesForDate(date);
+    newEntries.sort((a, b) => a.blockId.localeCompare(b.blockId));
+    return newEntries.map((e) => BlockEntrySchema.parse(e));
+  }
+  
   entries.sort((a, b) => a.blockId.localeCompare(b.blockId));
   return entries.map((e) => BlockEntrySchema.parse(e));
 }
@@ -87,6 +96,19 @@ export async function upsertDailyMeta(meta: DailyMeta): Promise<void> {
 // Summary for main grid: latest N dates aggregated by metric
 export type Metric = 'R' | 'C' | 'A';
 export async function getMainGridSummary(metric: Metric, limit: number) {
+  // Generate date list going back from today
+  const dates: string[] = [];
+  const today = new Date();
+  for (let i = 0; i < limit; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    dates.push(date.toISOString().split('T')[0]);
+  }
+  
+  // Auto-create all dates in the range
+  await Promise.all(dates.map(date => getEntriesForDate(date)));
+  
+  // Now fetch the summary
   return api.getEntriesSummary(metric, limit);
 }
 

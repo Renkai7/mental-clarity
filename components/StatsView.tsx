@@ -9,7 +9,7 @@ import { useStatsData } from '@/hooks/useStatsData';
 import { EmberCard } from '@/ui/cinematic-ember';
 
 export default function StatsView() {
-  const { sparkline, blockAverages, barMetric, setBarMetric, isLoading, error } = useStatsData();
+  const { sparkline, blockAverages, barMetric, setBarMetric, isLoading, error, kpis } = useStatsData();
 
   const barData = React.useMemo(() => {
     if (!blockAverages.length) return [];
@@ -35,7 +35,14 @@ export default function StatsView() {
 
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium text-white">By Timeframe (7-day average)</h2>
+          <h2 className="text-lg font-medium text-white">
+            By Timeframe (7-day average)
+            {kpis?.sevenTrackedCount != null && (
+              <span className="text-sm text-zinc-400 font-normal ml-2">
+                ({kpis.sevenTrackedCount} of 7 days tracked)
+              </span>
+            )}
+          </h2>
           <div className="inline-flex overflow-hidden rounded-lg border border-cinematic-800">
             {(['R', 'C', 'A'] as const).map((m, idx) => {
               const active = barMetric === m;

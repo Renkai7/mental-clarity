@@ -20,13 +20,11 @@ export default function MainPageClient() {
 
   // Load configured blocks for ordered column headers
   const [blocks, setBlocks] = useState<BlockConfig[] | null>(null);
-  const [isBlocksLoading, setIsBlocksLoading] = useState<boolean>(false);
+  const [isBlocksLoading, setIsBlocksLoading] = useState<boolean>(true);
   const [blocksError, setBlocksError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
-    setIsBlocksLoading(true);
-    setBlocksError(null);
     getBlocks()
       .then((b: BlockConfig[]) => {
         if (mounted) setBlocks(b);

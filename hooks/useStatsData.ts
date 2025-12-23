@@ -37,9 +37,9 @@ export function useStatsData() {
         getSettings(),
       ]);
       const aggregates = buildDayAggregates(entries, meta, settings);
-      setKpis(computeKPIs(aggregates, settings));
+      setKpis(computeKPIs(aggregates, meta));
       setSparkline(buildSparkline(aggregates, 'CI', 14));
-      const rawBlockAvgs = buildBlockAverages(aggregates, barMetric, 7);
+      const rawBlockAvgs = buildBlockAverages(aggregates, meta, barMetric, 7);
       const labelMap: Record<string, string> = Object.fromEntries(settings.blocks.map(b => [b.id, b.label]));
       setBlockAverages(rawBlockAvgs.map(b => ({ blockId: b.blockId, blockLabel: labelMap[b.blockId] || b.blockId, average: b.average })));
     } catch (e) {

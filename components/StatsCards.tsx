@@ -22,9 +22,30 @@ export default function StatsCards() {
   const todayR = kpis?.todayR ?? 0;
   const todayC = kpis?.todayC ?? 0;
   const todayA = kpis?.todayA ?? 0;
-  const todayCI = kpis?.todayCI ?? 0;
-  const sevenAvg = kpis?.sevenAvgCI ?? 0;
+  
+  // Handle tracked vs untracked days
+  const todayIsTracked = kpis?.todayIsTracked ?? false;
+  const todayCI = todayIsTracked && kpis?.todayCI != null 
+    ? formatPercent(kpis.todayCI) 
+    : 'Not tracked yet';
+  const todayCISubtitle = todayCI === 'Not tracked yet' 
+    ? 'Fill out daily summary' 
+    : '0% worst • 100% best';
+  const todayCIColor = todayCI === 'Not tracked yet' 
+    ? 'text-zinc-400' 
+    : 'text-emerald-600';
+  
+  const sevenAvg = kpis?.sevenAvgCI != null 
+    ? formatPercent(kpis.sevenAvgCI) 
+    : '—';
+  const sevenSubtitle = kpis?.sevenTrackedCount != null
+    ? `${kpis.sevenTrackedCount} of 7 days tracked`
+    : 'No tracked days';
+  const sevenAvgColor = sevenAvg === '—' ? 'text-zinc-400' : 'text-emerald-600';
+  
   const streak = kpis?.streakDays ?? 0;
+  const streakSubtitle = streak > 0 ? 'Keep it up!' : 'Start tracking today';
+  const streakColor = streak > 0 ? 'text-lumina-orange-500' : 'text-zinc-400';
 
   return (
     <section aria-label="stats-kpis" className="mt-6">
@@ -32,9 +53,9 @@ export default function StatsCards() {
         <KPICard title="Today's Rumination" value={todayR} subtitle="Total across all timeframes" colorClassName="text-zinc-900 dark:text-zinc-100" />
         <KPICard title="Today's Compulsions" value={todayC} subtitle="Total across all timeframes" colorClassName="text-zinc-900 dark:text-zinc-100" />
         <KPICard title="Today's Avoidance" value={todayA} subtitle="Total across all timeframes" colorClassName="text-zinc-900 dark:text-zinc-100" />
-        <KPICard title="Today's Clarity Index" value={formatPercent(todayCI)} subtitle="0% worst • 100% best" colorClassName="text-emerald-600" />
-        <KPICard title="7-Day Avg CI" value={formatPercent(sevenAvg)} subtitle="Average of last 7 days" colorClassName="text-emerald-600" />
-        <KPICard title="Current Streak" value={`${streak} days`} subtitle="Consecutive days logged" />
+        <KPICard title="Today's Clarity Index" value={todayCI} subtitle={todayCISubtitle} colorClassName={todayCIColor} />
+        <KPICard title="7-Day Avg CI" value={sevenAvg} subtitle={sevenSubtitle} colorClassName={sevenAvgColor} />
+        <KPICard title="Current Streak" value={`${streak} days`} subtitle={streakSubtitle} colorClassName={streakColor} />
       </div>
       {isLoading && <div className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">Loading KPIs…</div>}
     </section>
