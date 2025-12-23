@@ -20,6 +20,7 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
     error,
     saveEntry,
     saveDailyMeta,
+    reload,
   } = useDayData(date);
 
   // Derive timeframe-friendly entry objects (ensure stable ordering via blocks)
@@ -180,6 +181,8 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
         dailyNotes: dailyMetaDraft.dailyNotes || undefined,
         tracked: true,
       });
+      // Reload to get the updated tracked status
+      await reload();
     } catch (e) {
       console.error('[day] track day failed', e);
     }
