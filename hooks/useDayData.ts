@@ -132,6 +132,7 @@ export function useDayData(date: string) {
           exerciseMinutes: 0,
           dailyNotes: undefined,
           dailyCI: null,
+          tracked: false,
         };
         const provisional: DailyMeta = { ...base, ...patch };
         // Compute CI if we have entries

@@ -54,6 +54,7 @@ export const DailyMetaSchema = z.object({
   exerciseMinutes: NonNegativeInt,
   dailyNotes: z.string().max(1000).optional(),
   dailyCI: z.number().min(0).max(1).nullable().optional(),
+  tracked: z.boolean().optional().default(false),
 });
 
 // Goals schema

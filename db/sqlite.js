@@ -549,12 +549,13 @@ async function createDbContext(dbFilePath) {
     },
     
     getDailyMetaRange(startDate, endDate) {
-      const stmt = dbInstance.prepare('SELECT date, sleepQuality, exerciseMinutes, dailyNotes, dailyCI FROM daily_meta WHERE date BETWEEN ? AND ? ORDER BY date DESC');
+      const stmt = dbInstance.prepare('SELECT date, sleepQuality, exerciseMinutes, dailyNotes, dailyCI, tracked FROM daily_meta WHERE date BETWEEN ? AND ? ORDER BY date DESC');
       const rows = stmt.all(startDate, endDate);
       return rows.map(r => ({
         ...r,
         dailyNotes: r.dailyNotes == null ? undefined : r.dailyNotes,
         dailyCI: r.dailyCI == null ? null : Number(r.dailyCI),
+        tracked: r.tracked === 1,
       }));
     },
     
