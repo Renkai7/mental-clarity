@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TimeframeList from "./TimeframeList";
 import TimeframeEditor from "./TimeframeEditor";
 import GoalsConfig, { Goals } from "./GoalsConfig";
@@ -68,6 +68,14 @@ export const SettingsView: React.FC = () => {
   const [ciSettings, setCISettings] = useState<CISettings>(defaultCISettings);
   const [checkingUpdate, setCheckingUpdate] = useState(false);
   const [updateCheckResult, setUpdateCheckResult] = useState<string>('');
+  const [appVersion, setAppVersion] = useState<string>('');
+
+  // Fetch app version on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      window.electronAPI.getAppVersion().then(version => setAppVersion(version)).catch(() => setAppVersion('Unknown'));
+    }
+  }, []);
 
   function handleAdd() {
     setEditing(undefined);
@@ -207,7 +215,9 @@ export const SettingsView: React.FC = () => {
               )}
             </div>
             <p className="text-xs text-text-muted">
-              Current version: {typeof window !== 'undefined' && window.electronAPI ? 'v0.1.0 (Desktop App)' : 'Web Version'}
+              Current version: {typeof window !== 'undefined' && window.electronAPI 
+                ? `v${appVersion} (Desktop App)` 
+                : 'Web Version'}
             </p>
           </div>
         </EmberCard>

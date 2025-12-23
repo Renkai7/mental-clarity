@@ -21,6 +21,9 @@ declare global {
       'entries:range'?: (startDate: string, endDate: string) => Promise<BlockEntry[]>;
       'dailyMeta:range'?: (startDate: string, endDate: string) => Promise<DailyMeta[]>;
 
+      // App info
+      getAppVersion: () => Promise<string>;
+
       // Auto-updater APIs
       checkForUpdates: () => Promise<{
         available: boolean;
@@ -74,6 +77,9 @@ declare global {
       invoke?: (channel: string, ...args: unknown[]) => Promise<unknown>;
       'entries:range'?: (startDate: string, endDate: string) => Promise<BlockEntry[]>;
       'dailyMeta:range'?: (startDate: string, endDate: string) => Promise<DailyMeta[]>;
+
+      // App info
+      getAppVersion: () => Promise<string>;
 
       // Auto-updater APIs
       checkForUpdates: () => Promise<{

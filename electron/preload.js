@@ -25,6 +25,9 @@ const exposedApi = {
   getEntriesRange: (startDate, endDate) => ipcRenderer.invoke('entries:range', startDate, endDate),
   getDailyMetaRange: (startDate, endDate) => ipcRenderer.invoke('dailyMeta:range', startDate, endDate),
 
+  // App info
+  getAppVersion: () => ipcRenderer.invoke('get-app-version'),
+
   // Auto-updater APIs
   checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
   downloadUpdate: () => ipcRenderer.invoke('download-update'),

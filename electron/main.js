@@ -262,6 +262,11 @@ process.on('unhandledRejection', (reason) => {
 function registerIpcHandlers() {
   ipcMain.handle('ping', () => 'pong');
 
+  // Get app version
+  ipcMain.handle('get-app-version', () => {
+    return app.getVersion();
+  });
+
   // IPC handlers for update actions
   ipcMain.handle('check-for-updates', async () => {
     if (!app.isPackaged) {
