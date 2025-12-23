@@ -39,7 +39,16 @@ test.describe('Daily Summary Updates', () => {
     await notesTextarea.fill('Feeling great today!');
     
     // Wait for autosave (700ms debounce + network)
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(2000);
+    
+    // Look for save indicator or wait a bit more
+    const saveIndicator = page.locator('text=/saved|saving/i');
+    if (await saveIndicator.isVisible().catch(() => false)) {
+      await page.waitForTimeout(500);
+    }
+    
+    // Wait extra time to ensure save completes
+    await page.waitForTimeout(2000);
     
     // Reload page
     await page.reload();
@@ -132,7 +141,16 @@ test.describe('Daily Summary Updates', () => {
     await notesTextarea.clear();
     
     // Wait for autosave
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(2000);
+    
+    // Look for save indicator
+    const saveIndicator = page.locator('text=/saved|saving/i');
+    if (await saveIndicator.isVisible().catch(() => false)) {
+      await page.waitForTimeout(500);
+    }
+    
+    // Wait extra time to ensure save completes
+    await page.waitForTimeout(2000);
     
     // Reload
     await page.reload();

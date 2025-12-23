@@ -44,7 +44,16 @@ test.describe('Entry Field Updates', () => {
     await avoidanceInput.fill('2');
     
     // Wait for autosave (700ms debounce + network)
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(2000);
+    
+    // Look for save indicator or wait a bit more
+    const saveIndicator = page.locator('text=/saved|saving/i');
+    if (await saveIndicator.isVisible().catch(() => false)) {
+      await page.waitForTimeout(500);
+    }
+    
+    // Wait extra time to ensure save completes
+    await page.waitForTimeout(2000);
     
     // Reload page
     await page.reload();
@@ -79,7 +88,16 @@ test.describe('Entry Field Updates', () => {
     await stressInput.fill('7');
     
     // Wait for autosave
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(2000);
+    
+    // Look for save indicator
+    const saveIndicator = page.locator('text=/saved|saving/i');
+    if (await saveIndicator.isVisible().catch(() => false)) {
+      await page.waitForTimeout(500);
+    }
+    
+    // Wait extra time to ensure save completes
+    await page.waitForTimeout(2000);
     
     // Reload page
     await page.reload();
