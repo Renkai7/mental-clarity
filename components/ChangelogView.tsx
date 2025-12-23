@@ -61,7 +61,7 @@ export const ChangelogView: React.FC = () => {
   return (
     <div className="p-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white mb-2">What's New</h1>
+        <h1 className="text-2xl font-bold text-white mb-2">What&apos;s New</h1>
         <p className="text-sm text-text-muted">
           Recent updates and improvements to Mental Clarity
         </p>

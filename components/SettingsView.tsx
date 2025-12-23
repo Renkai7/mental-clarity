@@ -214,7 +214,7 @@ export const SettingsView: React.FC = () => {
               </Button>
               <Button
                 onClick={() => setShowChangelog(!showChangelog)}
-                variant="outline"
+                variant="ghost"
               >
                 {showChangelog ? 'Hide' : "What's New"}
               </Button>

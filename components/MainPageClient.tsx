@@ -4,10 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import Tabs, { MetricTab } from './Tabs';
 import MainMetricGrid, { MainGridRow } from './MainMetricGrid';
 import { useMainGridData } from '@/hooks/useMainGridData';
-import { getBlocks, createEmptyDay } from '@/lib/dbUtils';
+import { getBlocks } from '@/lib/dbUtils';
 import type { BlockConfig } from '@/types';
-import { format } from 'date-fns';
-import { useRouter } from 'next/navigation';
 import { EmberCard } from '@/ui/cinematic-ember';
 
 const LABELS: Record<MetricTab, string> = {
@@ -19,8 +17,6 @@ const LABELS: Record<MetricTab, string> = {
 export default function MainPageClient() {
   const [active, setActive] = useState<MetricTab>('R');
   const { data, isLoading, error, loadMore, hasMore } = useMainGridData(active, 30);
-  const [isCreating, setIsCreating] = useState(false);
-  const router = useRouter();
 
   // Load configured blocks for ordered column headers
   const [blocks, setBlocks] = useState<BlockConfig[] | null>(null);
@@ -51,21 +47,6 @@ export default function MainPageClient() {
     [blocks]
   );
 
-  const onStartToday = async () => {
-    try {
-      setIsCreating(true);
-      const today = format(new Date(), 'yyyy-MM-dd');
-      await createEmptyDay(today);
-      // Automatically navigate to today's date after creating entries
-      router.push(`/day/${encodeURIComponent(today)}`);
-    } catch (error) {
-      console.error('Failed to start tracking today:', error);
-      router.refresh(); // Fallback to refresh if navigation fails
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
   return (
     <div className="mt-8 flex flex-col gap-6">
       <Tabs activeTab={active} onTabChange={setActive} />
@@ -78,20 +59,10 @@ export default function MainPageClient() {
           role="tabpanel"
           aria-labelledby={LABELS[active]}
         >
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4">
             <p className="text-sm text-slate-400">
               Showing: <span className="font-medium text-white">{LABELS[active]}</span>
             </p>
-            <button
-              type="button"
-              onClick={onStartToday}
-              disabled={isCreating}
-              className="rounded border border-cinematic-800 bg-cinematic-900/60 px-4 py-2 text-sm text-white hover:bg-lumina-orange-500/20 hover:border-lumina-orange-500 hover:shadow-glow-orange hover:scale-105 transition-all duration-300 disabled:opacity-60 cursor-pointer"
-              aria-label="Start tracking today and navigate to today's entry form"
-              title="Opens today's entry form for tracking"
-            >
-              {isCreating ? 'Opening…' : 'Track Today'}
-            </button>
           </div>
           {(isLoading || isBlocksLoading) && (
             <div className="animate-pulse text-sm text-slate-400">Loading {LABELS[active]}…</div>
