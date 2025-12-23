@@ -17,18 +17,17 @@
               - text: Sleep Quality (1–10)
               - generic [ref=e14]:
                 - button "Decrease sleep quality" [ref=e15]: −
-                - spinbutton "Sleep Quality (1–10)" [ref=e16]: "9"
+                - spinbutton "Sleep Quality (1–10)" [ref=e16]: "7"
                 - button "Increase sleep quality" [ref=e17]: +
               - paragraph [ref=e18]: How well you slept last night.
             - generic [ref=e19]:
               - text: Exercise (minutes)
-              - spinbutton "Exercise (minutes)" [ref=e20]: "45"
+              - spinbutton "Exercise (minutes)" [ref=e20]: "0"
               - paragraph [ref=e21]: Total exercise minutes for Dec 21.
           - generic [ref=e22]:
             - text: Daily Notes
             - textbox "Daily Notes" [active] [ref=e23]:
               - /placeholder: Anything notable about your day…
-              - text: Feeling great today!
       - region "Timeframes" [ref=e24]:
         - heading "Timeframes" [level=2] [ref=e25]
         - table "Timeframe entries grid" [ref=e27]:

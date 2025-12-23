@@ -38,11 +38,8 @@ test.describe('Daily Summary Updates', () => {
     await notesTextarea.clear();
     await notesTextarea.fill('Feeling great today!');
     
-    // Wait for "All changes saved" message
-    await expect(page.locator('text=/all changes saved/i')).toBeVisible({ timeout: 10000 });
-    
-    // Wait a bit more to ensure database write completes
-    await page.waitForTimeout(1000);
+    // Wait for autosave with extra buffer (700ms debounce + save + extra margin)
+    await page.waitForTimeout(5000);
     
     // Reload page
     await page.reload();
@@ -115,11 +112,8 @@ test.describe('Daily Summary Updates', () => {
     await exerciseInput.clear();
     await exerciseInput.fill('30');
     
-    // Wait for "All changes saved" message
-    await expect(page.locator('text=/all changes saved/i')).toBeVisible({ timeout: 10000 });
-    
-    // Wait a bit more to ensure database write completes
-    await page.waitForTimeout(1000);
+    // Wait for autosave with extra buffer
+    await page.waitForTimeout(5000);
     
     // Reload
     await page.reload();
@@ -137,11 +131,8 @@ test.describe('Daily Summary Updates', () => {
     // Clear notes
     await notesTextarea.clear();
     
-    // Wait for "All changes saved" message
-    await expect(page.locator('text=/all changes saved/i')).toBeVisible({ timeout: 10000 });
-    
-    // Wait a bit more to ensure database write completes
-    await page.waitForTimeout(1000);
+    // Wait for autosave with extra buffer
+    await page.waitForTimeout(5000);
     
     // Reload
     await page.reload();

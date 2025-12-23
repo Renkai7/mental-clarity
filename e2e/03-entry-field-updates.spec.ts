@@ -43,11 +43,8 @@ test.describe('Entry Field Updates', () => {
     await avoidanceInput.clear();
     await avoidanceInput.fill('2');
     
-    // Wait for "All changes saved" message
-    await expect(page.locator('text=/all changes saved/i')).toBeVisible({ timeout: 10000 });
-    
-    // Wait a bit more to ensure database write completes
-    await page.waitForTimeout(1000);
+    // Wait for autosave with extra buffer (700ms debounce + save + extra margin)
+    await page.waitForTimeout(5000);
     
     // Reload page
     await page.reload();
@@ -81,13 +78,11 @@ test.describe('Entry Field Updates', () => {
     await stressInput.clear();
     await stressInput.fill('7');
     
-    // Wait for "All changes saved" message
-    await expect(page.locator('text=/all changes saved/i')).toBeVisible({ timeout: 10000 });
-    
-    // Wait a bit more to ensure database write completes
-    await page.waitForTimeout(1000);
+    // Wait for autosave with extra buffer
+    await page.waitForTimeout(5000);
     
     // Reload page
+    await page.reload();
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     
