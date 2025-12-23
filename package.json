@@ -15,7 +15,7 @@
     "start:desktop": "electron .",
     "build:desktop": "npm run build:web",
     "test:production": "npm run build:web && electron .",
-    "package:desktop": "npm run build:web && electron-builder build",
+    "package:desktop": "npm run build:web && electron-builder build --publish never",
     "dist": "npm run package:desktop",
     "postinstall": "electron-builder install-app-deps",
     "rebuild:native": "npx --yes electron-rebuild -f -w better-sqlite3",
