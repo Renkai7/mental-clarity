@@ -17,6 +17,15 @@ let prodMode = false;
 autoUpdater.autoDownload = false; // Don't auto-download, ask user first
 autoUpdater.autoInstallOnAppQuit = true;
 
+// Configure for private repository (if needed)
+// This uses the GitHub releases API directly instead of the .atom feed
+autoUpdater.setFeedURL({
+  provider: 'github',
+  owner: 'Renkai7',
+  repo: 'mental-clarity',
+  private: true, // Set to true for private repos
+});
+
 // Update event handlers
 autoUpdater.on('checking-for-update', () => {
   log.info('Checking for updates...');
