@@ -31,9 +31,14 @@ jobs:
         run: npm ci
       
       - name: Build and publish release
+        uses: nick-fields/retry-action@v3
+        with:
+          timeout_minutes: 20
+          max_attempts: 3
+          retry_wait_seconds: 30
+          command: |
+            npm run build:web
+            npx electron-builder build --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CI: true
-        run: |
-          npm run build:web
-          npx electron-builder build --publish always
