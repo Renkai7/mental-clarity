@@ -17,13 +17,13 @@ let prodMode = false;
 autoUpdater.autoDownload = false; // Don't auto-download, ask user first
 autoUpdater.autoInstallOnAppQuit = true;
 
-// Configure for private repository (if needed)
-// This uses the GitHub releases API directly instead of the .atom feed
+// Configure for public repository
+// This uses the GitHub releases API directly
 autoUpdater.setFeedURL({
   provider: 'github',
   owner: 'Renkai7',
   repo: 'mental-clarity',
-  private: true, // Set to true for private repos
+  private: false, // Public repository - no token needed
 });
 
 // Update event handlers
