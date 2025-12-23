@@ -44,16 +44,31 @@ jobs:
       contents: write
     
     steps:
-      - name: Download all artifacts
+      - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
+          name: windows-latest-build
           path: dist
-          merge-multiple: true
+      
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-latest-build
+          path: dist
+      
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ubuntu-latest-build
+          path: dist
+      
+      - name: List files for debugging
+        run: ls -R dist
       
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/**/*
+          files: dist/*
           draft: false
           prerelease: false
           generate_release_notes: true
