@@ -47,6 +47,10 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
   // Save status per cell
   const [status, setStatus] = useState<Record<CellKey, 'idle' | 'saving' | 'saved' | 'error'>>({});
   const timers = useRef<Map<CellKey, ReturnType<typeof setTimeout>>>(new Map());
+  
+  // Track table container for sticky bottom bar
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [showStickyBar, setShowStickyBar] = useState(false);
 
   const setCellValue = (date: string, blockId: string, value: number) => {
     setRows(prev => prev.map(r => r.date === date ? {
@@ -95,9 +99,33 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
     timers.current.set(key, t);
   };
 
+  // Track scroll position to show/hide sticky bottom bar
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!tableContainerRef.current) return;
+      
+      const rect = tableContainerRef.current.getBoundingClientRect();
+      const tableBottom = rect.bottom;
+      const viewportHeight = window.innerHeight;
+      
+      // Show sticky bar when table extends below viewport
+      setShowStickyBar(tableBottom > viewportHeight && rect.top < viewportHeight);
+    };
+
+    handleScroll(); // Check initial state
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [rows]);
+
   return (
-    <div className="mt-4 w-full overflow-x-auto">
-      <table className="min-w-full border-collapse text-xs md:text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
+    <>
+      <div ref={tableContainerRef} className="mt-4 w-full overflow-x-auto">
+        <table className="min-w-full border-collapse text-xs md:text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
         <caption className="px-3 py-2 text-left text-sm font-medium text-slate-400">
           {metricLabel} Tracker
         </caption>
@@ -124,10 +152,10 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
               </td>
             </tr>
           ) : (
-            rows.map((row, rowIndex) => (
+            rows.map((row) => (
               <tr
                 key={row.date}
-                className={`cursor-pointer border-b ${rowIndex === rows.length - 1 ? 'border-b-2 border-lumina-orange-500/80 shadow-glow-orange-sm' : 'border-cinematic-800/50'} odd:bg-cinematic-950/30 hover:bg-cinematic-800/40 hover:shadow-glow-orange-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-lumina-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-cinematic-950`}
+                className="cursor-pointer border-b border-cinematic-800/50 odd:bg-cinematic-950/30 hover:bg-cinematic-800/40 hover:shadow-glow-orange-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-lumina-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-cinematic-950"
                 tabIndex={0}
                 role="link"
                 aria-label={`View day details for ${formatShort(row.date)}`}
@@ -215,5 +243,14 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
         </tbody>
       </table>
     </div>
+    
+    {/* Sticky bottom bar that appears when table extends below viewport */}
+    {showStickyBar && (
+      <div 
+        className="fixed bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-lumina-orange-500/60 via-lumina-orange-400/80 to-lumina-orange-500/60 shadow-glow-orange z-50 pointer-events-none" 
+        aria-hidden="true"
+      />
+    )}
+  </>
   );
 }
