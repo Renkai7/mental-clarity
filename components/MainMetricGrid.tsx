@@ -96,7 +96,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
   };
 
   return (
-    <div className="mt-4 w-full overflow-x-auto">
+    <div className="mt-4 w-full overflow-x-auto relative">
       <table className="min-w-full border-collapse text-xs md:text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
         <caption className="px-3 py-2 text-left text-sm font-medium text-slate-400">
           {metricLabel} Tracker
@@ -214,6 +214,8 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
           )}
         </tbody>
       </table>
+      {/* Sticky bottom border that follows scroll */}
+      <div className="sticky bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-lumina-orange-500/60 via-lumina-orange-400/80 to-lumina-orange-500/60 shadow-glow-orange z-10" aria-hidden="true" />
     </div>
   );
 }
