@@ -41,48 +41,32 @@ export default function DailySummary({
   const [exercise, setExercise] = useState<number>(clamp(exerciseMinutes, 0, 300));
   const [dailyNotes, setDailyNotes] = useState<string>(notes);
   
-  // Track if user is actively editing to prevent prop updates from overwriting
-  const isEditingRef = useRef(false);
-  const editTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const initializedRef = useRef(false);
+  // Track the last synced values to detect actual changes from database
+  const lastSyncedRef = useRef({ sleepQuality, exerciseMinutes, notes, date });
 
-  // Only sync props to state on initial mount and when date changes
-  const prevDateRef = useRef(date);
+  // Sync props to state when date changes or when database values actually change
   useEffect(() => {
-    if (!initializedRef.current || prevDateRef.current !== date) {
-      // First mount or date changed, sync from props
+    const dateChanged = lastSyncedRef.current.date !== date;
+    const sleepChanged = lastSyncedRef.current.sleepQuality !== sleepQuality;
+    const exerciseChanged = lastSyncedRef.current.exerciseMinutes !== exerciseMinutes;
+    const notesChanged = lastSyncedRef.current.notes !== notes;
+    
+    if (dateChanged || sleepChanged || exerciseChanged || notesChanged) {
+      // Only sync if actual values changed (from database load/save completion)
       setSleep(clamp(sleepQuality, 1, 10));
       setExercise(clamp(exerciseMinutes, 0, 300));
       setDailyNotes(notes);
-      prevDateRef.current = date;
-      initializedRef.current = true;
-      isEditingRef.current = false;
-      if (editTimeoutRef.current) {
-        clearTimeout(editTimeoutRef.current);
-        editTimeoutRef.current = null;
-      }
+      
+      // Update last synced values
+      lastSyncedRef.current = { sleepQuality, exerciseMinutes, notes, date };
     }
-    // Never sync props to state except on mount or date change
   }, [date, sleepQuality, exerciseMinutes, notes]);
 
   const dateLabel = useMemo(() => formatShort(date), [date]);
-  
-  // Clear editing flag after inactivity across all fields
-  const markAsEditing = () => {
-    isEditingRef.current = true;
-    if (editTimeoutRef.current) {
-      clearTimeout(editTimeoutRef.current);
-    }
-    editTimeoutRef.current = setTimeout(() => {
-      isEditingRef.current = false;
-      editTimeoutRef.current = null;
-    }, 2500); // Increased to 2.5s to outlast parent's 700ms + save time
-  };
 
   const setSleepAndNotify = (v: number) => {
     const nv = clamp(v, 1, 10);
     setSleep(nv);
-    markAsEditing();
     onSleepQualityChange?.(nv);
   };
   const decSleep = () => setSleepAndNotify(sleep - 1);
@@ -151,7 +135,6 @@ export default function DailySummary({
             onChange={(e) => {
               const nv = clamp(parseInt(e.target.value, 10), 0, 300);
               setExercise(nv);
-              markAsEditing();
               onExerciseMinutesChange?.(nv);
             }}
             density="md"
@@ -179,7 +162,6 @@ export default function DailySummary({
           onChange={(e) => {
             const v = e.target.value;
             setDailyNotes(v);
-            markAsEditing();
             onNotesChange?.(v);
           }}
           placeholder="Anything notable about your day…"
