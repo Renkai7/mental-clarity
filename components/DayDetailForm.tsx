@@ -197,7 +197,7 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
   };
 
   return (
-    <div className="relative pb-24">
+    <div className="relative pb-32">
       {isLoading && (
         <div className="mb-4 text-sm text-slate-400" role="status">
           Loading day data...

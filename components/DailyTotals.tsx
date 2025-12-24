@@ -14,7 +14,7 @@ export default function DailyTotals({
   avoidanceTotal,
 }: DailyTotalsProps) {
   return (
-    <div className="sticky bottom-0 left-0 right-0 z-10 border-t border-cinematic-800 bg-cinematic-950/95 backdrop-blur-sm shadow-glow-orange-sm">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-cinematic-800 bg-cinematic-950/95 backdrop-blur-sm shadow-glow-orange-sm">
       <div className="mx-auto max-w-4xl px-6 py-4">
         <div className="flex items-center justify-between gap-4">
           <h3 className="text-sm font-medium text-white">
