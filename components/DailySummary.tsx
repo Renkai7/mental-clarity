@@ -43,17 +43,24 @@ export default function DailySummary({
   
   // Track the previous date to detect navigation
   const prevDateRef = useRef<string | null>(null);
+  const prevPropsRef = useRef({ sleepQuality, exerciseMinutes, notes });
 
-  // Sync props to state on initial mount or when date changes
+  // Sync props to state on initial mount, date change, OR when props change from database reload
   useEffect(() => {
-    if (prevDateRef.current === null || prevDateRef.current !== date) {
-      // Initial mount or date changed - load from props
+    const dateChanged = prevDateRef.current !== date;
+    const propsChanged = 
+      prevPropsRef.current.sleepQuality !== sleepQuality ||
+      prevPropsRef.current.exerciseMinutes !== exerciseMinutes ||
+      prevPropsRef.current.notes !== notes;
+    
+    if (prevDateRef.current === null || dateChanged || propsChanged) {
+      console.log('[DailySummary] Syncing props to state:', { date, sleepQuality, exerciseMinutes, notes, reason: prevDateRef.current === null ? 'mount' : dateChanged ? 'date-change' : 'props-changed' });
       setSleep(clamp(sleepQuality, 1, 10));
       setExercise(clamp(exerciseMinutes, 0, 300));
       setDailyNotes(notes);
       prevDateRef.current = date;
+      prevPropsRef.current = { sleepQuality, exerciseMinutes, notes };
     }
-    // Don't sync props during same-day edits - let user's local state be the source of truth
   }, [date, sleepQuality, exerciseMinutes, notes]);
 
   const dateLabel = useMemo(() => formatShort(date), [date]);
