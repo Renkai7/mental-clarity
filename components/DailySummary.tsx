@@ -44,8 +44,10 @@ export default function DailySummary({
   // Track the previous date to detect navigation
   const prevDateRef = useRef<string | null>(null);
   const prevPropsRef = useRef({ sleepQuality, exerciseMinutes, notes });
+  const isEditingRef = useRef(false);
+  const editTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Sync props to state on initial mount, date change, OR when props change from database reload
+  // Sync props to state on initial mount, date change, OR when props change from database reload (but NOT during active editing)
   useEffect(() => {
     const dateChanged = prevDateRef.current !== date;
     const propsChanged = 
@@ -53,15 +55,29 @@ export default function DailySummary({
       prevPropsRef.current.exerciseMinutes !== exerciseMinutes ||
       prevPropsRef.current.notes !== notes;
     
-    if (prevDateRef.current === null || dateChanged || propsChanged) {
-      console.log('[DailySummary] Syncing props to state:', { date, sleepQuality, exerciseMinutes, notes, reason: prevDateRef.current === null ? 'mount' : dateChanged ? 'date-change' : 'props-changed' });
+    // Always sync on mount or date change. For prop changes, only sync if not actively editing
+    if (prevDateRef.current === null || dateChanged || (propsChanged && !isEditingRef.current)) {
+      console.log('[DailySummary] Syncing props to state:', { date, sleepQuality, exerciseMinutes, notes, reason: prevDateRef.current === null ? 'mount' : dateChanged ? 'date-change' : 'props-changed', isEditing: isEditingRef.current });
       setSleep(clamp(sleepQuality, 1, 10));
       setExercise(clamp(exerciseMinutes, 0, 300));
       setDailyNotes(notes);
       prevDateRef.current = date;
       prevPropsRef.current = { sleepQuality, exerciseMinutes, notes };
+    } else if (propsChanged && isEditingRef.current) {
+      console.log('[DailySummary] Skipping prop sync during active edit:', { sleepQuality, exerciseMinutes, notes });
     }
   }, [date, sleepQuality, exerciseMinutes, notes]);
+  
+  // Mark as editing and clear the flag after inactivity
+  const markAsEditing = () => {
+    isEditingRef.current = true;
+    if (editTimeoutRef.current) clearTimeout(editTimeoutRef.current);
+    editTimeoutRef.current = setTimeout(() => {
+      console.log('[DailySummary] Edit session ended');
+      isEditingRef.current = false;
+      editTimeoutRef.current = null;
+    }, 2000); // 2 seconds of inactivity
+  };
 
   const dateLabel = useMemo(() => formatShort(date), [date]);
 
@@ -69,6 +85,7 @@ export default function DailySummary({
     const nv = clamp(v, 1, 10);
     console.log('[DailySummary] setSleepAndNotify called:', { value: v, clamped: nv, hasCallback: !!onSleepQualityChange });
     setSleep(nv);
+    markAsEditing();
     if (onSleepQualityChange) {
       console.log('[DailySummary] Calling onSleepQualityChange with:', nv);
       onSleepQualityChange(nv);
@@ -143,6 +160,7 @@ export default function DailySummary({
               const nv = clamp(parseInt(e.target.value, 10), 0, 300);
               console.log('[DailySummary] Exercise onChange:', { value: nv, hasCallback: !!onExerciseMinutesChange });
               setExercise(nv);
+              markAsEditing();
               if (onExerciseMinutesChange) {
                 console.log('[DailySummary] Calling onExerciseMinutesChange with:', nv);
                 onExerciseMinutesChange(nv);
@@ -176,6 +194,7 @@ export default function DailySummary({
             const v = e.target.value;
             console.log('[DailySummary] Notes onChange:', { value: v, hasCallback: !!onNotesChange });
             setDailyNotes(v);
+            markAsEditing();
             if (onNotesChange) {
               console.log('[DailySummary] Calling onNotesChange with:', v);
               onNotesChange(v);
