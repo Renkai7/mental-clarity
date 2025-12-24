@@ -216,12 +216,6 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
           )}
         </tbody>
       </table>
-      
-      {/* Sticky bottom bar within scroll container */}
-      <div 
-        className="sticky bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-lumina-orange-500/60 via-lumina-orange-400/80 to-lumina-orange-500/60 shadow-glow-orange pointer-events-none" 
-        aria-hidden="true"
-      />
     </div>
     </div>
   );
