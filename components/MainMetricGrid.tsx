@@ -96,7 +96,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
   };
 
   return (
-    <div className="mt-4 w-full overflow-x-auto relative">
+    <div className="mt-4 w-full overflow-x-auto">
       <table className="min-w-full border-collapse text-xs md:text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
         <caption className="px-3 py-2 text-left text-sm font-medium text-slate-400">
           {metricLabel} Tracker
@@ -124,10 +124,10 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
               </td>
             </tr>
           ) : (
-            rows.map((row) => (
+            rows.map((row, rowIndex) => (
               <tr
                 key={row.date}
-                className="cursor-pointer border-b border-cinematic-800/50 odd:bg-cinematic-950/30 hover:bg-cinematic-800/40 hover:shadow-glow-orange-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-lumina-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-cinematic-950"
+                className={`cursor-pointer border-b ${rowIndex === rows.length - 1 ? 'border-b-2 border-lumina-orange-500/80 shadow-glow-orange-sm' : 'border-cinematic-800/50'} odd:bg-cinematic-950/30 hover:bg-cinematic-800/40 hover:shadow-glow-orange-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-lumina-orange-500 focus-visible:ring-offset-1 focus-visible:ring-offset-cinematic-950`}
                 tabIndex={0}
                 role="link"
                 aria-label={`View day details for ${formatShort(row.date)}`}
@@ -214,8 +214,6 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
           )}
         </tbody>
       </table>
-      {/* Sticky bottom border that follows scroll */}
-      <div className="sticky bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-lumina-orange-500/60 via-lumina-orange-400/80 to-lumina-orange-500/60 shadow-glow-orange z-10" aria-hidden="true" />
     </div>
   );
 }
