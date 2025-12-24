@@ -44,27 +44,25 @@ export default function DailySummary({
   // Track if user is actively editing to prevent prop updates from overwriting
   const isEditingRef = useRef(false);
   const editTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const initializedRef = useRef(false);
 
-  // Only sync props to state when date changes or when not actively editing
+  // Only sync props to state on initial mount and when date changes
   const prevDateRef = useRef(date);
   useEffect(() => {
-    if (prevDateRef.current !== date) {
-      // Date changed, reset all fields
+    if (!initializedRef.current || prevDateRef.current !== date) {
+      // First mount or date changed, sync from props
       setSleep(clamp(sleepQuality, 1, 10));
       setExercise(clamp(exerciseMinutes, 0, 300));
       setDailyNotes(notes);
       prevDateRef.current = date;
+      initializedRef.current = true;
       isEditingRef.current = false;
       if (editTimeoutRef.current) {
         clearTimeout(editTimeoutRef.current);
         editTimeoutRef.current = null;
       }
-    } else if (!isEditingRef.current) {
-      // Only update from props if user is not actively editing
-      setSleep(clamp(sleepQuality, 1, 10));
-      setExercise(clamp(exerciseMinutes, 0, 300));
-      setDailyNotes(notes);
     }
+    // Never sync props to state except on mount or date change
   }, [date, sleepQuality, exerciseMinutes, notes]);
 
   const dateLabel = useMemo(() => formatShort(date), [date]);
@@ -78,7 +76,7 @@ export default function DailySummary({
     editTimeoutRef.current = setTimeout(() => {
       isEditingRef.current = false;
       editTimeoutRef.current = null;
-    }, 1500);
+    }, 2500); // Increased to 2.5s to outlast parent's 700ms + save time
   };
 
   const setSleepAndNotify = (v: number) => {
