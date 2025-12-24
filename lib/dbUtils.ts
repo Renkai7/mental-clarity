@@ -99,6 +99,8 @@ export async function getMainGridSummary(metric: Metric, limit: number) {
   // Generate date list going back from today
   const dates: string[] = [];
   const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize to start of day
+  
   for (let i = 0; i < limit; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() - i);
