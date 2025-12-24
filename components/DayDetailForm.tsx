@@ -198,8 +198,12 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
 
   // Flush pending saves when component unmounts or date changes
   useEffect(() => {
+    // Capture current draft before cleanup
+    const currentDraft = dailyMetaDraft;
+    const isPending = metaPendingRef.current;
+    
     return () => {
-      // On unmount/date change, flush immediately (synchronous)
+      // On unmount/date change, clear timeouts
       if (metaTimeoutRef.current) {
         clearTimeout(metaTimeoutRef.current);
         metaTimeoutRef.current = null;
@@ -209,15 +213,18 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
         if (timeout) clearTimeout(timeout);
       });
       saveTimeouts.current = {};
+      
+      // If there were pending changes, save them immediately
+      if (isPending) {
+        saveDailyMeta({
+          sleepQuality: currentDraft.sleepQuality,
+          exerciseMinutes: currentDraft.exerciseMinutes,
+          dailyNotes: currentDraft.dailyNotes || undefined,
+        }).catch(e => console.error('[day] cleanup meta save failed', e));
+        metaPendingRef.current = false;
+      }
     };
-  }, [date]);
-
-  // Effect to flush pending meta save when navigating away
-  useEffect(() => {
-    if (metaPendingRef.current) {
-      flushDailyMeta();
-    }
-  }, [date, flushDailyMeta]);
+  }, [date, dailyMetaDraft, saveDailyMeta]);
 
   return (
     <div className="relative pb-32">
