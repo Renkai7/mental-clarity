@@ -96,22 +96,20 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
   };
 
   return (
-    <div className="mt-4 w-full">
-      {/* Scrollable table container with sticky bottom bar */}
-      <div className="relative max-h-[600px] overflow-y-auto overflow-x-auto border border-cinematic-800 rounded-lg">
-        <table className="min-w-full border-collapse text-xs md:text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
+    <div className="mt-4 w-full overflow-x-auto">
+      <table className="min-w-full border-collapse text-xs md:text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
         <caption className="px-3 py-2 text-left text-sm font-medium text-slate-400">
           {metricLabel} Tracker
         </caption>
-        <thead className="sticky top-0 z-20">
-          <tr className="bg-cinematic-900/60 border-b border-cinematic-800 backdrop-blur-sm">
-            <th scope="col" className="sticky left-0 z-30 bg-cinematic-900/90 backdrop-blur-sm px-2 py-1.5 md:px-3 md:py-2 text-left font-medium text-white shadow-sm">Date</th>
-            <th scope="col" className="bg-cinematic-900/90 backdrop-blur-sm px-2 py-1.5 md:px-3 md:py-2 text-right font-medium text-white">{`Total ${metricLabel}`}</th>
+        <thead>
+          <tr className="bg-cinematic-900/60 border-b border-cinematic-800">
+            <th scope="col" className="sticky left-0 z-10 bg-cinematic-900/60 px-2 py-1.5 md:px-3 md:py-2 text-left font-medium text-white">Date</th>
+            <th scope="col" className="px-2 py-1.5 md:px-3 md:py-2 text-right font-medium text-white">{`Total ${metricLabel}`}</th>
             {columns.map(col => (
               <th
                 key={col.id}
                 scope="col"
-                className="bg-cinematic-900/90 backdrop-blur-sm px-2 py-1.5 md:px-3 md:py-2 text-center font-medium whitespace-normal leading-tight text-white"
+                className="px-2 py-1.5 md:px-3 md:py-2 text-center font-medium whitespace-normal leading-tight text-white"
               >
                 {col.label}
               </th>
@@ -216,7 +214,6 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
           )}
         </tbody>
       </table>
-    </div>
     </div>
   );
 }
