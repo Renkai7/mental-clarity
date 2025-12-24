@@ -199,36 +199,24 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
   // Flush pending saves when component unmounts or date changes
   useEffect(() => {
     return () => {
-      // On unmount, immediately flush any pending saves
+      // On unmount/date change, flush immediately (synchronous)
       if (metaTimeoutRef.current) {
         clearTimeout(metaTimeoutRef.current);
-        // Flush immediately (don't use async in cleanup)
-        if (metaPendingRef.current) {
-          flushDailyMeta();
-        }
+        metaTimeoutRef.current = null;
       }
-      // Flush any pending block saves
-      Object.keys(saveTimeouts.current).forEach(blockId => {
-        const timeout = saveTimeouts.current[blockId];
-        if (timeout) {
-          clearTimeout(timeout);
-          const draft = draftOverrides[blockId];
-          if (draft) {
-            flushBlockSave(blockId, draft);
-          }
-        }
+      // Clear all pending block timeouts
+      Object.values(saveTimeouts.current).forEach(timeout => {
+        if (timeout) clearTimeout(timeout);
       });
+      saveTimeouts.current = {};
     };
-  }, [flushDailyMeta, flushBlockSave, draftOverrides]);
+  }, [date]);
 
-  // When date changes, flush pending saves for the old date
+  // Effect to flush pending meta save when navigating away
   useEffect(() => {
-    return () => {
-      // This cleanup runs when date changes
-      if (metaPendingRef.current) {
-        flushDailyMeta();
-      }
-    };
+    if (metaPendingRef.current) {
+      flushDailyMeta();
+    }
   }, [date, flushDailyMeta]);
 
   return (
