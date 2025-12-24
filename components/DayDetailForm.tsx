@@ -205,22 +205,24 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
     }
   };
 
-  // Flush pending saves when component unmounts or date changes
+  // Flush pending saves when date changes
   useEffect(() => {
-    // Capture current draft before cleanup
-    const currentDraft = dailyMetaDraft;
-    const isPending = metaPendingRef.current;
-    console.log('[DayDetailForm] useEffect setup for date:', date, 'draft:', currentDraft, 'pending:', isPending);
+    // Capture current draft and pending state when date changes
+    const prevDate = date;
     
     return () => {
-      console.log('[DayDetailForm] Cleanup running for date change. Captured draft:', currentDraft, 'pending:', isPending);
-      // On unmount/date change, clear timeouts
+      // Only save if we're changing dates (not just re-rendering)
+      const currentDraft = dailyMetaDraft;
+      const isPending = metaPendingRef.current;
+      
+      console.log('[DayDetailForm] Cleanup running. Date was:', prevDate, 'Captured draft:', currentDraft, 'pending:', isPending);
+      
+      // Clear timeouts
       if (metaTimeoutRef.current) {
         console.log('[DayDetailForm] Clearing meta timeout');
         clearTimeout(metaTimeoutRef.current);
         metaTimeoutRef.current = null;
       }
-      // Clear all pending block timeouts
       Object.values(saveTimeouts.current).forEach(timeout => {
         if (timeout) clearTimeout(timeout);
       });
@@ -243,7 +245,7 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
         console.log('[DayDetailForm] No pending changes in cleanup');
       }
     };
-  }, [date, dailyMetaDraft, saveDailyMeta]);
+  }, [date, saveDailyMeta]); // Removed dailyMetaDraft from deps!
 
   return (
     <div className="relative pb-32">
