@@ -35,17 +35,26 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
     exerciseMinutes: dailyMeta?.exerciseMinutes ?? 0,
     dailyNotes: dailyMeta?.dailyNotes ?? '',
   });
+  // Ref to track latest draft values synchronously (for immediate access in callbacks)
+  const dailyMetaDraftRef = useRef(dailyMetaDraft);
   const metaTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const metaPendingRef = useRef<boolean>(false);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    dailyMetaDraftRef.current = dailyMetaDraft;
+  }, [dailyMetaDraft]);
 
   // Keep draft in sync when underlying persisted meta changes (e.g., after reload)
   useEffect(() => {
     if (dailyMeta) {
-      setDailyMetaDraft({
+      const newDraft = {
         sleepQuality: dailyMeta.sleepQuality ?? 7,
         exerciseMinutes: dailyMeta.exerciseMinutes ?? 0,
         dailyNotes: dailyMeta.dailyNotes ?? '',
-      });
+      };
+      setDailyMetaDraft(newDraft);
+      dailyMetaDraftRef.current = newDraft;
     }
   }, [dailyMeta]);
 
@@ -141,14 +150,14 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
 
   // Flush daily meta draft
   const flushDailyMeta = useCallback(async () => {
-    console.log('[DayDetailForm] flushDailyMeta called, pending:', metaPendingRef.current, 'draft:', dailyMetaDraft);
+    console.log('[DayDetailForm] flushDailyMeta called, pending:', metaPendingRef.current, 'draft from ref:', dailyMetaDraftRef.current);
     if (!metaPendingRef.current) return;
     setIsSaving(true);
     try {
       const dataToSave = {
-        sleepQuality: dailyMetaDraft.sleepQuality,
-        exerciseMinutes: dailyMetaDraft.exerciseMinutes,
-        dailyNotes: dailyMetaDraft.dailyNotes || undefined,
+        sleepQuality: dailyMetaDraftRef.current.sleepQuality,
+        exerciseMinutes: dailyMetaDraftRef.current.exerciseMinutes,
+        dailyNotes: dailyMetaDraftRef.current.dailyNotes || undefined,
       };
       console.log('[DayDetailForm] Saving daily meta:', dataToSave);
       await saveDailyMeta(dataToSave);
@@ -162,7 +171,7 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
         setTimeout(() => setIsSaving(false), 120);
       }
     }
-  }, [dailyMetaDraft, saveDailyMeta]);
+  }, [saveDailyMeta]);
 
   const scheduleMetaSave = useCallback(() => {
     console.log('[DayDetailForm] scheduleMetaSave called, pending:', metaPendingRef.current);
@@ -212,10 +221,10 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
     
     return () => {
       // Only save if we're changing dates (not just re-rendering)
-      const currentDraft = dailyMetaDraft;
+      const currentDraft = dailyMetaDraftRef.current;
       const isPending = metaPendingRef.current;
       
-      console.log('[DayDetailForm] Cleanup running. Date was:', prevDate, 'Captured draft:', currentDraft, 'pending:', isPending);
+      console.log('[DayDetailForm] Cleanup running. Date was:', prevDate, 'Captured draft from ref:', currentDraft, 'pending:', isPending);
       
       // Clear timeouts
       if (metaTimeoutRef.current) {
