@@ -196,6 +196,41 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
     }
   };
 
+  // Flush pending saves when component unmounts or date changes
+  useEffect(() => {
+    return () => {
+      // On unmount, immediately flush any pending saves
+      if (metaTimeoutRef.current) {
+        clearTimeout(metaTimeoutRef.current);
+        // Flush immediately (don't use async in cleanup)
+        if (metaPendingRef.current) {
+          flushDailyMeta();
+        }
+      }
+      // Flush any pending block saves
+      Object.keys(saveTimeouts.current).forEach(blockId => {
+        const timeout = saveTimeouts.current[blockId];
+        if (timeout) {
+          clearTimeout(timeout);
+          const draft = draftOverrides[blockId];
+          if (draft) {
+            flushBlockSave(blockId, draft);
+          }
+        }
+      });
+    };
+  }, [flushDailyMeta, flushBlockSave, draftOverrides]);
+
+  // When date changes, flush pending saves for the old date
+  useEffect(() => {
+    return () => {
+      // This cleanup runs when date changes
+      if (metaPendingRef.current) {
+        flushDailyMeta();
+      }
+    };
+  }, [date, flushDailyMeta]);
+
   return (
     <div className="relative pb-32">
       {isLoading && (
