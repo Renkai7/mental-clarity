@@ -57,14 +57,11 @@ export default function DailySummary({
     
     // Always sync on mount or date change. For prop changes, only sync if not actively editing
     if (prevDateRef.current === null || dateChanged || (propsChanged && !isEditingRef.current)) {
-      console.log('[DailySummary] Syncing props to state:', { date, sleepQuality, exerciseMinutes, notes, reason: prevDateRef.current === null ? 'mount' : dateChanged ? 'date-change' : 'props-changed', isEditing: isEditingRef.current });
       setSleep(clamp(sleepQuality, 1, 10));
       setExercise(clamp(exerciseMinutes, 0, 300));
       setDailyNotes(notes);
       prevDateRef.current = date;
       prevPropsRef.current = { sleepQuality, exerciseMinutes, notes };
-    } else if (propsChanged && isEditingRef.current) {
-      console.log('[DailySummary] Skipping prop sync during active edit:', { sleepQuality, exerciseMinutes, notes });
     }
   }, [date, sleepQuality, exerciseMinutes, notes]);
   
@@ -73,7 +70,6 @@ export default function DailySummary({
     isEditingRef.current = true;
     if (editTimeoutRef.current) clearTimeout(editTimeoutRef.current);
     editTimeoutRef.current = setTimeout(() => {
-      console.log('[DailySummary] Edit session ended');
       isEditingRef.current = false;
       editTimeoutRef.current = null;
     }, 2000); // 2 seconds of inactivity
@@ -83,15 +79,9 @@ export default function DailySummary({
 
   const setSleepAndNotify = (v: number) => {
     const nv = clamp(v, 1, 10);
-    console.log('[DailySummary] setSleepAndNotify called:', { value: v, clamped: nv, hasCallback: !!onSleepQualityChange });
     setSleep(nv);
     markAsEditing();
-    if (onSleepQualityChange) {
-      console.log('[DailySummary] Calling onSleepQualityChange with:', nv);
-      onSleepQualityChange(nv);
-    } else {
-      console.warn('[DailySummary] onSleepQualityChange callback is undefined!');
-    }
+    onSleepQualityChange?.(nv);
   };
   const decSleep = () => setSleepAndNotify(sleep - 1);
   const incSleep = () => setSleepAndNotify(sleep + 1);
@@ -158,15 +148,9 @@ export default function DailySummary({
             value={exercise}
             onChange={(e) => {
               const nv = clamp(parseInt(e.target.value, 10), 0, 300);
-              console.log('[DailySummary] Exercise onChange:', { value: nv, hasCallback: !!onExerciseMinutesChange });
               setExercise(nv);
               markAsEditing();
-              if (onExerciseMinutesChange) {
-                console.log('[DailySummary] Calling onExerciseMinutesChange with:', nv);
-                onExerciseMinutesChange(nv);
-              } else {
-                console.warn('[DailySummary] onExerciseMinutesChange callback is undefined!');
-              }
+              onExerciseMinutesChange?.(nv);
             }}
             density="md"
             tabularNums
@@ -192,15 +176,9 @@ export default function DailySummary({
           value={dailyNotes}
           onChange={(e) => {
             const v = e.target.value;
-            console.log('[DailySummary] Notes onChange:', { value: v, hasCallback: !!onNotesChange });
             setDailyNotes(v);
             markAsEditing();
-            if (onNotesChange) {
-              console.log('[DailySummary] Calling onNotesChange with:', v);
-              onNotesChange(v);
-            } else {
-              console.warn('[DailySummary] onNotesChange callback is undefined!');
-            }
+            onNotesChange?.(v);
           }}
           placeholder="Anything notable about your day…"
           density="md"

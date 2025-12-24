@@ -150,18 +150,14 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
 
   // Flush daily meta draft
   const flushDailyMeta = useCallback(async () => {
-    console.log('[DayDetailForm] flushDailyMeta called, pending:', metaPendingRef.current, 'draft from ref:', dailyMetaDraftRef.current);
     if (!metaPendingRef.current) return;
     setIsSaving(true);
     try {
-      const dataToSave = {
+      await saveDailyMeta({
         sleepQuality: dailyMetaDraftRef.current.sleepQuality,
         exerciseMinutes: dailyMetaDraftRef.current.exerciseMinutes,
         dailyNotes: dailyMetaDraftRef.current.dailyNotes || undefined,
-      };
-      console.log('[DayDetailForm] Saving daily meta:', dataToSave);
-      await saveDailyMeta(dataToSave);
-      console.log('[DayDetailForm] Daily meta save successful');
+      });
       // Placeholder: CI recalculation trigger (M10) would go here.
     } catch (e) {
       console.error('[day] daily meta autosave failed', e);
@@ -174,27 +170,22 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
   }, [saveDailyMeta]);
 
   const scheduleMetaSave = useCallback(() => {
-    console.log('[DayDetailForm] scheduleMetaSave called, pending:', metaPendingRef.current);
     if (metaTimeoutRef.current) clearTimeout(metaTimeoutRef.current);
     metaPendingRef.current = true;
     metaTimeoutRef.current = setTimeout(() => {
-      console.log('[DayDetailForm] scheduleMetaSave timeout fired, calling flushDailyMeta');
       flushDailyMeta();
     }, 700); // 700ms debounce for daily meta
   }, [flushDailyMeta]);
 
   const handleSleepChange = (v: number) => {
-    console.log('[DayDetailForm] handleSleepChange called:', { date, value: v });
     setDailyMetaDraft(d => ({ ...d, sleepQuality: v }));
     scheduleMetaSave();
   };
   const handleExerciseChange = (v: number) => {
-    console.log('[DayDetailForm] handleExerciseChange called:', { date, value: v });
     setDailyMetaDraft(d => ({ ...d, exerciseMinutes: v }));
     scheduleMetaSave();
   };
   const handleNotesChange = (v: string) => {
-    console.log('[DayDetailForm] handleNotesChange called:', { date, value: v });
     setDailyMetaDraft(d => ({ ...d, dailyNotes: v }));
     scheduleMetaSave();
   };
@@ -220,15 +211,11 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
     const prevDate = date;
     
     return () => {
-      // Only save if we're changing dates (not just re-rendering)
       const currentDraft = dailyMetaDraftRef.current;
       const isPending = metaPendingRef.current;
       
-      console.log('[DayDetailForm] Cleanup running. Date was:', prevDate, 'Captured draft from ref:', currentDraft, 'pending:', isPending);
-      
       // Clear timeouts
       if (metaTimeoutRef.current) {
-        console.log('[DayDetailForm] Clearing meta timeout');
         clearTimeout(metaTimeoutRef.current);
         metaTimeoutRef.current = null;
       }
@@ -239,19 +226,14 @@ export default function DayDetailForm({ date }: DayDetailFormProps) {
       
       // If there were pending changes, save them immediately
       if (isPending) {
-        console.log('[DayDetailForm] Saving captured draft in cleanup:', currentDraft);
         saveDailyMeta({
           sleepQuality: currentDraft.sleepQuality,
           exerciseMinutes: currentDraft.exerciseMinutes,
           dailyNotes: currentDraft.dailyNotes || undefined,
-        }).then(() => {
-          console.log('[DayDetailForm] Cleanup save completed successfully');
         }).catch(e => {
           console.error('[day] cleanup meta save failed', e);
         });
         metaPendingRef.current = false;
-      } else {
-        console.log('[DayDetailForm] No pending changes in cleanup');
       }
     };
   }, [date, saveDailyMeta]); // Removed dailyMetaDraft from deps!
