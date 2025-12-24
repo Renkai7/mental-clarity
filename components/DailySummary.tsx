@@ -40,26 +40,37 @@ export default function DailySummary({
   const [sleep, setSleep] = useState<number>(clamp(sleepQuality, 1, 10));
   const [exercise, setExercise] = useState<number>(clamp(exerciseMinutes, 0, 300));
   const [dailyNotes, setDailyNotes] = useState<string>(notes);
+  
+  // Track if user is actively editing to prevent prop updates from overwriting
+  const isEditingRef = useRef(false);
 
-  // Sync local state with props when they change
+  // Only sync props to state when date changes or when not actively editing
+  const prevDateRef = useRef(date);
   useEffect(() => {
-    setSleep(clamp(sleepQuality, 1, 10));
-  }, [sleepQuality]);
-
-  useEffect(() => {
-    setExercise(clamp(exerciseMinutes, 0, 300));
-  }, [exerciseMinutes]);
-
-  useEffect(() => {
-    setDailyNotes(notes);
-  }, [notes]);
+    if (prevDateRef.current !== date) {
+      // Date changed, reset all fields
+      setSleep(clamp(sleepQuality, 1, 10));
+      setExercise(clamp(exerciseMinutes, 0, 300));
+      setDailyNotes(notes);
+      prevDateRef.current = date;
+      isEditingRef.current = false;
+    } else if (!isEditingRef.current) {
+      // Only update from props if user is not actively editing
+      setSleep(clamp(sleepQuality, 1, 10));
+      setExercise(clamp(exerciseMinutes, 0, 300));
+      setDailyNotes(notes);
+    }
+  }, [date, sleepQuality, exerciseMinutes, notes]);
 
   const dateLabel = useMemo(() => formatShort(date), [date]);
 
   const setSleepAndNotify = (v: number) => {
     const nv = clamp(v, 1, 10);
     setSleep(nv);
+    isEditingRef.current = true;
     onSleepQualityChange?.(nv);
+    // Clear editing flag after a short delay
+    setTimeout(() => { isEditingRef.current = false; }, 1000);
   };
   const decSleep = () => setSleepAndNotify(sleep - 1);
   const incSleep = () => setSleepAndNotify(sleep + 1);
@@ -127,7 +138,10 @@ export default function DailySummary({
             onChange={(e) => {
               const nv = clamp(parseInt(e.target.value, 10), 0, 300);
               setExercise(nv);
+              isEditingRef.current = true;
               onExerciseMinutesChange?.(nv);
+              // Clear editing flag after a short delay
+              setTimeout(() => { isEditingRef.current = false; }, 1000);
             }}
             density="md"
             tabularNums
@@ -154,7 +168,10 @@ export default function DailySummary({
           onChange={(e) => {
             const v = e.target.value;
             setDailyNotes(v);
+            isEditingRef.current = true;
             onNotesChange?.(v);
+            // Clear editing flag after a short delay
+            setTimeout(() => { isEditingRef.current = false; }, 1000);
           }}
           placeholder="Anything notable about your day…"
           density="md"
