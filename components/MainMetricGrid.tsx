@@ -47,10 +47,6 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
   // Save status per cell
   const [status, setStatus] = useState<Record<CellKey, 'idle' | 'saving' | 'saved' | 'error'>>({});
   const timers = useRef<Map<CellKey, ReturnType<typeof setTimeout>>>(new Map());
-  
-  // Track table container for sticky bottom bar
-  const tableContainerRef = useRef<HTMLDivElement>(null);
-  const [showStickyBar, setShowStickyBar] = useState(false);
 
   const setCellValue = (date: string, blockId: string, value: number) => {
     setRows(prev => prev.map(r => r.date === date ? {
@@ -99,32 +95,10 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
     timers.current.set(key, t);
   };
 
-  // Track scroll position to show/hide sticky bottom bar
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!tableContainerRef.current) return;
-      
-      const rect = tableContainerRef.current.getBoundingClientRect();
-      const tableBottom = rect.bottom;
-      const viewportHeight = window.innerHeight;
-      
-      // Show sticky bar when table extends below viewport
-      setShowStickyBar(tableBottom > viewportHeight && rect.top < viewportHeight);
-    };
-
-    handleScroll(); // Check initial state
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll, { passive: true });
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-    };
-  }, [rows]);
-
   return (
-    <>
-      <div ref={tableContainerRef} className="mt-4 w-full overflow-x-auto">
+    <div className="mt-4 w-full">
+      {/* Scrollable table container with sticky bottom bar */}
+      <div className="relative max-h-[600px] overflow-y-auto overflow-x-auto border border-cinematic-800 rounded-lg">
         <table className="min-w-full border-collapse text-xs md:text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
         <caption className="px-3 py-2 text-left text-sm font-medium text-slate-400">
           {metricLabel} Tracker
@@ -242,15 +216,13 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
           )}
         </tbody>
       </table>
-    </div>
-    
-    {/* Sticky bottom bar that appears when table extends below viewport */}
-    {showStickyBar && (
+      
+      {/* Sticky bottom bar within scroll container */}
       <div 
-        className="fixed bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-lumina-orange-500/60 via-lumina-orange-400/80 to-lumina-orange-500/60 shadow-glow-orange z-50 pointer-events-none" 
+        className="sticky bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-lumina-orange-500/60 via-lumina-orange-400/80 to-lumina-orange-500/60 shadow-glow-orange pointer-events-none" 
         aria-hidden="true"
       />
-    )}
-  </>
+    </div>
+    </div>
   );
 }
