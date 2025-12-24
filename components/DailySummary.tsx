@@ -42,12 +42,12 @@ export default function DailySummary({
   const [dailyNotes, setDailyNotes] = useState<string>(notes);
   
   // Track the previous date to detect navigation
-  const prevDateRef = useRef(date);
+  const prevDateRef = useRef<string | null>(null);
 
-  // Only sync props to state when date changes (navigation to different day)
+  // Sync props to state on initial mount or when date changes
   useEffect(() => {
-    if (prevDateRef.current !== date) {
-      // Date changed - load new day's data
+    if (prevDateRef.current === null || prevDateRef.current !== date) {
+      // Initial mount or date changed - load from props
       setSleep(clamp(sleepQuality, 1, 10));
       setExercise(clamp(exerciseMinutes, 0, 300));
       setDailyNotes(notes);
