@@ -24,6 +24,7 @@ export function useDayData(date: string) {
   const requestId = useRef(0);
 
   const load = useCallback(async () => {
+    console.log('[useDayData] load called for date:', date);
     setIsLoading(true);
     setError(null);
     const id = ++requestId.current;
@@ -33,6 +34,7 @@ export function useDayData(date: string) {
         getEntriesForDate(date),
         getDailyMeta(date),
       ]);  
+      console.log('[useDayData] loaded data for date:', date, 'meta:', meta);
       if (id !== requestId.current) return; // stale
       setBlocks(blk);
       // Ensure entries ordered by block order
