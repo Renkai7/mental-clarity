@@ -41,25 +41,19 @@ export default function DailySummary({
   const [exercise, setExercise] = useState<number>(clamp(exerciseMinutes, 0, 300));
   const [dailyNotes, setDailyNotes] = useState<string>(notes);
   
-  // Track the last synced values to detect actual changes from database
-  const lastSyncedRef = useRef({ sleepQuality, exerciseMinutes, notes, date });
+  // Track the previous date to detect navigation
+  const prevDateRef = useRef(date);
 
-  // Sync props to state when date changes or when database values actually change
+  // Only sync props to state when date changes (navigation to different day)
   useEffect(() => {
-    const dateChanged = lastSyncedRef.current.date !== date;
-    const sleepChanged = lastSyncedRef.current.sleepQuality !== sleepQuality;
-    const exerciseChanged = lastSyncedRef.current.exerciseMinutes !== exerciseMinutes;
-    const notesChanged = lastSyncedRef.current.notes !== notes;
-    
-    if (dateChanged || sleepChanged || exerciseChanged || notesChanged) {
-      // Only sync if actual values changed (from database load/save completion)
+    if (prevDateRef.current !== date) {
+      // Date changed - load new day's data
       setSleep(clamp(sleepQuality, 1, 10));
       setExercise(clamp(exerciseMinutes, 0, 300));
       setDailyNotes(notes);
-      
-      // Update last synced values
-      lastSyncedRef.current = { sleepQuality, exerciseMinutes, notes, date };
+      prevDateRef.current = date;
     }
+    // Don't sync props during same-day edits - let user's local state be the source of truth
   }, [date, sleepQuality, exerciseMinutes, notes]);
 
   const dateLabel = useMemo(() => formatShort(date), [date]);
