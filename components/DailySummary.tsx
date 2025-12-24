@@ -60,8 +60,14 @@ export default function DailySummary({
 
   const setSleepAndNotify = (v: number) => {
     const nv = clamp(v, 1, 10);
+    console.log('[DailySummary] setSleepAndNotify called:', { value: v, clamped: nv, hasCallback: !!onSleepQualityChange });
     setSleep(nv);
-    onSleepQualityChange?.(nv);
+    if (onSleepQualityChange) {
+      console.log('[DailySummary] Calling onSleepQualityChange with:', nv);
+      onSleepQualityChange(nv);
+    } else {
+      console.warn('[DailySummary] onSleepQualityChange callback is undefined!');
+    }
   };
   const decSleep = () => setSleepAndNotify(sleep - 1);
   const incSleep = () => setSleepAndNotify(sleep + 1);
@@ -128,8 +134,14 @@ export default function DailySummary({
             value={exercise}
             onChange={(e) => {
               const nv = clamp(parseInt(e.target.value, 10), 0, 300);
+              console.log('[DailySummary] Exercise onChange:', { value: nv, hasCallback: !!onExerciseMinutesChange });
               setExercise(nv);
-              onExerciseMinutesChange?.(nv);
+              if (onExerciseMinutesChange) {
+                console.log('[DailySummary] Calling onExerciseMinutesChange with:', nv);
+                onExerciseMinutesChange(nv);
+              } else {
+                console.warn('[DailySummary] onExerciseMinutesChange callback is undefined!');
+              }
             }}
             density="md"
             tabularNums
@@ -155,8 +167,14 @@ export default function DailySummary({
           value={dailyNotes}
           onChange={(e) => {
             const v = e.target.value;
+            console.log('[DailySummary] Notes onChange:', { value: v, hasCallback: !!onNotesChange });
             setDailyNotes(v);
-            onNotesChange?.(v);
+            if (onNotesChange) {
+              console.log('[DailySummary] Calling onNotesChange with:', v);
+              onNotesChange(v);
+            } else {
+              console.warn('[DailySummary] onNotesChange callback is undefined!');
+            }
           }}
           placeholder="Anything notable about your day…"
           density="md"
