@@ -96,7 +96,7 @@ export default function MainMetricGrid({ metric, metricLabel, data, columns }: M
   };
 
   return (
-    <div className="mt-4 w-full overflow-x-auto">
+    <div className="mt-4 w-full overflow-x-auto max-h-[600px] overflow-y-auto">
       <table className="min-w-full border-collapse text-xs md:text-sm" aria-label={`Main metric grid for ${metricLabel}`}>
         <caption className="px-3 py-2 text-left text-sm font-medium text-slate-400">
           {metricLabel} Tracker
