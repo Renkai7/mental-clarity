@@ -70,8 +70,8 @@ export function generateStaticParams() {
   const today = new Date();
   const out: { date: string }[] = [];
   
-  // Generate last 30 days for production use
-  for (let i = 0; i < 30; i++) {
+  // Generate 30 days in the past and 7 days in the future for auto-day creation
+  for (let i = -7; i < 30; i++) {
     const dt = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - i));
     const y = dt.getUTCFullYear();
     const m = String(dt.getUTCMonth() + 1).padStart(2, '0');
